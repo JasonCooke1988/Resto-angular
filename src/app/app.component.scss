@@ -1,0 +1,11 @@
+section#dashboard {
+  app-resto-layout {
+    display: grid;
+    margin-top: 10rem;
+    grid-template-columns: 860px 1fr;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}

@@ -1,0 +1,7 @@
+<div>
+  <app-canvas [tables]="tables"></app-canvas>
+  <app-controls (newTableEvent)="addTable($event)"></app-controls>
+</div>
+<div>
+  <app-table-detail [tables]="tables"></app-table-detail>
+</div>
