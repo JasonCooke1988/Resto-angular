@@ -1,0 +1,27 @@
+<div class="w-25 flex justify-around">
+  <span>Modifier la largeur :</span>
+
+  <i (click)="incrementPropertyOnce('width')"
+     (mousedown)="incrementProperty('width')"
+     (mouseup)="stopInterval()"
+     class="icon-plus cursor-pointer"></i>
+
+  <i (click)="reducePropertyOnce('width')"
+     (mousedown)="reduceProperty('width')"
+     (mouseup)="stopInterval()"
+     class="icon-minus cursor-pointer"></i>
+</div>
+
+<div class="w-25 flex justify-around">
+  <span>Modifier la hauteur :</span>
+
+  <i (click)="incrementPropertyOnce('height')"
+     (mousedown)="incrementProperty('height')"
+     (mouseup)="stopInterval()"
+     class="icon-plus cursor-pointer"></i>
+
+  <i (click)="reducePropertyOnce('height')"
+     (mousedown)="reduceProperty('height')"
+     (mouseup)="stopInterval()"
+     class="icon-minus cursor-pointer"></i>
+</div>

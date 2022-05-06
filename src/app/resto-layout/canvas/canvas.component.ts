@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Table} from "../../core/models/table.model";
 import {Mouse} from "../../core/models/mouse.model";
 import {TablesService} from "../../core/services/tables.service";
@@ -14,6 +14,8 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   dragok!: Boolean;
   mouse!: Mouse;
   private rect: any;
+
+  @Output() selectedTableEvent = new EventEmitter<Table>()
   @ViewChild('canvas') canvas!: ElementRef;
   @Input() tables!: Table[];
 
@@ -42,6 +44,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.dragok = true;
       table.isDragging = true;
       table.selected = true;
+      this.selectedTableEvent.emit(table);
       return true
     }
     table.isDragging = false;
