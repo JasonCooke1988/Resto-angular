@@ -1,18 +1,10 @@
 <div>
   <app-canvas [tables]="tables" (selectedTableEvent)="selectTable($event)"></app-canvas>
   <app-controls [tables]="tables" (newTableEvent)="addTable($event)"></app-controls>
-  <app-table-controls *ngIf="selectedTable" [table]="selectedTable"></app-table-controls>
-
-
-<!--  <form *ngIf="selectedTable" [selectedTable]="selectedTable" [formGroup]="updateTableForm">-->
-<!--    <label for="height">height: </label>-->
-<!--    <input id="height" type="number" formControlName="height">-->
-<!--    <label for="width">width: </label>-->
-<!--    <input id="width" type="number" formControlName="width">-->
-<!--  </form>-->
-
-
 </div>
+
 <div>
+  <h2 class="justify-center flex uppercase font-lavendar">Table sélectionné :</h2>
   <app-table-detail [tables]="tables"></app-table-detail>
+  <app-table-controls *ngIf="selectedTable" [table]="selectedTable"></app-table-controls>
 </div>
