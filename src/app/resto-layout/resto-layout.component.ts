@@ -7,6 +7,7 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 @Component({
   selector: 'app-resto-layout',
   templateUrl: './resto-layout.component.html',
+  styles: ['#canvas-wrap {height: 60vh;}']
 })
 export class RestoLayoutComponent implements OnInit {
   tables!: Table[];

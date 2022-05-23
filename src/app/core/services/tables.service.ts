@@ -42,15 +42,22 @@ export class TablesService {
 
   drawTable(ctx: CanvasRenderingContext2D, table: Table) {
     ctx.beginPath()
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 5;
+    // ctx.fillStyle = "#4B392C";
+    ctx.fillStyle = "rgba(75,57,44,0.70)";
     ctx.fillRect(
       table.x,
       table.y,
       table.width,
       table.height
     );
-    ctx.fillStyle = "#000000";
-    ctx.fill()
-    ctx.closePath()
+
+    ctx.font = "15px roboto";
+    ctx.fillStyle = 'black';
+    let text = ctx.measureText(table.tableNumber.toString());
+
+    ctx.fillText(table.tableNumber.toString(), table.x + (table.width / 2) - (text.width / 2), table.y + (table.height / 2) + 3.5)
 
     if (table.selected) {
       ctx.strokeStyle = '#0677D7';

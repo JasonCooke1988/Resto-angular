@@ -1,30 +1,51 @@
-<div class="mt-4 w-25 flex justify-between">
+<div *ngFor="let table of tables">
 
-  <i
-     (click)="incrementPropertyOnce('width')"
-     (mousedown)="incrementProperty('width')"
-     (mouseup)="stopInterval()"
-     class="icon-plus cursor-pointer"></i>
+  <div *ngIf="table.selected" class="flex justify-between">
+    <div class="w-1/2 flex items-center">
+      <label class="form-label text-gray-700 items-center flex" for="table-number">N° de table </label>
+      <input type="number" id="table-number" class="w-12 ml-2 p-1 text-sm border border-solid border-gray-300"
+             [(ngModel)]="table.tableNumber">
+    </div>
 
-  <span>Largeur</span>
+    <div class="w-1/2 flex items-center justify-end">
+      <label for="table-seats">Nombre de couverts </label>
+      <input type="number" id="table-seats" class="w-12 ml-2 p-1 border border-solid border-gray-300" [(ngModel)]="table.seats">
+    </div>
+  </div>
 
-  <i (click)="reducePropertyOnce('width')"
-     (mousedown)="reduceProperty('width')"
-     (mouseup)="stopInterval()"
-     class="icon-minus cursor-pointer"></i>
+<div *ngIf="table.selected" class="flex justify-between">
+  <div class="my-2 w-32 flex justify-between">
+    <i
+      (click)="incrementPropertyOnce('width')"
+      (mousedown)="incrementProperty('width')"
+      (mouseup)="stopInterval()"
+      class="icon-plus bg-green shadow-slate-500 p-1.5 cursor-pointer flex items-center rounded-full"></i>
+
+    <span class="flex items-center">Largeur</span>
+
+    <i (click)="reducePropertyOnce('width')"
+       (mousedown)="reduceProperty('width')"
+       (mouseup)="stopInterval()"
+       class="icon-minus bg-green shadow-slate-500 p-1.5 icon-plus cursor-pointer flex items-center rounded-full"></i>
+  </div>
+
+  <div class="my-2 w-32 flex justify-between">
+
+    <i (click)="incrementPropertyOnce('height')"
+       (mousedown)="incrementProperty('height')"
+       (mouseup)="stopInterval()"
+       class="icon-plus bg-green shadow-slate-500 p-1.5 cursor-pointer flex items-center rounded-full"></i>
+
+    <span class="flex items-center">Hauteur</span>
+
+    <i (click)="reducePropertyOnce('height')"
+       (mousedown)="reduceProperty('height')"
+       (mouseup)="stopInterval()"
+       class="icon-minus bg-green shadow-slate-500 p-1.5 cursor-pointer flex items-center rounded-full"></i>
+  </div>
 </div>
 
-<div class="w-25 flex justify-between">
 
-  <i (click)="incrementPropertyOnce('height')"
-     (mousedown)="incrementProperty('height')"
-     (mouseup)="stopInterval()"
-     class="icon-plus cursor-pointer"></i>
 
-  <span>Modifier la hauteur :</span>
 
-  <i (click)="reducePropertyOnce('height')"
-     (mousedown)="reduceProperty('height')"
-     (mouseup)="stopInterval()"
-     class="icon-minus cursor-pointer"></i>
 </div>

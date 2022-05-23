@@ -12,6 +12,7 @@ export class TableControlsComponent implements OnInit {
   valueMax!: any;
 
   @Input() table!: Table;
+  @Input() tables!: Table[];
 
   ngOnInit() {
     this.incrementValue = 10;

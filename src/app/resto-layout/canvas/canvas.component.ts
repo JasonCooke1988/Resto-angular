@@ -30,9 +30,19 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    const canvas = this.canvas.nativeElement;
-    this.context = canvas.getContext('2d');
-    this.rect = canvas.getBoundingClientRect();
+
+    let canvasWrap = document.getElementById('canvas-wrap');
+    // @ts-ignore
+    let canvasWrapWidth = canvasWrap.clientWidth;
+    // @ts-ignore
+    let canvasWrapHeight = canvasWrap.clientHeight;
+
+    // @ts-ignore
+    this.context = document.querySelector('canvas').getContext('2d');
+    this.context.canvas.width = canvasWrapWidth;
+    this.context.canvas.height = canvasWrapHeight;
+    this.context.translate(canvasWrapWidth/canvasWrapWidth,canvasWrapHeight/canvasWrapHeight);
+    this.rect = this.context.canvas.getBoundingClientRect();
 
     this.tick();
   }
@@ -107,7 +117,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     requestAnimationFrame(() => this.tick());
 
     const ctx = this.context;
-    ctx.clearRect(0, 0, 850, 500);
+    ctx.clearRect(0, 0, this.rect.width, this.rect.height);
 
     // draw tables
     this.tables.map(table => {
