@@ -3,16 +3,29 @@ import {Table} from "../../core/models/table.model";
 import {Mouse} from "../../core/models/mouse.model";
 import {TablesService} from "../../core/services/tables.service";
 import {CanvasService} from "../../core/services/canvas.service";
+import {state, style, trigger} from "@angular/animations";
 
 @Component({
   selector: 'app-canvas',
   templateUrl: './canvas.component.html',
-  styles: ['canvas {border: 1px solid black;}']
+  styles: ['canvas {border: 1px solid black;}'],
+  animations: [
+    trigger('moveTableToggle', [
+      state('moving', style({
+        cursor: 'move'
+      })),
+      state('movingOff', style({
+        cursor: 'default'
+      }))
+    ])
+  ]
 })
 export class CanvasComponent implements AfterViewInit, OnInit {
 
   context!: CanvasRenderingContext2D;
   dragok!: Boolean;
+  resizeTable!: boolean;
+  moveTable!: boolean;
   mouse!: Mouse;
   private rect: any;
 
@@ -49,6 +62,12 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.tick();
   }
 
+  mouseHoverDetection(table: Table) {
+    if((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
+      (this.mouse.y >= table.y && this.mouse.y <= table.y + table.height)) {
+      this.moveTable = true;
+    }
+  }
 
   mouseHitDetection(table: Table) {
     if ((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
@@ -68,6 +87,11 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   updateMousePos(e: MouseEvent) {
     this.mouse.x = e.clientX - this.rect.left;
     this.mouse.y = e.clientY - this.rect.top;
+    this.moveTable = false;
+
+    this.tables.forEach(table => {
+      this.mouseHoverDetection(table);
+    })
   }
 
   mouseDown(e: MouseEvent) {
@@ -76,11 +100,11 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     e.stopPropagation();
 
     // get the current mouse position
-    this.updateMousePos(e);
+    // this.updateMousePos(e);
 
-    // test each rect to see if mouse is inside
     this.dragok = false;
 
+    // test each rect to see if mouse is inside
     this.tables.map(element => {
       this.mouseHitDetection(element);
     });
@@ -98,6 +122,9 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   // handle mouse moves
   mouseMove(e: MouseEvent) {
     // if we're dragging anything...
+
+    this.updateMousePos(e);
+
     if (this.dragok) {
       // tell the browser we're handling this mouse event
       e.preventDefault();
@@ -110,19 +137,23 @@ export class CanvasComponent implements AfterViewInit, OnInit {
         if (table.isDragging) {
           this.tables.forEach(compare => {
 
-            let newTable = {...table};
+            let cloneTable = {...table};
 
-            newTable.x = this.mouse.x - table.width / 2;
-            newTable.y = this.mouse.y - table.height / 2;
+            cloneTable.x = this.mouse.x - table.width / 2;
+            cloneTable.y = this.mouse.y - table.height / 2;
 
-            if (newTable.id != compare.id && this.canvasService.detectOverlap(newTable, compare)) {
-              table.x = newTable.x;
-              table.y = newTable.y;
+            if (cloneTable.id != compare.id && !this.canvasService.detectOverlap(cloneTable, compare) && !this.canvasService.detectOutOfBounds(cloneTable, this.context.canvas)) {
+              table.x = cloneTable.x;
+              table.y = cloneTable.y;
             }
           })
         }
       })
+    } else if (this.resizeTable) {
+
     }
+
+
   }
 
 
