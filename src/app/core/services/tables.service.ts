@@ -44,7 +44,6 @@ export class TablesService {
     ctx.beginPath()
     ctx.shadowColor = 'black';
     ctx.shadowBlur = 5;
-    // ctx.fillStyle = "#4B392C";
     ctx.fillStyle = "rgba(75,57,44,0.70)";
     ctx.fillRect(
       table.x,
@@ -79,5 +78,13 @@ export class TablesService {
       ...table,
       ...value
     }
+  }
+
+  calcRight(table: Table) {
+    return table.x + table.width;
+  }
+
+  calcBottom(table: Table) {
+    return table.y + table.height;
   }
 }

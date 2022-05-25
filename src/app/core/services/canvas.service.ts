@@ -1,16 +1,22 @@
 import {Injectable} from '@angular/core';
+import {TablesService} from "./tables.service";
+import {Table} from "../models/table.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CanvasService {
 
-  constructor() {
+  constructor(private tableService: TablesService) {
   }
 
-  detectOverlap(element: { x: number; width: any; y: number; height: any; },
-                compare: { x: number; width: any; y: number; height: any; }) {
-    return (element.x >= element.x + element.width || element.y >= compare.y + compare.height ||
-      (element.x + element.width) <= compare.x || (element.y + element.height) <= compare.y)
+  detectOverlap(element: Table,
+                compare: Table) {
+
+    return !(element.x < compare.x + compare.width &&
+      element.x + element.width > compare.x &&
+      element.y < compare.y + compare.height &&
+      element.height + element.y > compare.y)
+
   }
 }

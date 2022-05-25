@@ -2,6 +2,7 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Outpu
 import {Table} from "../../core/models/table.model";
 import {Mouse} from "../../core/models/mouse.model";
 import {TablesService} from "../../core/services/tables.service";
+import {CanvasService} from "../../core/services/canvas.service";
 
 @Component({
   selector: 'app-canvas',
@@ -19,7 +20,8 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   @ViewChild('canvas') canvas!: ElementRef;
   @Input() tables!: Table[];
 
-  constructor(private tableService: TablesService) {
+  constructor(private tableService: TablesService,
+              private canvasService: CanvasService) {
   }
 
   ngOnInit(): void {
@@ -41,11 +43,12 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.context = document.querySelector('canvas').getContext('2d');
     this.context.canvas.width = canvasWrapWidth;
     this.context.canvas.height = canvasWrapHeight;
-    this.context.translate(canvasWrapWidth/canvasWrapWidth,canvasWrapHeight/canvasWrapHeight);
+    this.context.translate(canvasWrapWidth / canvasWrapWidth, canvasWrapHeight / canvasWrapHeight);
     this.rect = this.context.canvas.getBoundingClientRect();
 
     this.tick();
   }
+
 
   mouseHitDetection(table: Table) {
     if ((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
@@ -105,8 +108,18 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
       this.tables.map(table => {
         if (table.isDragging) {
-          table.x = this.mouse.x - table.width / 2;
-          table.y = this.mouse.y - table.height / 2;
+          this.tables.forEach(compare => {
+
+            let newTable = {...table};
+
+            newTable.x = this.mouse.x - table.width / 2;
+            newTable.y = this.mouse.y - table.height / 2;
+
+            if (newTable.id != compare.id && this.canvasService.detectOverlap(newTable, compare)) {
+              table.x = newTable.x;
+              table.y = newTable.y;
+            }
+          })
         }
       })
     }
@@ -117,7 +130,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     requestAnimationFrame(() => this.tick());
 
     const ctx = this.context;
-    ctx.clearRect(0, 0, this.rect.width, this.rect.height);
+    ctx.clearRect(-1, -1, this.rect.width + 1, this.rect.height + 1);
 
     // draw tables
     this.tables.map(table => {
