@@ -6,6 +6,5 @@ export class Table {
   y!: number;
   tableNumber!: number;
   seats!: number;
-  isDragging!: Boolean;
   selected!: Boolean;
 }

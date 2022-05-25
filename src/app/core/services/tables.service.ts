@@ -16,7 +16,6 @@ export class TablesService {
       y: 100,
       tableNumber: 1,
       seats: 2,
-      isDragging: false,
       selected: false
     },
     {
@@ -27,7 +26,6 @@ export class TablesService {
       y: 200,
       tableNumber: 2,
       seats: 5,
-      isDragging: false,
       selected: false
     }
   ]

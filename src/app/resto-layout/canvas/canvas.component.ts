@@ -10,7 +10,7 @@ import {state, style, trigger} from "@angular/animations";
   templateUrl: './canvas.component.html',
   styles: ['canvas {border: 1px solid black;}'],
   animations: [
-    trigger('moveTableToggle', [
+    trigger('mouseMoveTableToggle', [
       state('moving', style({
         cursor: 'move'
       })),
@@ -23,10 +23,13 @@ import {state, style, trigger} from "@angular/animations";
 export class CanvasComponent implements AfterViewInit, OnInit {
 
   context!: CanvasRenderingContext2D;
-  dragok!: Boolean;
-  resizeTable!: boolean;
-  moveTable!: boolean;
+  hoverTable!: Table | undefined;
+  selectedTable!: Table | undefined;
   mouse!: Mouse;
+
+  mouseResizeTable!: boolean;
+  mouseMoveTable!: boolean;
+  dragging!: boolean;
   private rect: any;
 
   @Output() selectedTableEvent = new EventEmitter<Table>()
@@ -65,29 +68,17 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   mouseHoverDetection(table: Table) {
     if((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
       (this.mouse.y >= table.y && this.mouse.y <= table.y + table.height)) {
-      this.moveTable = true;
+      this.mouseMoveTable = true;
+      this.hoverTable = table;
     }
-  }
-
-  mouseHitDetection(table: Table) {
-    if ((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
-      (this.mouse.y >= table.y && this.mouse.y <= table.y + table.height)) {
-
-      this.dragok = true;
-      table.isDragging = true;
-      table.selected = true;
-      this.selectedTableEvent.emit(table);
-      return true
-    }
-    table.isDragging = false;
-    table.selected = false;
-    return false;
   }
 
   updateMousePos(e: MouseEvent) {
     this.mouse.x = e.clientX - this.rect.left;
     this.mouse.y = e.clientY - this.rect.top;
-    this.moveTable = false;
+
+    this.hoverTable = undefined;
+    this.mouseMoveTable = false;
 
     this.tables.forEach(table => {
       this.mouseHoverDetection(table);
@@ -99,57 +90,57 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     e.preventDefault();
     e.stopPropagation();
 
-    // get the current mouse position
-    // this.updateMousePos(e);
+    if (this.selectedTable != undefined) {
+      this.selectedTable.selected = false;
+      this.selectedTable = undefined;
+    }
 
-    this.dragok = false;
+    //If the mouse is hovering over a table we define a selected table and allow the user to drag
+    if (this.hoverTable != undefined) {
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.dragging = true;
+    }
 
-    // test each rect to see if mouse is inside
-    this.tables.map(element => {
-      this.mouseHitDetection(element);
-    });
   }
 
   mouseUp(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
 
-    // clear all the dragging flags
-    this.dragok = false;
-    this.tables.map(table => table.isDragging = false);
+    // clear action status
+    this.dragging = false;
+
   }
 
-  // handle mouse moves
   mouseMove(e: MouseEvent) {
-    // if we're dragging anything...
 
     this.updateMousePos(e);
+    e.preventDefault();
+    e.stopPropagation();
 
-    if (this.dragok) {
-      // tell the browser we're handling this mouse event
-      e.preventDefault();
-      e.stopPropagation();
+    if (this.dragging) {
 
-      // get the current mouse position
-      this.updateMousePos(e);
+      let cloneTable = {...this.selectedTable};
+      // @ts-ignore
+      cloneTable.x = this.mouse.x - this.selectedTable.width / 2;
+      // @ts-ignore
+      cloneTable.y = this.mouse.y - this.selectedTable.height / 2;
 
-      this.tables.map(table => {
-        if (table.isDragging) {
-          this.tables.forEach(compare => {
+        this.tables.forEach(compare => {
 
-            let cloneTable = {...table};
+          if (cloneTable.id != compare.id
+            && !this.canvasService.detectOverlap(<Table>cloneTable, compare)
+            && !this.canvasService.detectOutOfBounds(<Table>cloneTable, this.context.canvas)) {
 
-            cloneTable.x = this.mouse.x - table.width / 2;
-            cloneTable.y = this.mouse.y - table.height / 2;
-
-            if (cloneTable.id != compare.id && !this.canvasService.detectOverlap(cloneTable, compare) && !this.canvasService.detectOutOfBounds(cloneTable, this.context.canvas)) {
-              table.x = cloneTable.x;
-              table.y = cloneTable.y;
-            }
-          })
-        }
-      })
-    } else if (this.resizeTable) {
+            // @ts-ignore
+            this.selectedTable.x = cloneTable.x;
+            // @ts-ignore
+            this.selectedTable.y = cloneTable.y;
+          }
+        })
+    } else if (this.mouseResizeTable) {
 
     }
 
@@ -164,7 +155,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     ctx.clearRect(-1, -1, this.rect.width + 1, this.rect.height + 1);
 
     // draw tables
-    this.tables.map(table => {
+    this.tables.forEach(table => {
       this.tableService.drawTable(ctx, table);
     })
   }

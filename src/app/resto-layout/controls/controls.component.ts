@@ -31,7 +31,6 @@ export class ControlsComponent {
         y: 150,
         tableNumber: 0,
         seats: 0,
-        isDragging: false,
         selected: true
       }
     );

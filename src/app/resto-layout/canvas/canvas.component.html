@@ -1,5 +1,5 @@
 <canvas #canvas
-        [@moveTableToggle]="moveTable ? 'moving' : 'movingOff'"
+        [@mouseMoveTableToggle]="mouseMoveTable ? 'moving' : 'movingOff'"
         (mousedown)="mouseDown($event)"
         (mouseup)="mouseUp($event)"
         (mousemove)="mouseMove($event)"></canvas>
