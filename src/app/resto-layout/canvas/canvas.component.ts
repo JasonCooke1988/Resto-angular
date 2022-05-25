@@ -10,16 +10,20 @@ import {state, style, trigger} from "@angular/animations";
   templateUrl: './canvas.component.html',
   styles: ['canvas {border: 1px solid black;}'],
   animations: [
-    trigger('mouseMoveTableToggle', [
-      state('moving', style({
-        cursor: 'move'
+    trigger('mouseEditTable', [
+      state('move', style({
+        cursor: 'move',
       })),
-      state('movingOff', style({
-        cursor: 'default'
-      }))
+      state('resize', style({
+        cursor: 'ns-resize',
+      })),
+      state('default', style({
+        cursor: 'default',
+      })),
     ])
   ]
 })
+
 export class CanvasComponent implements AfterViewInit, OnInit {
 
   context!: CanvasRenderingContext2D;
@@ -27,9 +31,10 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   selectedTable!: Table | undefined;
   mouse!: Mouse;
 
-  mouseResizeTable!: boolean;
-  mouseMoveTable!: boolean;
+  mouseResizeTableTop!: boolean;
+  mouseEditTable!: string;
   dragging!: boolean;
+  testing!: boolean;
   private rect: any;
 
   @Output() selectedTableEvent = new EventEmitter<Table>()
@@ -66,10 +71,19 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   }
 
   mouseHoverDetection(table: Table) {
-    if((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
-      (this.mouse.y >= table.y && this.mouse.y <= table.y + table.height)) {
-      this.mouseMoveTable = true;
+
+    if (this.mouse.y > table.y - 10 && this.mouse.y < table.y + 10 &&
+      this.mouse.x > table.x && this.mouse.x < table.x + table.width) {
+
+      this.mouseEditTable = 'resize';
       this.hoverTable = table;
+
+    } else if ((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
+      (this.mouse.y >= table.y && this.mouse.y <= table.y + table.height)) {
+
+      this.mouseEditTable = 'move';
+      this.hoverTable = table;
+
     }
   }
 
@@ -78,7 +92,8 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.mouse.y = e.clientY - this.rect.top;
 
     this.hoverTable = undefined;
-    this.mouseMoveTable = false;
+    this.mouseEditTable = 'default';
+    this.mouseResizeTableTop = false;
 
     this.tables.forEach(table => {
       this.mouseHoverDetection(table);
@@ -102,7 +117,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.selectedTableEvent.emit(this.selectedTable);
       this.dragging = true;
     }
-
   }
 
   mouseUp(e: MouseEvent) {
@@ -121,29 +135,27 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     e.stopPropagation();
 
     if (this.dragging) {
-
       let cloneTable = {...this.selectedTable};
       // @ts-ignore
       cloneTable.x = this.mouse.x - this.selectedTable.width / 2;
       // @ts-ignore
       cloneTable.y = this.mouse.y - this.selectedTable.height / 2;
 
-        this.tables.forEach(compare => {
+      this.tables.forEach(compare => {
 
-          if (cloneTable.id != compare.id
-            && !this.canvasService.detectOverlap(<Table>cloneTable, compare)
-            && !this.canvasService.detectOutOfBounds(<Table>cloneTable, this.context.canvas)) {
+        if (cloneTable.id != compare.id
+          && !this.canvasService.detectOverlap(<Table>cloneTable, compare)
+          && !this.canvasService.detectOutOfBounds(<Table>cloneTable, this.context.canvas)) {
 
-            // @ts-ignore
-            this.selectedTable.x = cloneTable.x;
-            // @ts-ignore
-            this.selectedTable.y = cloneTable.y;
-          }
-        })
-    } else if (this.mouseResizeTable) {
+          // @ts-ignore
+          this.selectedTable.x = cloneTable.x;
+          // @ts-ignore
+          this.selectedTable.y = cloneTable.y;
+        }
+      })
+    } else if (this.mouseResizeTableTop) {
 
     }
-
 
   }
 
