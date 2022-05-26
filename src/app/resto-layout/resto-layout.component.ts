@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Table} from "../core/models/table.model";
 import {TablesService} from "../core/services/tables.service";
 import {CanvasService} from "../core/services/canvas.service";
@@ -12,6 +12,9 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 export class RestoLayoutComponent implements OnInit {
   tables!: Table[];
   selectedTable!: Table | undefined;
+  newTable!: Table | undefined;
+  alert!: String | undefined;
+
 
   constructor(private tableService: TablesService,
               private canvasService: CanvasService) {
@@ -22,13 +25,18 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   addTable(newTable: Table) {
-    if (!this.canvasService.detectOverlap(newTable)){
-      this.tables.push(newTable);
-    }
+    this.newTable = newTable;
+    this.selectedTable = newTable;
+    this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
   }
 
   selectTable(table: Table) {
     this.selectedTable = table;
+  }
+
+  clearNewTable() {
+    this.alert = undefined;
+    this.newTable = undefined;
   }
 
 }

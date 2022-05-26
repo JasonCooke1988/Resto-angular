@@ -10,6 +10,7 @@ export class ControlsComponent {
 
   @Output() newTableEvent = new EventEmitter<Table>()
   @Input() tables!: Table[];
+  @Input() alert!: String | undefined;
 
   constructor(private tableService: TablesService) {
   }

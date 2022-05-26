@@ -5,11 +5,13 @@ module.exports = {
     './src/app/**/**/*.{html,ts}'
   ],
   theme: {
-    colors: {
-      'denim' : '#1E40AF',
-      'lavendar' : '#857885',
-      'gold': '#bfae48',
-      'green' : '#04724d'
+    extend : {
+      colors: {
+        'denim' : '#1E40AF',
+        'lavendar' : '#857885',
+        'gold': '#bfae48',
+        'green' : '#04724d'
+      }
     }
   },
   plugins: [],

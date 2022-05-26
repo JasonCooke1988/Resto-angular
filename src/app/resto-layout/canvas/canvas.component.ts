@@ -67,8 +67,10 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   resizeTableTopLeft!: boolean;
 
   @Output() selectedTableEvent = new EventEmitter<Table>()
+  @Output() clearNewTable = new EventEmitter<Table>()
   @ViewChild('canvas') canvas!: ElementRef;
   @Input() tables!: Table[];
+  @Input() newTable!: Table | undefined;
 
   constructor(private tableService: TablesService,
               private canvasService: CanvasService) {
@@ -172,37 +174,55 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     e.preventDefault();
     e.stopPropagation();
 
-    if (this.selectedTable != undefined) {
-      this.selectedTable.selected = false;
-      this.selectedTable = undefined;
-    }
+    if (this.newTable != undefined) {
 
-    if (this.hoverTable != undefined) {
+      this.newTable.x = this.mouse.x - this.newTable.width / 2;
+      this.newTable.y = this.mouse.y - this.newTable.height / 2;
 
-      this.selectedTable = this.hoverTable;
-      this.selectedTable.selected = true;
-      this.selectedTableEvent.emit(this.selectedTable);
+      if (!this.canvasService.detectOverlap(this.newTable)){
+        this.tables.push(this.newTable);
+        this.selectedTable = this.newTable;
+        this.newTable = undefined;
 
-      if (this.mouseEditTable === 'move') {
-        this.dragging = true;
-      } else if (this.mouseEditTable === 'n-resize') {
-        this.resizeTableTop = true;
-      } else if (this.mouseEditTable === 's-resize') {
-        this.resizeTableBottom = true;
-      } else if (this.mouseEditTable === 'e-resize') {
-        this.resizeTableRight = true;
-      } else if (this.mouseEditTable === 'w-resize') {
-        this.resizeTableLeft = true;
-      } else if (this.mouseEditTable === 'ne-resize') {
-        this.resizeTableTopRight = true;
-      } else if (this.mouseEditTable === 'se-resize') {
-        this.resizeTableBottomRight = true;
-      } else if (this.mouseEditTable === 'sw-resize') {
-        this.resizeTableBottomLeft = true;
-      } else if (this.mouseEditTable === 'nw-resize') {
-        this.resizeTableTopLeft = true;
+        this.clearNewTable.emit();
       }
+    } else {
+
+      if (this.selectedTable != undefined) {
+        this.selectedTable.selected = false;
+        this.selectedTable = undefined;
+      }
+
+      if (this.hoverTable != undefined) {
+
+        this.selectedTable = this.hoverTable;
+        this.selectedTable.selected = true;
+        this.selectedTableEvent.emit(this.selectedTable);
+
+        if (this.mouseEditTable === 'move') {
+          this.dragging = true;
+        } else if (this.mouseEditTable === 'n-resize') {
+          this.resizeTableTop = true;
+        } else if (this.mouseEditTable === 's-resize') {
+          this.resizeTableBottom = true;
+        } else if (this.mouseEditTable === 'e-resize') {
+          this.resizeTableRight = true;
+        } else if (this.mouseEditTable === 'w-resize') {
+          this.resizeTableLeft = true;
+        } else if (this.mouseEditTable === 'ne-resize') {
+          this.resizeTableTopRight = true;
+        } else if (this.mouseEditTable === 'se-resize') {
+          this.resizeTableBottomRight = true;
+        } else if (this.mouseEditTable === 'sw-resize') {
+          this.resizeTableBottomLeft = true;
+        } else if (this.mouseEditTable === 'nw-resize') {
+          this.resizeTableTopLeft = true;
+        }
+      }
+
     }
+
+
 
   }
 
