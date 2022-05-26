@@ -14,6 +14,18 @@ import {state, style, trigger} from "@angular/animations";
       state('move', style({
         cursor: 'move',
       })),
+      state('ne-resize', style({
+        cursor: 'nesw-resize',
+      })),
+      state('nw-resize', style({
+        cursor: 'nwse-resize',
+      })),
+      state('se-resize', style({
+        cursor: 'nwse-resize',
+      })),
+      state('sw-resize', style({
+        cursor: 'nesw-resize',
+      })),
       state('n-resize', style({
         cursor: 'ns-resize',
       })),
@@ -49,6 +61,10 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   resizeTableRight!: boolean;
   resizeTableBottom!: boolean;
   resizeTableLeft!: boolean;
+  resizeTableTopRight!: boolean;
+  resizeTableBottomRight!: boolean;
+  resizeTableBottomLeft!: boolean;
+  resizeTableTopLeft!: boolean;
 
   @Output() selectedTableEvent = new EventEmitter<Table>()
   @ViewChild('canvas') canvas!: ElementRef;
@@ -86,25 +102,49 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   mouseHoverDetection(table: Table) {
 
     if (this.mouse.y > table.y - 10 && this.mouse.y < table.y + 10 &&
+      this.mouse.x > table.x + table.width - 10 && this.mouse.x < table.x + table.width + 10) {
+
+      this.mouseEditTable = 'ne-resize';
+      this.hoverTable = table;
+
+    } else if (this.mouse.y > table.y + table.height - 10 && this.mouse.y < table.y + table.height + 10 &&
+      this.mouse.x > table.x + table.width - 10 && this.mouse.x < table.x + table.width + 10) {
+
+      this.mouseEditTable = 'se-resize';
+      this.hoverTable = table;
+
+    } else if (this.mouse.y > table.y - 10 && this.mouse.y < table.y + 10 &&
+      this.mouse.x > table.x - 10 && this.mouse.x < table.x + 10) {
+
+      this.mouseEditTable = 'nw-resize';
+      this.hoverTable = table;
+
+    } else if (this.mouse.y > table.y + table.height - 10 && this.mouse.y < table.y + table.height + 10 &&
+      this.mouse.x > table.x - 10 && this.mouse.x < table.x + 10) {
+
+      this.mouseEditTable = 'sw-resize';
+      this.hoverTable = table;
+
+    } else if (this.mouse.y > table.y - 10 && this.mouse.y < table.y + 10 &&
       this.mouse.x > table.x && this.mouse.x < table.x + table.width) {
 
       this.mouseEditTable = 'n-resize';
       this.hoverTable = table;
 
-    } else if(this.mouse.x > table.x && this.mouse.x < table.x + table.width
+    } else if (this.mouse.x > table.x && this.mouse.x < table.x + table.width
       && this.mouse.y > table.y + table.height - 10 && this.mouse.y < table.y + table.height + 10) {
 
       this.mouseEditTable = 's-resize';
       this.hoverTable = table;
 
-    } else if(this.mouse.x > table.x + table.width - 10 && this.mouse.x < table.x + table.width + 10 &&
+    } else if (this.mouse.x > table.x + table.width - 10 && this.mouse.x < table.x + table.width + 10 &&
       this.mouse.y > table.y && this.mouse.y < table.y + table.height) {
 
       this.mouseEditTable = 'e-resize';
       this.hoverTable = table;
 
     } else if (this.mouse.x > table.x - 10 && this.mouse.x < table.x + 10
-    && this.mouse.y > table.y && this.mouse.y < table.y + table.height) {
+      && this.mouse.y > table.y && this.mouse.y < table.y + table.height) {
 
       this.mouseEditTable = 'w-resize';
       this.hoverTable = table;
@@ -122,9 +162,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.mouse.x = e.clientX - this.rect.left;
     this.mouse.y = e.clientY - this.rect.top;
 
-    // this.hoverTable = undefined;
     this.mouseEditTable = 'default';
-    // this.resizeTableTop = false;
 
     this.tables.forEach(table => {
       this.mouseHoverDetection(table);
@@ -174,6 +212,30 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.selectedTable.selected = true;
       this.selectedTableEvent.emit(this.selectedTable);
       this.resizeTableLeft = true;
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 'ne-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableTopRight = true;
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 'se-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableBottomRight = true;
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 'sw-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableBottomLeft = true;
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 'nw-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableTopLeft = true;
     }
   }
 
@@ -187,6 +249,10 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.resizeTableRight = false;
     this.resizeTableTop = false;
     this.resizeTableBottom = false;
+    this.resizeTableTopRight = false;
+    this.resizeTableBottomRight = false;
+    this.resizeTableBottomLeft = false;
+    this.resizeTableTopLeft = false;
 
   }
 
@@ -233,8 +299,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
       // @ts-ignore
       let yDiff = this.mouse.y - (this.selectedTable.y + this.selectedTable.height);
-
-
       // @ts-ignore
       this.selectedTable.height += yDiff;
 
@@ -247,7 +311,67 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.selectedTable.width += xDiff;
     } else if (this.resizeTableLeft) {
 
-      console.log('coucou')
+      // @ts-ignore
+      let xDiff = this.selectedTable.x - this.mouse.x;
+
+      // @ts-ignore
+      this.selectedTable.x = this.mouse.x;
+
+      // @ts-ignore
+      this.selectedTable.width += xDiff;
+    } else if (this.resizeTableTopRight) {
+
+      // @ts-ignore
+      let yDiff = this.selectedTable.y - this.mouse.y;
+
+      // @ts-ignore
+      this.selectedTable.y = this.mouse.y;
+      // @ts-ignore
+      this.selectedTable.height += yDiff;
+
+      // @ts-ignore
+      let xDiff = this.mouse.x - (this.selectedTable.x + this.selectedTable.width);
+
+      // @ts-ignore
+      this.selectedTable.width += xDiff;
+    } else if (this.resizeTableBottomRight) {
+
+      // @ts-ignore
+      let yDiff = this.mouse.y - (this.selectedTable.y + this.selectedTable.height);
+
+      // @ts-ignore
+      this.selectedTable.height += yDiff;
+
+      // @ts-ignore
+      let xDiff = this.mouse.x - (this.selectedTable.x + this.selectedTable.width);
+
+      // @ts-ignore
+      this.selectedTable.width += xDiff;
+    } else if (this.resizeTableBottomLeft) {
+
+      // @ts-ignore
+      let yDiff = this.mouse.y - (this.selectedTable.y + this.selectedTable.height);
+
+      // @ts-ignore
+      this.selectedTable.height += yDiff;
+
+      // @ts-ignore
+      let xDiff = this.selectedTable.x - this.mouse.x;
+
+      // @ts-ignore
+      this.selectedTable.x = this.mouse.x;
+
+      // @ts-ignore
+      this.selectedTable.width += xDiff;
+    } else if (this.resizeTableTopLeft) {
+
+      // @ts-ignore
+      let yDiff = this.selectedTable.y - this.mouse.y;
+
+      // @ts-ignore
+      this.selectedTable.y = this.mouse.y;
+      // @ts-ignore
+      this.selectedTable.height += yDiff;
 
       // @ts-ignore
       let xDiff = this.selectedTable.x - this.mouse.x;
