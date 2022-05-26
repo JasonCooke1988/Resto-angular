@@ -22,15 +22,7 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   addTable(newTable: Table) {
-
-    let checked = 0;
-    this.tables.forEach(compare => {
-      if (!this.canvasService.detectOverlap(newTable, compare)) {
-        checked++;
-      }
-    })
-
-    if (checked === this.tables.length) {
+    if (!this.canvasService.detectOverlap(newTable)){
       this.tables.push(newTable);
     }
   }

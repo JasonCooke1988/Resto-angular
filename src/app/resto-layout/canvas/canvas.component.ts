@@ -239,74 +239,110 @@ export class CanvasComponent implements AfterViewInit, OnInit {
         cloneTable.x = this.mouse.x - this.selectedTable.width / 2;
         cloneTable.y = this.mouse.y - this.selectedTable.height / 2;
 
-        //Check out of bounds
-        if(!this.canvasService.detectOutOfBounds(<Table>cloneTable, this.context!.canvas)) {
+        //Check out-of-bounds
+        //Compares selected table with all tables present on canvas to check overlap
+        if (!this.canvasService.detectOutOfBounds(<Table>cloneTable, this.context!.canvas) &&
+          !this.canvasService.detectOverlap(<Table>cloneTable)) {
 
-          //Compares selected table with all tables present on canvas to check overlap
-          this.tables.forEach(compare => {
-
-            if (cloneTable.id != compare.id
-              && !this.canvasService.detectOverlap(<Table>cloneTable, compare)) {
-
-              this.selectedTable!.x = cloneTable.x;
-              this.selectedTable!.y = cloneTable.y;
-            }
-          })
+          this.selectedTable!.x = cloneTable.x;
+          this.selectedTable!.y = cloneTable.y;
         }
 
       } else if (this.resizeTableTop) {
 
-        let yDiff = this.selectedTable.y - this.mouse.y;
-        this.selectedTable.y = this.mouse.y;
-        this.selectedTable.height += yDiff;
+        let yDiff = cloneTable.y - this.mouse.y;
+        cloneTable.y = this.mouse.y;
+        cloneTable.height += yDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.y = cloneTable.y;
+          this.selectedTable.height = cloneTable.height;
+        }
 
       } else if (this.resizeTableBottom) {
 
         let yDiff = this.mouse.y - (this.selectedTable.y + this.selectedTable.height);
-        this.selectedTable.height += yDiff;
+        cloneTable.height += yDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.height = cloneTable.height;
+        }
 
       } else if (this.resizeTableRight) {
 
         let xDiff = this.mouse.x - (this.selectedTable.x + this.selectedTable.width);
-        this.selectedTable.width += xDiff;
+        cloneTable.width += xDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.width = cloneTable.width;
+        }
 
       } else if (this.resizeTableLeft) {
 
         let xDiff = this.selectedTable.x - this.mouse.x;
-        this.selectedTable.x = this.mouse.x;
-        this.selectedTable.width += xDiff;
+        cloneTable.x = this.mouse.x;
+        cloneTable.width += xDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.width = cloneTable.width;
+          this.selectedTable.x = cloneTable.x;
+        }
 
       } else if (this.resizeTableTopRight) {
 
         let yDiff = this.selectedTable.y - this.mouse.y;
-        this.selectedTable.y = this.mouse.y;
-        this.selectedTable.height += yDiff;
+        cloneTable.y = this.mouse.y;
+        cloneTable.height += yDiff;
         let xDiff = this.mouse.x - (this.selectedTable.x + this.selectedTable.width);
-        this.selectedTable.width += xDiff;
+        cloneTable.width += xDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.y = cloneTable.y;
+          this.selectedTable.height = cloneTable.height;
+          this.selectedTable.width = cloneTable.width;
+        }
 
       } else if (this.resizeTableBottomRight) {
 
         let yDiff = this.mouse.y - (this.selectedTable.y + this.selectedTable.height);
-        this.selectedTable.height += yDiff;
+        cloneTable.height += yDiff;
         let xDiff = this.mouse.x - (this.selectedTable.x + this.selectedTable.width);
-        this.selectedTable.width += xDiff;
+        cloneTable.width += xDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.height = cloneTable.height;
+          this.selectedTable.width = cloneTable.width;
+        }
 
       } else if (this.resizeTableBottomLeft) {
 
         let yDiff = this.mouse.y - (this.selectedTable.y + this.selectedTable.height);
-        this.selectedTable.height += yDiff;
+        cloneTable.height += yDiff;
         let xDiff = this.selectedTable.x - this.mouse.x;
-        this.selectedTable.x = this.mouse.x;
-        this.selectedTable.width += xDiff;
+        cloneTable.x = this.mouse.x;
+        cloneTable.width += xDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.height = cloneTable.height;
+          this.selectedTable.x = cloneTable.x;
+          this.selectedTable.width = cloneTable.width;
+        }
 
       } else if (this.resizeTableTopLeft) {
 
         let yDiff = this.selectedTable.y - this.mouse.y;
-        this.selectedTable.y = this.mouse.y;
-        this.selectedTable.height += yDiff;
+        cloneTable.y = this.mouse.y;
+        cloneTable.height += yDiff;
         let xDiff = this.selectedTable.x - this.mouse.x;
-        this.selectedTable.x = this.mouse.x;
-        this.selectedTable.width += xDiff;
+        cloneTable.x = this.mouse.x;
+        cloneTable.width += xDiff;
+
+        if (!this.canvasService.detectOverlap(<Table>cloneTable)) {
+          this.selectedTable.y = cloneTable.y;
+          this.selectedTable.height = cloneTable.height;
+          this.selectedTable.x = cloneTable.x;
+          this.selectedTable.width = cloneTable.width;
+        }
 
       }
 
