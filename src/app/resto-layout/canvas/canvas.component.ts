@@ -14,8 +14,17 @@ import {state, style, trigger} from "@angular/animations";
       state('move', style({
         cursor: 'move',
       })),
-      state('resize', style({
+      state('n-resize', style({
         cursor: 'ns-resize',
+      })),
+      state('s-resize', style({
+        cursor: 'ns-resize',
+      })),
+      state('e-resize', style({
+        cursor: 'ew-resize',
+      })),
+      state('w-resize', style({
+        cursor: 'ew-resize',
       })),
       state('default', style({
         cursor: 'default',
@@ -27,15 +36,19 @@ import {state, style, trigger} from "@angular/animations";
 export class CanvasComponent implements AfterViewInit, OnInit {
 
   context!: CanvasRenderingContext2D;
+  private rect: any;
   hoverTable!: Table | undefined;
   selectedTable!: Table | undefined;
   mouse!: Mouse;
 
-  mouseResizeTableTop!: boolean;
+  //State used for cursor animation
   mouseEditTable!: string;
+
   dragging!: boolean;
-  testing!: boolean;
-  private rect: any;
+  resizeTableTop!: boolean;
+  resizeTableRight!: boolean;
+  resizeTableBottom!: boolean;
+  resizeTableLeft!: boolean;
 
   @Output() selectedTableEvent = new EventEmitter<Table>()
   @ViewChild('canvas') canvas!: ElementRef;
@@ -75,7 +88,25 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     if (this.mouse.y > table.y - 10 && this.mouse.y < table.y + 10 &&
       this.mouse.x > table.x && this.mouse.x < table.x + table.width) {
 
-      this.mouseEditTable = 'resize';
+      this.mouseEditTable = 'n-resize';
+      this.hoverTable = table;
+
+    } else if(this.mouse.x > table.x && this.mouse.x < table.x + table.width
+      && this.mouse.y > table.y + table.height - 10 && this.mouse.y < table.y + table.height + 10) {
+
+      this.mouseEditTable = 's-resize';
+      this.hoverTable = table;
+
+    } else if(this.mouse.x > table.x + table.width - 10 && this.mouse.x < table.x + table.width + 10 &&
+      this.mouse.y > table.y && this.mouse.y < table.y + table.height) {
+
+      this.mouseEditTable = 'e-resize';
+      this.hoverTable = table;
+
+    } else if (this.mouse.x > table.x - 10 && this.mouse.x < table.x + 10
+    && this.mouse.y > table.y && this.mouse.y < table.y + table.height) {
+
+      this.mouseEditTable = 'w-resize';
       this.hoverTable = table;
 
     } else if ((this.mouse.x >= table.x && this.mouse.x <= table.x + table.width) &&
@@ -91,9 +122,9 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     this.mouse.x = e.clientX - this.rect.left;
     this.mouse.y = e.clientY - this.rect.top;
 
-    this.hoverTable = undefined;
+    // this.hoverTable = undefined;
     this.mouseEditTable = 'default';
-    this.mouseResizeTableTop = false;
+    // this.resizeTableTop = false;
 
     this.tables.forEach(table => {
       this.mouseHoverDetection(table);
@@ -111,11 +142,38 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     }
 
     //If the mouse is hovering over a table we define a selected table and allow the user to drag
-    if (this.hoverTable != undefined) {
+    if (this.hoverTable != undefined && this.mouseEditTable === 'move') {
       this.selectedTable = this.hoverTable;
       this.selectedTable.selected = true;
       this.selectedTableEvent.emit(this.selectedTable);
       this.dragging = true;
+
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 'n-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableTop = true;
+
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 's-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableBottom = true;
+
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 'e-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableRight = true;
+    } else if (this.hoverTable != undefined && this.mouseEditTable === 'w-resize') {
+
+      this.selectedTable = this.hoverTable;
+      this.selectedTable.selected = true;
+      this.selectedTableEvent.emit(this.selectedTable);
+      this.resizeTableLeft = true;
     }
   }
 
@@ -125,6 +183,10 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
     // clear action status
     this.dragging = false;
+    this.resizeTableLeft = false;
+    this.resizeTableRight = false;
+    this.resizeTableTop = false;
+    this.resizeTableBottom = false;
 
   }
 
@@ -135,6 +197,9 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     e.stopPropagation();
 
     if (this.dragging) {
+
+      //Compares selected table with all tables present on canvas to check overlap and out of bounds
+
       let cloneTable = {...this.selectedTable};
       // @ts-ignore
       cloneTable.x = this.mouse.x - this.selectedTable.width / 2;
@@ -153,8 +218,45 @@ export class CanvasComponent implements AfterViewInit, OnInit {
           this.selectedTable.y = cloneTable.y;
         }
       })
-    } else if (this.mouseResizeTableTop) {
 
+    } else if (this.resizeTableTop) {
+
+      // @ts-ignore
+      let yDiff = this.selectedTable.y - this.mouse.y;
+
+      // @ts-ignore
+      this.selectedTable.y = this.mouse.y;
+      // @ts-ignore
+      this.selectedTable.height += yDiff;
+
+    } else if (this.resizeTableBottom) {
+
+      // @ts-ignore
+      let yDiff = this.mouse.y - (this.selectedTable.y + this.selectedTable.height);
+
+
+      // @ts-ignore
+      this.selectedTable.height += yDiff;
+
+    } else if (this.resizeTableRight) {
+
+      // @ts-ignore
+      let xDiff = this.mouse.x - (this.selectedTable.x + this.selectedTable.width);
+
+      // @ts-ignore
+      this.selectedTable.width += xDiff;
+    } else if (this.resizeTableLeft) {
+
+      console.log('coucou')
+
+      // @ts-ignore
+      let xDiff = this.selectedTable.x - this.mouse.x;
+
+      // @ts-ignore
+      this.selectedTable.x = this.mouse.x;
+
+      // @ts-ignore
+      this.selectedTable.width += xDiff;
     }
 
   }
