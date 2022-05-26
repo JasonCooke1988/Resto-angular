@@ -22,24 +22,21 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   addTable(newTable: Table) {
-    let pass = this.noOverlappingTable(newTable);
 
-    if (pass) {
-      this.tables.map(elt => elt.selected = false)
+    let checked = 0;
+    this.tables.forEach(compare => {
+      if (!this.canvasService.detectOverlap(newTable, compare)) {
+        checked++;
+      }
+    })
+
+    if (checked === this.tables.length) {
       this.tables.push(newTable);
     }
   }
 
   selectTable(table: Table) {
     this.selectedTable = table;
-  }
-
-  noOverlappingTable(newTable: Table) {
-
-    return this.tables.every(element => {
-
-      return this.canvasService.detectOverlap(newTable, element);
-    });
   }
 
 }

@@ -25,8 +25,8 @@ export class ControlsComponent {
     this.newTableEvent.emit(
       {
         id: lastId + 1,
-        width: 30,
-        height: 30,
+        width: 50,
+        height: 50,
         x: 150,
         y: 150,
         tableNumber: 0,
