@@ -241,8 +241,10 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
         //Check out-of-bounds
         //Compares selected table with all tables present on canvas to check overlap
+
         if (!this.canvasService.detectOutOfBounds(<Table>cloneTable, this.context!.canvas) &&
           !this.canvasService.detectOverlap(<Table>cloneTable)) {
+
 
           this.selectedTable!.x = cloneTable.x;
           this.selectedTable!.y = cloneTable.y;
