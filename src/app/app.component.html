@@ -4,16 +4,16 @@
   <title>Réservation restaurant en ligne</title>
 </head>
 <body>
-  <header class="flex justify-between px-10 py-4 bg-denim/75">
-    <img class="w-16 h-16" src="https://via.placeholder.com/150" alt="">
-    <h1 class="flex align-items-center">RESTO : RESERVEZ EN LIGNE</h1>
-    <app-menu></app-menu>
-  </header>
-<main class="container mx-auto">
 
-  <section id="dashboard">
-    <app-resto-layout class="grid grid-cols-3"></app-resto-layout>
-  </section>
+<header class="flex justify-around px-10 py-4 bg-denim sticky top-0 z-50">
+  <div></div>
+  <p id="header-title" class="flex items-center"><a href="/">RESTO : RESERVEZ EN LIGNE</a></p>
+  <app-menu class="flex items-center"></app-menu>
+</header>
+
+<main>
+
+  <router-outlet></router-outlet>
 
 </main>
 
