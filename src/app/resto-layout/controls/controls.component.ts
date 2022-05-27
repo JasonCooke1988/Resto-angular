@@ -11,13 +11,14 @@ export class ControlsComponent {
   @Output() newTableEvent = new EventEmitter<Table>()
   @Input() tables!: Table[];
   @Input() alert!: String | undefined;
+  @Input() selectedTable!: Table | undefined;
 
   constructor(private tableService: TablesService) {
   }
 
   addNewTable() {
 
-    this.tables.sort((a,b) => {
+    this.tables.sort((a, b) => {
       return a.id - b.id;
     })
 
@@ -28,12 +29,38 @@ export class ControlsComponent {
         id: lastId + 1,
         width: 50,
         height: 50,
-        x: 150,
-        y: 150,
+        x: 0,
+        y: 0,
         tableNumber: 0,
         seats: 0,
         selected: true
       }
     );
   }
+
+  copyTable() {
+
+    this.tables.sort((a, b) => {
+      return a.id - b.id;
+    })
+
+    const lastId = this.tableService.getNewTableID();
+
+    if (this.selectedTable != undefined) {
+
+      this.newTableEvent.emit(
+        {
+          id: lastId + 1,
+          width: this.selectedTable.width,
+          height: this.selectedTable.height,
+          x: 0,
+          y: 0,
+          tableNumber: this.selectedTable.tableNumber,
+          seats: this.selectedTable.seats,
+          selected: true
+        }
+      )
+    }
+  }
+
 }

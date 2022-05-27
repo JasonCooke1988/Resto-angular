@@ -1,6 +1,6 @@
 <div class="col-span-2" id="canvas-wrap">
   <app-canvas [tables]="tables" [newTable]="newTable" [selectedTable]="selectedTable" (selectedTableEvent)="selectTable($event)" (clearNewTable)="clearNewTable()"></app-canvas>
-  <app-controls [tables]="tables" [alert]="alert" (newTableEvent)="addTable($event)"></app-controls>
+  <app-controls [tables]="tables" [alert]="alert" [selectedTable]="selectedTable" (newTableEvent)="addTable($event)"></app-controls>
 </div>
 
 <div class="px-5 col-span-1">

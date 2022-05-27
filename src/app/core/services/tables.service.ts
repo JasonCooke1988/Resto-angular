@@ -78,11 +78,11 @@ export class TablesService {
     }
   }
 
-  calcRight(table: Table) {
-    return table.x + table.width;
-  }
+  getNewTableID() {
+    this.tables.sort((a,b) => {
+      return a.id - b.id;
+    })
 
-  calcBottom(table: Table) {
-    return table.y + table.height;
+   return this.tables[this.tables.length - 1].id;
   }
 }

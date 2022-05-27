@@ -181,8 +181,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
       if (!this.canvasService.detectOverlap(this.newTable)){
         this.tables.push(this.newTable);
-        this.selectedTable = this.newTable;
-        this.newTable = undefined;
 
         this.clearNewTable.emit();
       }
