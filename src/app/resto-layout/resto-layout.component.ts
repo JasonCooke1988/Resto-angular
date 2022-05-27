@@ -25,6 +25,11 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   addTable(newTable: Table) {
+
+    if (this.selectedTable != undefined) {
+      this.selectedTable.selected = false;
+    }
+
     this.newTable = newTable;
     this.selectedTable = newTable;
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";

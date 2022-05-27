@@ -50,7 +50,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   context!: CanvasRenderingContext2D | null;
   private rect: any;
   hoverTable!: Table | undefined;
-  selectedTable!: Table | undefined;
   mouse!: Mouse;
 
   //State used for cursor animation
@@ -71,6 +70,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
   @ViewChild('canvas') canvas!: ElementRef;
   @Input() tables!: Table[];
   @Input() newTable!: Table | undefined;
+  @Input() selectedTable!: Table | undefined;
 
   constructor(private tableService: TablesService,
               private canvasService: CanvasService) {
