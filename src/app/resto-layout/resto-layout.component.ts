@@ -44,4 +44,24 @@ export class RestoLayoutComponent implements OnInit {
     this.newTable = undefined;
   }
 
+  clearSelectTable() {
+    this.selectedTable!.selected = false;
+    this.selectedTable = undefined;
+  }
+
+  deleteTable(table: Table) {
+
+    let length = this.tables.length;
+
+    this.tables = this.tables.filter(elt => {
+      return elt.id != table.id;
+    })
+
+    let newLength = this.tables.length;
+
+    if (length != newLength) {
+      this.clearSelectTable();
+    }
+  }
+
 }

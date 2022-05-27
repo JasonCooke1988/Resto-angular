@@ -9,6 +9,7 @@ import {TablesService} from "../../core/services/tables.service";
 export class ControlsComponent {
 
   @Output() newTableEvent = new EventEmitter<Table>()
+  @Output() deleteTableEvent = new EventEmitter<Table>()
   @Input() tables!: Table[];
   @Input() alert!: String | undefined;
   @Input() selectedTable!: Table | undefined;
@@ -46,21 +47,28 @@ export class ControlsComponent {
 
     const lastId = this.tableService.getNewTableID();
 
-    if (this.selectedTable != undefined) {
+    this.newTableEvent.emit(
+      {
+        id: lastId + 1,
+        width: this.selectedTable!.width,
+        height: this.selectedTable!.height,
+        x: 0,
+        y: 0,
+        tableNumber: this.selectedTable!.tableNumber,
+        seats: this.selectedTable!.seats,
+        selected: true
+      }
+    )
+  }
 
-      this.newTableEvent.emit(
-        {
-          id: lastId + 1,
-          width: this.selectedTable.width,
-          height: this.selectedTable.height,
-          x: 0,
-          y: 0,
-          tableNumber: this.selectedTable.tableNumber,
-          seats: this.selectedTable.seats,
-          selected: true
+  deleteTable() {
+
+    this.tables.forEach( table => {
+        if(table.id === this.selectedTable!.id) {
+          this.deleteTableEvent.emit(table);
         }
-      )
-    }
+      }
+    )
   }
 
 }

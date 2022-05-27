@@ -67,6 +67,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
   @Output() selectedTableEvent = new EventEmitter<Table>()
   @Output() clearNewTable = new EventEmitter<Table>()
+  @Output() clearSelectedTable = new EventEmitter<Table>()
   @ViewChild('canvas') canvas!: ElementRef;
   @Input() tables!: Table[];
   @Input() newTable!: Table | undefined;
@@ -187,8 +188,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
     } else {
 
       if (this.selectedTable != undefined) {
-        this.selectedTable.selected = false;
-        this.selectedTable = undefined;
+        this.clearSelectedTable.emit();
       }
 
       if (this.hoverTable != undefined) {
@@ -262,7 +262,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
         if (!this.canvasService.detectOutOfBounds(<Table>cloneTable, this.context!.canvas) &&
           !this.canvasService.detectOverlap(<Table>cloneTable)) {
-
 
           this.selectedTable!.x = cloneTable.x;
           this.selectedTable!.y = cloneTable.y;
