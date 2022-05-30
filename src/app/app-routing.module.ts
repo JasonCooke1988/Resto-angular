@@ -5,8 +5,8 @@ import {HomeComponent} from "./home/home.component";
 import {RestoLayoutComponent} from "./resto-layout/resto-layout.component";
 
 const routes: Routes = [
-  { path: '', component: HomeComponent},
-  { path: 'resto-admin', component: RestoLayoutComponent}
+  { path: '', component: HomeComponent, data:{ animation: 'Home'}},
+  { path: 'resto-admin', component: RestoLayoutComponent, data:{ animation: 'RestoAdmin'}}
 ];
 
 @NgModule({
