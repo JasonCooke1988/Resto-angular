@@ -1,20 +1,23 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Table} from "../core/models/table.model";
 import {TablesService} from "../core/services/tables.service";
 import {CanvasService} from "../core/services/canvas.service";
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {slideInAnimation} from "../animation";
+import {CanvasComponent} from "./canvas/canvas.component";
 
 @Component({
   selector: 'app-resto-layout',
   templateUrl: './resto-layout.component.html',
-  styles: ['#canvas-wrap {height: 60vh;}']
+  styles: ['#canvas-wrap {height: 60vh;}'],
+  animations: [slideInAnimation]
 })
 export class RestoLayoutComponent implements OnInit {
   tables!: Table[];
   selectedTable!: Table | undefined;
   newTable!: Table | undefined;
-  alert!: String | undefined;
+  alert!: String | undefined
 
+  @ViewChild(CanvasComponent) canvas: CanvasComponent | undefined;
 
   constructor(private tableService: TablesService,
               private canvasService: CanvasService) {

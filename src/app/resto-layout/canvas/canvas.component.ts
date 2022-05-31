@@ -8,7 +8,7 @@ import {state, style, trigger} from "@angular/animations";
 @Component({
   selector: 'app-canvas',
   templateUrl: './canvas.component.html',
-  styles: ['canvas {border: 1px solid black;}'],
+  styles: ['canvas {}'],
   animations: [
     trigger('mouseEditTable', [
       state('move', style({
@@ -86,17 +86,14 @@ export class CanvasComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
 
-    let canvasWrap = document.getElementById('canvas-wrap');
-    let canvasWrapWidth = canvasWrap!.clientWidth;
-    let canvasWrapHeight = canvasWrap!.clientHeight;
-
-    this.context = document.querySelector('canvas')!.getContext('2d');
-    this.context!.canvas.width = canvasWrapWidth;
-    this.context!.canvas.height = canvasWrapHeight;
-    this.context!.translate(canvasWrapWidth / canvasWrapWidth, canvasWrapHeight / canvasWrapHeight);
-    this.rect = this.context!.canvas.getBoundingClientRect();
-
+    this.refresh()
     this.tick();
+
+    setTimeout(
+      () => {
+        this.refresh()
+      }, 400
+    )
   }
 
   mouseHoverDetection(table: Table) {
@@ -180,7 +177,7 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       this.newTable.x = this.mouse.x - this.newTable.width / 2;
       this.newTable.y = this.mouse.y - this.newTable.height / 2;
 
-      if (!this.canvasService.detectOverlap(this.newTable)){
+      if (!this.canvasService.detectOverlap(this.newTable)) {
         this.tables.push(this.newTable);
 
         this.clearNewTable.emit();
@@ -219,7 +216,6 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       }
 
     }
-
 
 
   }
@@ -366,6 +362,18 @@ export class CanvasComponent implements AfterViewInit, OnInit {
       }
 
     }
+  }
+
+  refresh() {
+    let canvasWrap = document.getElementById('canvas-wrap');
+    let canvasWrapWidth = canvasWrap!.clientWidth;
+    let canvasWrapHeight = canvasWrap!.clientHeight;
+
+    this.context = document.querySelector('canvas')!.getContext('2d');
+    this.context!.canvas.width = canvasWrapWidth;
+    this.context!.canvas.height = canvasWrapHeight;
+    this.context!.translate(canvasWrapWidth / canvasWrapWidth, canvasWrapHeight / canvasWrapHeight);
+    this.rect = this.context!.canvas.getBoundingClientRect();
   }
 
 

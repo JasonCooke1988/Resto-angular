@@ -4,17 +4,19 @@ import { MenuComponent } from './menu/menu.component';
 import {MatMenuModule} from "@angular/material/menu";
 import {ButtonComponent} from "./button/button.component";
 import {AppRoutingModule} from "../app-routing.module";
+import {MatButtonModule} from "@angular/material/button";
 
 @NgModule({
   declarations: [
     MenuComponent,
     ButtonComponent
   ],
-    imports: [
-        CommonModule,
-        MatMenuModule,
-        AppRoutingModule
-    ],
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    AppRoutingModule,
+    MatButtonModule
+  ],
   exports: [
     MenuComponent,
     MatMenuModule,

@@ -5,13 +5,17 @@ module.exports = {
     './src/app/**/**/*.{html,ts}'
   ],
   theme: {
-    extend : {
+    fontFamily: {
+      'montserrat': 'Montserrat'
+    },
+    extend: {
       colors: {
-        'denim' : '#1E40AF',
-        'lavendar' : '#857885',
+        'denim': '#1E40AF',
+        'lavendar': '#857885',
         'gold': '#bfae48',
-        'green' : '#04724d'
-      }
+        'green': '#04724d'
+      },
+
     }
   },
   plugins: [],

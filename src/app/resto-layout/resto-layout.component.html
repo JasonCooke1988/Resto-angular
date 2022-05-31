@@ -1,22 +1,19 @@
-<div class="container mx-auto">
+<section class="bg-lavendar/75 grid grid-cols-3 pt-40 px-20 h-screen">
 
-  <section class="grid grid-cols-3 mt-20">
+  <div class="col-span-2" id="canvas-wrap">
+    <app-canvas [tables]="tables" [newTable]="newTable" [selectedTable]="selectedTable"
+                (selectedTableEvent)="selectTable($event)" (clearNewTable)="clearNewTable()"
+                (clearSelectedTable)="clearSelectTable()"></app-canvas>
 
-    <div class="col-span-2" id="canvas-wrap">
-      <app-canvas [tables]="tables" [newTable]="newTable" [selectedTable]="selectedTable"
-                  (selectedTableEvent)="selectTable($event)" (clearNewTable)="clearNewTable()"
-                  (clearSelectedTable)="clearSelectTable()"></app-canvas>
+    <app-controls [tables]="tables" [alert]="alert" [selectedTable]="selectedTable"
+                  (newTableEvent)="addTable($event)" (deleteTableEvent)="deleteTable($event)"></app-controls>
+  </div>
 
-      <app-controls [tables]="tables" [alert]="alert" [selectedTable]="selectedTable"
-                    (newTableEvent)="addTable($event)" (deleteTableEvent)="deleteTable($event)"></app-controls>
-    </div>
+  <div class="px-5 col-span-1">
+    <h2 class="font-montserrat justify-center flex uppercase text-denim font-bold mb-4 text-xl">Table sélectionné :</h2>
+    <!--  <app-table-detail [tables]="tables"></app-table-detail>-->
+    <app-table-controls [tables]="tables" *ngIf="selectedTable" [table]="selectedTable"></app-table-controls>
+  </div>
 
-    <div class="px-5 col-span-1">
-      <h2 class="justify-center flex uppercase text-lavendar font-bold mb-4 text-lg">Table sélectionné :</h2>
-      <!--  <app-table-detail [tables]="tables"></app-table-detail>-->
-      <app-table-controls [tables]="tables" *ngIf="selectedTable" [table]="selectedTable"></app-table-controls>
-    </div>
+</section>
 
-  </section>
-
-</div>

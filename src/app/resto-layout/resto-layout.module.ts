@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import {CanvasComponent} from "./canvas/canvas.component";
 import { RestoLayoutComponent } from './resto-layout.component';
 import { ControlsComponent } from './controls/controls.component';
-import { TableDetailComponent } from './table-detail/table-detail.component';
 import {ComponentsModule} from "../components/components.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TableControlsComponent} from "./controls/table-controls.component";
@@ -14,7 +13,6 @@ import {TableControlsComponent} from "./controls/table-controls.component";
     CanvasComponent,
     RestoLayoutComponent,
     ControlsComponent,
-    TableDetailComponent,
     TableControlsComponent
   ],
   imports: [

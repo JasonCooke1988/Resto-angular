@@ -3,8 +3,7 @@ import {MatMenuModule} from "@angular/material/menu";
 
 @Component({
   selector: 'app-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss']
+  templateUrl: './menu.component.html'
 })
 export class MenuComponent implements OnInit, MatMenuModule {
 

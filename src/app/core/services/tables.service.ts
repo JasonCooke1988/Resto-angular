@@ -1,6 +1,5 @@
 import {Injectable} from "@angular/core";
 import {Table} from "../models/table.model";
-import {FormGroup} from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
