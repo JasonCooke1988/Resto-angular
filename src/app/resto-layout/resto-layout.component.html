@@ -1,18 +1,23 @@
 <section class="bg-lavendar/75 grid grid-cols-3 pt-40 px-20 h-screen">
 
   <div class="col-span-2" id="canvas-wrap">
-    <app-canvas [tables]="tables" [newTable]="newTable" [selectedTable]="selectedTable"
-                (selectedTableEvent)="selectTable($event)" (clearNewTable)="clearNewTable()"
-                (clearSelectedTable)="clearSelectTable()"></app-canvas>
 
-    <app-controls [tables]="tables" [alert]="alert" [selectedTable]="selectedTable"
-                  (newTableEvent)="addTable($event)" (deleteTableEvent)="deleteTable($event)"></app-controls>
+    <canvas
+      [@mouseState]="mouseState"
+      id="canvas" class="bg-white/60"></canvas>
+
+    <!--    <app-canvas [tables]="tables$ | async"-->
+    <!--                (selectedTableEvent)="selectTable($event)"-->
+    <!--                (modifyTableEvent)="modifyTable($event)"></app-canvas>-->
+
+    <!--    <app-controls [tables]="tables$ | async" [alert]="alert"></app-controls>-->
+
   </div>
 
   <div class="px-5 col-span-1">
     <h2 class="font-montserrat justify-center flex uppercase text-denim font-bold mb-4 text-xl">Table sélectionné :</h2>
     <!--  <app-table-detail [tables]="tables"></app-table-detail>-->
-    <app-table-controls [tables]="tables" *ngIf="selectedTable" [table]="selectedTable"></app-table-controls>
+    <!--    <app-table-controls [tables]="tables$ | async"></app-table-controls>-->
   </div>
 
 </section>

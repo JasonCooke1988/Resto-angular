@@ -11,7 +11,7 @@ export class TableControlsComponent implements OnInit {
   valueMin!: any;
   valueMax!: any;
 
-  @Input() table!: Table;
+  @Input() selectedTable!: Table;
   @Input() tables!: Table[];
 
   ngOnInit() {
@@ -28,75 +28,75 @@ export class TableControlsComponent implements OnInit {
     }
   }
 
-  incrementProperty(value: string) {
-    if (this.checkPropertyChange(value, true)) {
-      if (value === 'width') {
-        this.interval = setInterval(() =>
-          this.checkPropertyChange(value, true) ?
-          this.table.width += this.incrementValue : this.stopInterval(), 100)
-      } else if (value === 'height') {
-        this.interval = setInterval(() =>
-          this.checkPropertyChange(value, true) ?
-          this.table.height += this.incrementValue : this.stopInterval(), 100)
-      }
-    }
-  }
-
-  reduceProperty(value: string) {
-    if (this.checkPropertyChange(value, true)) {
-      if (value === 'width') {
-
-        this.interval = setInterval(() =>
-          this.checkPropertyChange(value, false) ?
-            this.table.width -= this.incrementValue :
-            this.stopInterval(), 100)
-
-      } else if (value === 'height') {
-
-        this.interval = setInterval(() =>
-          this.checkPropertyChange(value, false) ?
-            this.table.height -= this.incrementValue :
-            this.stopInterval(), 100)
-
-      }
-    }
-  }
-
-  incrementPropertyOnce(value: string) {
-    if (this.checkPropertyChange(value, true)) {
-      if (value === 'width') {
-        this.table.width += this.incrementValue;
-      } else if (value === 'height') {
-        this.table.height += this.incrementValue;
-      }
-    }
-  }
-
-  reducePropertyOnce(value: string) {
-    if (this.checkPropertyChange(value, false)) {
-      if (value === 'width') {
-        this.table.width -= this.incrementValue;
-      } else if (value === 'height') {
-        this.table.height -= this.incrementValue;
-      }
-    }
-  }
-
-  checkPropertyChange(value: string, increment: boolean) {
-    if (value === 'width') {
-
-      let newWidth = increment ? this.table.width + this.incrementValue : this.table.width - this.incrementValue;
-      return newWidth >= this.valueMin.width && newWidth <= this.valueMax.width;
-
-    } else if (value === 'height') {
-
-      let newHeight = increment ? this.table.height + this.incrementValue : this.table.height - this.incrementValue;
-      return newHeight >= this.valueMin.height && newHeight <= this.valueMax.height;
-
-    }
-
-    return false;
-  }
+  // incrementProperty(value: string) {
+  //   if (this.checkPropertyChange(value, true)) {
+  //     if (value === 'width') {
+  //       this.interval = setInterval(() =>
+  //         this.checkPropertyChange(value, true) ?
+  //         this.selectedTable.width += this.incrementValue : this.stopInterval(), 100)
+  //     } else if (value === 'height') {
+  //       this.interval = setInterval(() =>
+  //         this.checkPropertyChange(value, true) ?
+  //         this.selectedTable.height += this.incrementValue : this.stopInterval(), 100)
+  //     }
+  //   }
+  // }
+  //
+  // reduceProperty(value: string) {
+  //   if (this.checkPropertyChange(value, true)) {
+  //     if (value === 'width') {
+  //
+  //       this.interval = setInterval(() =>
+  //         this.checkPropertyChange(value, false) ?
+  //           this.selectedTable.width -= this.incrementValue :
+  //           this.stopInterval(), 100)
+  //
+  //     } else if (value === 'height') {
+  //
+  //       this.interval = setInterval(() =>
+  //         this.checkPropertyChange(value, false) ?
+  //           this.selectedTable.height -= this.incrementValue :
+  //           this.stopInterval(), 100)
+  //
+  //     }
+  //   }
+  // }
+  //
+  // incrementPropertyOnce(value: string) {
+  //   if (this.checkPropertyChange(value, true)) {
+  //     if (value === 'width') {
+  //       this.selectedTable.width += this.incrementValue;
+  //     } else if (value === 'height') {
+  //       this.selectedTable.height += this.incrementValue;
+  //     }
+  //   }
+  // }
+  //
+  // reducePropertyOnce(value: string) {
+  //   if (this.checkPropertyChange(value, false)) {
+  //     if (value === 'width') {
+  //       this.selectedTable.width -= this.incrementValue;
+  //     } else if (value === 'height') {
+  //       this.selectedTable.height -= this.incrementValue;
+  //     }
+  //   }
+  // }
+  //
+  // checkPropertyChange(value: string, increment: boolean) {
+  //   if (value === 'width') {
+  //
+  //     let newWidth = increment ? this.selectedTable.width + this.incrementValue : this.selectedTable.width - this.incrementValue;
+  //     return newWidth >= this.valueMin.width && newWidth <= this.valueMax.width;
+  //
+  //   } else if (value === 'height') {
+  //
+  //     let newHeight = increment ? this.selectedTable.height + this.incrementValue : this.selectedTable.height - this.incrementValue;
+  //     return newHeight >= this.valueMin.height && newHeight <= this.valueMax.height;
+  //
+  //   }
+  //
+  //   return false;
+  // }
 
   stopInterval() {
     clearInterval(this.interval);

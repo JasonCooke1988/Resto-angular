@@ -17,7 +17,7 @@ export class AppComponent {
   title = 'Resto : Application de reservation';
 
   @ViewChild(RestoLayoutComponent) restoLayout!: RestoLayoutComponent;
-  @ViewChild(HomeComponent) homeComponent!: HomeComponent;
+  // @ViewChild(HomeComponent) homeComponent!: HomeComponent;
 
   constructor(private contexts: ChildrenOutletContexts) {
   }

@@ -1,5 +1,5 @@
 export class Table {
-  id!: number;
+  readonly id!: number;
   width!: number;
   height!: number;
   x!: number;
@@ -7,4 +7,5 @@ export class Table {
   tableNumber!: number;
   seats!: number;
   selected!: Boolean;
+  hovering!: Boolean;
 }
