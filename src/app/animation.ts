@@ -1,4 +1,4 @@
-import {animate, animateChild, group, query, state, style, transition, trigger} from "@angular/animations";
+import {animate, animateChild, group, query, stagger, state, style, transition, trigger} from "@angular/animations";
 
 export const slideInAnimation =
   trigger('routeAnimations', [
@@ -118,3 +118,32 @@ export const mouseState =
       cursor: 'default',
     }))
   ])
+
+export const popInAnimation =
+  trigger(
+    'popInAnimation', [
+      transition(":enter", [
+        style({ opacity: 0, transform: "scale(0.9)" }), //apply default styles before animation starts
+        animate(
+          "300ms ease-in-out",
+          style({ opacity: 0.75, transform: "scale(1.05)" })
+        ),
+        animate(
+          "300ms ease-in-out",
+          style({ opacity: 1, transform: "scale(1)" })
+        )
+      ]),
+      transition(":leave", [
+        style({ opacity: 1, transform: "scale(1)" }), //apply default styles before animation starts
+        animate(
+          "300ms ease-in-out",
+          style({ opacity: 0, transform: "scale(1.05)" })
+        ),
+        animate(
+          "300ms ease-in-out",
+          style({ opacity: 0, transform: "scale(0.9)" })
+        )
+      ])
+    ]
+  )
+

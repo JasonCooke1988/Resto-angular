@@ -16,10 +16,19 @@ export class CanvasService {
     args['mouse'].x = args['evt'].clientX - args['layoutState']['layout'].offsetLeft;
     args['mouse'].y = args['evt'].clientY - args['layoutState']['layout'].offsetTop;
 
-    if (!args['layoutState']['dragging']) {
+    if (!args['layoutState']['dragging'] && !args['layoutState']['addingTable']) {
       args['mouse'].state = 'default';
       this.mouseHoverDetection(args['tables'], args['mouse']);
     }
+
+  }
+
+  placeNewTable(event: Event, tables: Table[], layoutState: any, mouse: Mouse, newTable: Table) {
+
+    tables.push(Object.assign(newTable, {
+      x: mouse.x,
+      y: mouse.y
+    }));
 
   }
 
@@ -104,7 +113,7 @@ export class CanvasService {
 
         }
 
-        if (!this.detectOutOfBounds(cloneTable,layoutState['ctx'])) {
+        if (!this.detectOutOfBounds(cloneTable, layoutState['ctx'])) {
           table = Object.assign(table, cloneTable);
         }
       }

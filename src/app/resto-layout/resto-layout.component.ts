@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Table} from "../core/models/table.model";
 import {TablesService} from "../core/services/tables.service";
 import {mouseState, slideInAnimation} from "../animation";
@@ -12,7 +12,7 @@ import {
   share,
   tap,
   withLatestFrom,
-  fromEvent, switchMap, takeUntil,
+  fromEvent, switchMap, takeUntil, take, Subject,
 } from "rxjs";
 import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
@@ -26,15 +26,19 @@ import {CanvasService} from "../core/services/canvas.service";
 })
 export class RestoLayoutComponent implements OnInit {
   tables$!: Observable<Table[]>;
-  alert!: String | undefined;
+  alert: String = '';
 
-  frames$!: Observable<number>;
-  layoutState$!: BehaviorSubject<any>;
-  layout!: HTMLElement;
-  ctx!: CanvasRenderingContext2D;
+  private ngUnsubscribe = new Subject<void>();
+  private frames$!: Observable<number>;
+  private layoutState$!: BehaviorSubject<any>;
+  private layout!: HTMLElement;
+  private ctx!: CanvasRenderingContext2D;
 
   mouse$!: Observable<Mouse>;
   mouseState: String = 'default';
+  private mouseDown$!: Observable<Event>;
+  private mouseMove$!: Observable<Event>;
+  private mouseUp$!: Observable<Event>;
 
   constructor(private tableService: TablesService,
               private canvasService: CanvasService) {
@@ -68,7 +72,6 @@ export class RestoLayoutComponent implements OnInit {
         expand((val) => this.calculateStep(val)),
         filter(frame => frame !== {deltaTime: 0, frameStartTime: 0}),
         map((frame: IFrameData) => frame.deltaTime),
-        share()
       )
 
 
@@ -77,21 +80,22 @@ export class RestoLayoutComponent implements OnInit {
       .pipe(
         withLatestFrom(this.layoutState$, this.tables$),
         map(([deltaTime, layoutState, tables]) => this.update(layoutState)),
-        tap((layoutState) => this.layoutState$.next(layoutState))
+        tap((layoutState) => this.layoutState$.next(layoutState)),
+        takeUntil(this.ngUnsubscribe)
       )
       .subscribe((layoutState) => {
         this.render(layoutState);
       });
 
     //Mouse interactions observables
-    const mouseDown$ = fromEvent(this.layout, 'mousedown');
-    const mouseMove$ = fromEvent(this.layout, 'mousemove');
+    this.mouseDown$ = fromEvent(this.layout, 'mousedown');
+    this.mouseMove$ = fromEvent(this.layout, 'mousemove');
     const mouseUp$ = fromEvent(this.layout, 'mouseup');
 
-    const dragStart$ = mouseDown$;
+    const dragStart$ = this.mouseDown$;
     const dragMove$ = dragStart$.pipe(
       switchMap(start =>
-        mouseMove$.pipe(
+        this.mouseMove$.pipe(
           withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
           tap(([event, tables, layoutState]) => {
             layoutState.dragging = true;
@@ -107,7 +111,8 @@ export class RestoLayoutComponent implements OnInit {
       }
     );
 
-    mouseMove$.pipe(
+    //Update mouse position
+    this.mouseMove$.pipe(
       withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
       tap(([evt, tables, layoutState, mouse]) => this.canvasService.updateMousePos({
         evt,
@@ -120,11 +125,9 @@ export class RestoLayoutComponent implements OnInit {
       }
     )
 
-    mouseDown$.pipe(
-      withLatestFrom(this.tables$),
-      tap(([e, tables]) => {
-        // console.log(tables);
-      })
+    this.mouseDown$.pipe(
+      withLatestFrom(this.tables$, this.layoutState$),
+      takeUntil(this.layoutState$.pipe(filter(val => val.placingNewTable)))
     ).subscribe(
       ([mouse, tables]) => {
         tables.forEach(table => {
@@ -139,7 +142,11 @@ export class RestoLayoutComponent implements OnInit {
       layoutState.dragging = false
     })
 
+  }
 
+  ngOnDestroy(){
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 
   update(state: any) {
@@ -211,8 +218,19 @@ export class RestoLayoutComponent implements OnInit {
     return frame;
   }
 
-  // addTable(table: Table) {
-  //   this.tables$.next(table)
-  //   this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
-  // }
+  addTable(newTable: Table) {
+
+    const addTableStart$ = this.mouseDown$;
+    const addTable$ = addTableStart$.pipe(
+      withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
+      take(1),
+      tap(([event, tables, layoutState, mouse]) => {
+          this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
+          this.alert = "";
+        }
+      )
+    ).subscribe();
+
+  }
+
 }

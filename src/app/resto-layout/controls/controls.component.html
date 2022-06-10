@@ -4,7 +4,7 @@
   <app-button *ngIf="selectedTable" class="mx-4" (click)="deleteTable()" buttonText="Supprimer table"></app-button>
 </div>
 
-<div *ngIf="alert" class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mt-4" role="alert">
+<div *ngIf="alert != ''" [@popInAnimation] class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mt-4" role="alert">
   <p class="font-bold font-montserrat">Attention !</p>
   <p class="font-montserrat">{{alert}}</p>
 </div>
