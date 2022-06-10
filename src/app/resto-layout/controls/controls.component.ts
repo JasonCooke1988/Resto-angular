@@ -19,14 +19,24 @@ export class ControlsComponent {
 
   addNewTable() {
 
-    // this.tableService.addTable();
+    this.tables.sort((a, b) => {
+      return a.id - b.id;
+    })
 
-    // this.tables.sort((a, b) => {
-    //   return a.id - b.id;
-    // })
-    //
-    // const lastId = this.tables[this.tables.length - 1].id;
-    //
+    const lastId = this.tables[this.tables.length - 1].id;
+
+    this.tables.push({
+      id: lastId + 1,
+      width: 50,
+      height: 50,
+      x: 0,
+      y: 0,
+      tableNumber: 0,
+      seats: 0,
+      selected: true,
+      hovering: false
+    })
+
     // this.newTableEvent.emit(
     //   {
     //     id: lastId + 1,
@@ -36,7 +46,8 @@ export class ControlsComponent {
     //     y: 0,
     //     tableNumber: 0,
     //     seats: 0,
-    //     selected: true
+    //     selected: true,
+    //     hovering: false
     //   }
     // );
   }

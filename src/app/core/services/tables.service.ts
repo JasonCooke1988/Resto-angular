@@ -1,8 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Table} from "../models/table.model";
-import { InMemoryDbService } from 'angular-in-memory-web-api';
-import {asyncScheduler, map, Observable, Observer, of, scheduled} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import { Observable, of} from "rxjs";
 
 @Injectable({
   providedIn: 'root'

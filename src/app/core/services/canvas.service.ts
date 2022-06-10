@@ -1,18 +1,11 @@
 import {Injectable} from '@angular/core';
 import {Table} from "../models/table.model";
 import {Mouse} from "../models/mouse.model";
-import {TablesService} from "./tables.service";
-import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CanvasService {
-
-
-  constructor(private tableService: TablesService) {
-
-  }
 
   detectOutOfBounds(element: any, canvas: any) {
     return (element.x < 10 || element.y < 10 || element.x + element.width > canvas.width - 10 || element.y + element.height > canvas.height - 10);

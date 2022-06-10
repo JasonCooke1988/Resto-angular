@@ -83,12 +83,6 @@ export class RestoLayoutComponent implements OnInit {
         this.render(layoutState);
       });
 
-      // .subscribe(([layoutState, tables]) => {
-      //   console.log(tables)
-      //   this.render(layoutState, tables);
-      // });
-
-
     //Mouse interactions observables
     const mouseDown$ = fromEvent(this.layout, 'mousedown');
     const mouseMove$ = fromEvent(this.layout, 'mousemove');
@@ -217,7 +211,8 @@ export class RestoLayoutComponent implements OnInit {
     return frame;
   }
 
-  addTable(newTable: Table) {
-    this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
-  }
+  // addTable(table: Table) {
+  //   this.tables$.next(table)
+  //   this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
+  // }
 }

@@ -2,22 +2,17 @@
 
   <div class="col-span-2" id="canvas-wrap">
 
-    <canvas
-      [@mouseState]="mouseState"
-      id="canvas" class="bg-white/60"></canvas>
+    <canvas [@mouseState]="mouseState" id="canvas" class="bg-white/60"></canvas>
 
-    <!--    <app-canvas [tables]="tables$ | async"-->
-    <!--                (selectedTableEvent)="selectTable($event)"-->
-    <!--                (modifyTableEvent)="modifyTable($event)"></app-canvas>-->
-
-    <!--    <app-controls [tables]="tables$ | async" [alert]="alert"></app-controls>-->
+    <app-controls
+                  [tables]="(tables$ | async) ?? []" [alert]="alert"></app-controls>
 
   </div>
 
   <div class="px-5 col-span-1">
     <h2 class="font-montserrat justify-center flex uppercase text-denim font-bold mb-4 text-xl">Table sélectionné :</h2>
-    <!--  <app-table-detail [tables]="tables"></app-table-detail>-->
-    <!--    <app-table-controls [tables]="tables$ | async"></app-table-controls>-->
+<!--    TODO: Table details-->
+<!--    TODO: Calendar + time component for reservation-->
   </div>
 
 </section>

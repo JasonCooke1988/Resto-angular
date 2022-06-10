@@ -4,19 +4,17 @@ import { RestoLayoutComponent } from './resto-layout.component';
 import { ControlsComponent } from './controls/controls.component';
 import {ComponentsModule} from "../components/components.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {TableControlsComponent} from "./controls/table-controls.component";
 
 @NgModule({
   declarations: [
     RestoLayoutComponent,
-    ControlsComponent,
-    TableControlsComponent
+    ControlsComponent
   ],
   imports: [
     CommonModule,
     ComponentsModule,
     ReactiveFormsModule,
-    FormsModule,
+    FormsModule
   ],
   exports: [
     RestoLayoutComponent
