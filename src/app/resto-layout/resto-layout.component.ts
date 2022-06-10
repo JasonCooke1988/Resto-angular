@@ -144,7 +144,7 @@ export class RestoLayoutComponent implements OnInit {
 
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
@@ -219,6 +219,8 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   addTable(newTable: Table) {
+
+    this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
 
     const addTableStart$ = this.mouseDown$;
     const addTable$ = addTableStart$.pipe(
