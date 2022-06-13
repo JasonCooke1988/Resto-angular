@@ -21,6 +21,5 @@ export class ButtonComponent {
 
   toggleMouseDown() {
     this.mouseDown = this.mouseDown === 'true' ? 'false' : 'true';
-    console.log(this.mouseDown)
   }
 }

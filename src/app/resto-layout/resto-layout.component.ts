@@ -26,6 +26,7 @@ import {CanvasService} from "../core/services/canvas.service";
 })
 export class RestoLayoutComponent implements OnInit {
   tables$!: Observable<Table[]>;
+  selectedTable$: Observable<Table> | null = null;
   alert: String = '';
 
   private ngUnsubscribe = new Subject<void>();
@@ -38,7 +39,6 @@ export class RestoLayoutComponent implements OnInit {
   mouseState: String = 'default';
   private mouseDown$!: Observable<Event>;
   private mouseMove$!: Observable<Event>;
-  private mouseUp$!: Observable<Event>;
 
   constructor(private tableService: TablesService,
               private canvasService: CanvasService) {
@@ -129,9 +129,18 @@ export class RestoLayoutComponent implements OnInit {
       withLatestFrom(this.tables$, this.layoutState$),
       takeUntil(this.layoutState$.pipe(filter(val => val.placingNewTable)))
     ).subscribe(
-      ([mouse, tables]) => {
+      ([mouse, tables, layoutState]) => {
+
+        this.selectedTable$ = null;
+
         tables.forEach(table => {
           table.selected = table.hovering;
+
+          if(table.selected) {
+            this.selectedTable$ = of(table);
+
+            console.log(this.selectedTable$)
+          }
         })
       }
     )
