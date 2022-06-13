@@ -32,63 +32,13 @@ export class TablesService {
     }
   ]
 
-  selectedTable!: Table | null;
-
   constructor() {
   }
 
-  // createDb() {
-  //   const TABLES = [
-  //     {
-  //       id: 1,
-  //       width: 50,
-  //       height: 50,
-  //       x: 100,
-  //       y: 100,
-  //       tableNumber: 1,
-  //       seats: 2,
-  //       selected: false
-  //     },
-  //     {
-  //       id: 2,
-  //       width: 100,
-  //       height: 50,
-  //       x: 200,
-  //       y: 200,
-  //       tableNumber: 2,
-  //       seats: 5,
-  //       selected: false
-  //     }
-  //   ];
-  //   return {TABLES};
-  // }
 
   getTables(): Observable<Table[]> {
     return of(this.tables);
   }
-
-  // addTable(): Observable<Table[]> {
-  //
-    // const table: Table = {
-    //   id: this.tables[this.tables.length - 1].id + 1,
-    //   width: 50,
-    //   height: 50,
-    //   x: 0,
-    //   y: 0,
-    //   tableNumber: 0,
-    //   seats: 0,
-    //   selected: true
-    // }
-    //
-    // this.tables.push(table);
-  //
-  //   return this.getTables();
-  // }
-
-  // updateTables(tables: Table[]): Observable<Table[]> {
-  //   this.tables = tables;
-  //   return this.getTables();
-  // }
 
   detectOverlap(table: Table) {
 

@@ -37,84 +37,86 @@ export class CanvasService {
     tables.forEach(table => {
       if (table.hovering && table.selected) {
 
-        let cloneTable,
+        let cloneTable = {...table},
           yDiff,
           xDiff;
 
+        cloneTable.width = 700;
+
         switch (mouse.state) {
           case 'move':
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable,{
               x: mouse.x - table.width / 2,
               y: mouse.y - table.height / 2
-            };
+            });
             break;
           case 'ne-resize':
-            yDiff = table.y - mouse.y;
-            xDiff = mouse.x - (table.x + table.width);
-            cloneTable = {
+            yDiff = cloneTable.y - mouse.y;
+            xDiff = mouse.x - (cloneTable.x + cloneTable.width);
+            cloneTable = Object.assign(cloneTable, {
               y: mouse.y,
-              height: table.height += yDiff,
-              width: table.width += xDiff
-            };
+              height: cloneTable.height += yDiff,
+              width: cloneTable.width += xDiff
+            });
             break;
           case 'nw-resize':
             yDiff = table.y - mouse.y;
             xDiff = table.x - mouse.x;
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable, {
               y: mouse.y,
               x: mouse.x,
               height: table.height += yDiff,
               width: table.width += xDiff
-            };
+            });
             break;
           case 'se-resize':
             yDiff = mouse.y - (table.y + table.height);
             xDiff = mouse.x - (table.x + table.width);
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable, {
               height: table.height += yDiff,
               width: table.width += xDiff
-            };
+            });
             break;
           case 'sw-resize':
             yDiff = mouse.y - (table.y + table.height);
             xDiff = table.x - mouse.x;
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable, {
               x: mouse.x,
               height: table.height += yDiff,
               width: table.width += xDiff
-            };
+            });
             break;
           case 'n-resize':
             yDiff = table.y - mouse.y;
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable, {
               y: mouse.y,
               height: table.height += yDiff,
-            };
+            });
             break;
           case 's-resize':
             yDiff = mouse.y - (table.y + table.height);
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable, {
               height: table.height += yDiff,
-            };
+            });
             break;
           case 'e-resize':
             xDiff = mouse.x - (table.x + table.width);
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable, {
               width: table.width += xDiff,
-            };
+            });
             break;
           case 'w-resize':
             xDiff = table.x - mouse.x;
-            cloneTable = {
+            cloneTable = Object.assign(cloneTable, {
               x: mouse.x,
               width: table.width += xDiff,
-            };
+            });
             break;
 
         }
 
-        if (!this.detectOutOfBounds(cloneTable, layoutState['ctx'])) {
-          table = Object.assign(table, cloneTable);
+        if (!this.detectOutOfBounds(cloneTable, layoutState['ctx']) && cloneTable.width >= 20 && cloneTable.height >= 20) {
+          table = Object.assign(table,cloneTable);
         }
       }
     })

@@ -138,8 +138,6 @@ export class RestoLayoutComponent implements OnInit {
 
           if(table.selected) {
             this.selectedTable$ = of(table);
-
-            console.log(this.selectedTable$)
           }
         })
       }
