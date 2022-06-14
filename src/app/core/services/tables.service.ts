@@ -36,8 +36,8 @@ export class TablesService {
   }
 
 
-  getTables(): Observable<Table[]> {
-    return of(this.tables);
+  getTables(): Table[] {
+    return this.tables;
   }
 
   detectOverlap(table: Table) {
@@ -62,9 +62,9 @@ export class TablesService {
     return count != length;
   }
 
-  drawTables(ctx: CanvasRenderingContext2D) {
+  drawTables(ctx: CanvasRenderingContext2D, tables: Table[]) {
 
-    this.tables.forEach(table => {
+    tables.forEach(table => {
       ctx.beginPath()
       ctx.shadowColor = 'black';
       ctx.shadowBlur = 3.5;

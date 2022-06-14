@@ -114,8 +114,6 @@ export class CanvasService {
         }
 
         if ((!this.detectOutOfBounds(cloneTable, layoutState['ctx'])) && cloneTable.width >= 50 && cloneTable.height >= 50) {
-
-          console.log(cloneTable.width)
           table = Object.assign(table,cloneTable);
         }
       }

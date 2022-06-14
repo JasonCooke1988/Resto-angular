@@ -25,8 +25,10 @@ import {CanvasService} from "../core/services/canvas.service";
   animations: [slideInAnimation, mouseState]
 })
 export class RestoLayoutComponent implements OnInit {
-  tables$!: Observable<Table[]>;
+  // tables$!: Observable<Table[]>;
+  _tables: Table[] = [];
   selectedTable$: Observable<Table> | null = null;
+  tablesSubject: BehaviorSubject<Table[]> = new BehaviorSubject<Table[]>(this.tableService.getTables());
   alert: String = '';
 
   private ngUnsubscribe = new Subject<void>();
@@ -46,7 +48,16 @@ export class RestoLayoutComponent implements OnInit {
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
 
+    //Set up tables subject
+    this.tablesSubject.subscribe(data => {
+      this._tables = <Table[]>data;
+    });
+
   }
+
+  // get tables() {
+  //   return this.subject.asObservable();
+  // }
 
   ngOnInit(): void {
 
@@ -58,11 +69,8 @@ export class RestoLayoutComponent implements OnInit {
       ctx: this.ctx
     });
 
-    //Set up tables observable
-    this.tables$ = this.tableService.getTables().pipe(
-      share()
-    );
-    this.tables$.subscribe(tables => tables)
+
+    // this.tables$.subscribe(tables => tables)
 
     // This is our core stream of frames. We use expand to recursively call the
     //  `calculateStep` function above that will give us each new Frame based on the
@@ -78,7 +86,7 @@ export class RestoLayoutComponent implements OnInit {
     // This is where we run our layout and perform our layoutState updates.
     this.frames$
       .pipe(
-        withLatestFrom(this.layoutState$, this.tables$),
+        withLatestFrom(this.layoutState$, this._tables),
         map(([deltaTime, layoutState, tables]) => this.update(layoutState)),
         tap((layoutState) => this.layoutState$.next(layoutState)),
         takeUntil(this.ngUnsubscribe)
@@ -96,8 +104,8 @@ export class RestoLayoutComponent implements OnInit {
     const dragMove$ = dragStart$.pipe(
       switchMap(start =>
         this.mouseMove$.pipe(
-          withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
-          tap(([event, tables, layoutState]) => {
+          withLatestFrom(this.layoutState$, this.mouse$),
+          tap(([event, layoutState, mouse]) => {
             layoutState.dragging = true;
           }),
           takeUntil(mouseUp$),
@@ -106,40 +114,60 @@ export class RestoLayoutComponent implements OnInit {
     );
 
     dragMove$.subscribe(
-      ([event, tables, layoutState, mouse]) => {
-        this.canvasService.editTablePlaceSize(event, tables, layoutState, mouse)
+      ([event, layoutState, mouse]) => {
+        this.canvasService.editTablePlaceSize(event, this._tables, layoutState, mouse)
       }
     );
 
     //Update mouse position
     this.mouseMove$.pipe(
-      withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
-      tap(([evt, tables, layoutState, mouse]) => this.canvasService.updateMousePos({
+      withLatestFrom(this.layoutState$, this.mouse$, this.tablesSubject),
+      tap(([evt, layoutState, mouse, tables]) => this.canvasService.updateMousePos({
         evt,
         tables,
         layoutState,
         mouse
       })),
-    ).subscribe(([evt, tables, layoutState, mouse]) => {
+    ).subscribe(
+      ([evt, layoutState, mouse]) => {
         this.mouseState = mouse.state;
       }
     )
 
     this.mouseDown$.pipe(
-      withLatestFrom(this.tables$, this.layoutState$),
+      withLatestFrom(this.tablesSubject, this.layoutState$),
       takeUntil(this.layoutState$.pipe(filter(val => val.placingNewTable)))
     ).subscribe(
       ([mouse, tables, layoutState]) => {
 
         this.selectedTable$ = null;
 
-        tables.forEach(table => {
+        this._tables = this._tables.map( table => {
           table.selected = table.hovering;
 
-          if(table.selected) {
+          if (table.selected) {
             this.selectedTable$ = of(table);
           }
-        })
+          return table;
+        }
+          // table => {
+          //     table.selected = table.hovering;
+          //
+          //     if (table.selected) {
+          //       this.selectedTable$ = of(table);
+          //     }
+          //   }
+        )
+
+        this.tablesSubject.next(this._tables)
+
+        // tables.forEach(table => {
+        //   table.selected = table.hovering;
+        //
+        //   if (table.selected) {
+        //     this.selectedTable$ = of(table);
+        //   }
+        // })
       }
     )
 
@@ -172,7 +200,7 @@ export class RestoLayoutComponent implements OnInit {
     state['ctx'].clearRect(0, 0, state['layout'].clientWidth, state['layout'].clientHeight);
 
     // Render all of our objects (simple rectangles for simplicity)
-    this.tableService.drawTables(state['ctx']);
+    this.tableService.drawTables(state['ctx'], this._tables);
   };
 
   refresh(state: any) {
@@ -231,7 +259,7 @@ export class RestoLayoutComponent implements OnInit {
 
     const addTableStart$ = this.mouseDown$;
     const addTable$ = addTableStart$.pipe(
-      withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
+      withLatestFrom(this.tablesSubject, this.layoutState$, this.mouse$),
       take(1),
       tap(([event, tables, layoutState, mouse]) => {
           this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
@@ -241,5 +269,35 @@ export class RestoLayoutComponent implements OnInit {
     ).subscribe();
 
   }
+
+  deleteTable(selectedTable: Table) {
+
+    console.log('deleting')
+
+    this._tables = this._tables.filter(table => table.id != selectedTable.id);
+    this.tablesSubject.next(this._tables);
+    //
+    // this._tables.pipe(
+    //   withLatestFrom(this.selectedTable$!),
+    //   take(1),
+    //   map( ([tables, selectedTable]) => tables.filter(table => table.id != selectedTable.id)),
+    //   // tap( val => console.log(val))
+    // ).subscribe( val => console.log(val));
+
+    // map((items: Item[]) => items.filter((item: Item) => item.selected=== true)))
+
+    // filter(([tables, selectedTable]) => tables.forEach(table => {
+    //
+    // }))
+
+    // this._tables.forEach(tables => {
+    //   tables.forEach(table => {
+    //     if (table.id === this.selectedTable$!.id) {
+    //
+    //     }
+    //   })
+    // })
+  }
+
 
 }
