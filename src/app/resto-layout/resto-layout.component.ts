@@ -12,7 +12,7 @@ import {
   share,
   tap,
   withLatestFrom,
-  fromEvent, switchMap, takeUntil, take, Subject,
+  fromEvent, switchMap, takeUntil, take, Subject, takeWhile,
 } from "rxjs";
 import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
@@ -34,6 +34,7 @@ export class RestoLayoutComponent implements OnInit {
   private ngUnsubscribe = new Subject<void>();
   private frames$!: Observable<number>;
   private layoutState$!: BehaviorSubject<any>;
+  _layoutState!: any;
   private layout!: HTMLElement;
   private ctx!: CanvasRenderingContext2D;
 
@@ -55,22 +56,19 @@ export class RestoLayoutComponent implements OnInit {
 
   }
 
-  // get tables() {
-  //   return this.subject.asObservable();
-  // }
-
   ngOnInit(): void {
 
     //Set up layout config
     this.layout = document.getElementById('canvas')!;
     this.ctx = (<HTMLCanvasElement>document.getElementById('canvas')).getContext('2d')!;
-    this.layoutState$ = new BehaviorSubject({
+    this._layoutState = {
       layout: this.layout,
-      ctx: this.ctx
-    });
-
-
-    // this.tables$.subscribe(tables => tables)
+      ctx: this.ctx,
+      isDragging: false,
+      placingNewTable: false
+    };
+    this.layoutState$ = new BehaviorSubject(this._layoutState);
+    this.layoutState$.subscribe(state => this._layoutState = state)
 
     // This is our core stream of frames. We use expand to recursively call the
     //  `calculateStep` function above that will give us each new Frame based on the
@@ -81,7 +79,6 @@ export class RestoLayoutComponent implements OnInit {
         filter(frame => frame !== {deltaTime: 0, frameStartTime: 0}),
         map((frame: IFrameData) => frame.deltaTime),
       )
-
 
     // This is where we run our layout and perform our layoutState updates.
     this.frames$
@@ -136,38 +133,30 @@ export class RestoLayoutComponent implements OnInit {
 
     this.mouseDown$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$),
-      takeUntil(this.layoutState$.pipe(filter(val => val.placingNewTable)))
     ).subscribe(
       ([mouse, tables, layoutState]) => {
+        if (!this._layoutState.placingNewTable) {
 
-        this.selectedTable$ = null;
+          console.log('mouse down allowed')
 
-        this._tables = this._tables.map( table => {
-          table.selected = table.hovering;
+          let isSelected = false;
 
-          if (table.selected) {
-            this.selectedTable$ = of(table);
-          }
-          return table;
+          this._tables = this._tables.map(table => {
+              table.selected = table.hovering;
+
+              if (table.selected) {
+                isSelected = true;
+                this.selectedTable$ = of(table);
+              }
+              return table;
+            }
+          )
+
+          if (!isSelected) {this.selectedTable$ = null}
+
+          this.tablesSubject.next(this._tables)
+
         }
-          // table => {
-          //     table.selected = table.hovering;
-          //
-          //     if (table.selected) {
-          //       this.selectedTable$ = of(table);
-          //     }
-          //   }
-        )
-
-        this.tablesSubject.next(this._tables)
-
-        // tables.forEach(table => {
-        //   table.selected = table.hovering;
-        //
-        //   if (table.selected) {
-        //     this.selectedTable$ = of(table);
-        //   }
-        // })
       }
     )
 
@@ -257,13 +246,20 @@ export class RestoLayoutComponent implements OnInit {
 
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
 
+    let newState = {placingNewTable: true}
+
+    this.layoutState$.next({...this._layoutState, newState})
+
     const addTableStart$ = this.mouseDown$;
     const addTable$ = addTableStart$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$, this.mouse$),
       take(1),
       tap(([event, tables, layoutState, mouse]) => {
+          this.selectedTable$ = of(newTable);
           this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
           this.alert = "";
+          newState.placingNewTable = false;
+          this.layoutState$.next({...this._layoutState,newState})
         }
       )
     ).subscribe();
@@ -271,32 +267,9 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   deleteTable(selectedTable: Table) {
-
-    console.log('deleting')
-
     this._tables = this._tables.filter(table => table.id != selectedTable.id);
     this.tablesSubject.next(this._tables);
-    //
-    // this._tables.pipe(
-    //   withLatestFrom(this.selectedTable$!),
-    //   take(1),
-    //   map( ([tables, selectedTable]) => tables.filter(table => table.id != selectedTable.id)),
-    //   // tap( val => console.log(val))
-    // ).subscribe( val => console.log(val));
-
-    // map((items: Item[]) => items.filter((item: Item) => item.selected=== true)))
-
-    // filter(([tables, selectedTable]) => tables.forEach(table => {
-    //
-    // }))
-
-    // this._tables.forEach(tables => {
-    //   tables.forEach(table => {
-    //     if (table.id === this.selectedTable$!.id) {
-    //
-    //     }
-    //   })
-    // })
+    this.selectedTable$ = null;
   }
 
 
