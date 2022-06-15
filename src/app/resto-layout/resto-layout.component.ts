@@ -133,9 +133,12 @@ export class RestoLayoutComponent implements OnInit {
 
     this.mouseDown$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$),
+      tap(e => console.log('mouseDown tap'))
     ).subscribe(
       ([mouse, tables, layoutState]) => {
-        if (!this._layoutState.placingNewTable) {
+        console.log(layoutState)
+        console.log('mouseDown subscribe')
+        if (!layoutState.placingNewTable) {
 
           console.log('mouse down allowed')
 
@@ -152,7 +155,9 @@ export class RestoLayoutComponent implements OnInit {
             }
           )
 
-          if (!isSelected) {this.selectedTable$ = null}
+          if (!isSelected) {
+            this.selectedTable$ = null
+          }
 
           this.tablesSubject.next(this._tables)
 
@@ -244,25 +249,31 @@ export class RestoLayoutComponent implements OnInit {
 
   addTable(newTable: Table) {
 
+    console.log('start add table')
+
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
 
     let newState = {placingNewTable: true}
 
-    this.layoutState$.next({...this._layoutState, newState})
+    this.layoutState$.next(Object.assign(this._layoutState, newState))
+
+    console.log(this._layoutState)
 
     const addTableStart$ = this.mouseDown$;
     const addTable$ = addTableStart$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$, this.mouse$),
       take(1),
       tap(([event, tables, layoutState, mouse]) => {
+          tables.forEach(table => table.selected = false)
           this.selectedTable$ = of(newTable);
           this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
           this.alert = "";
           newState.placingNewTable = false;
-          this.layoutState$.next({...this._layoutState,newState})
+          this.layoutState$.next(Object.assign(this._layoutState, newState))
+          console.log('tap add table')
         }
       )
-    ).subscribe();
+    ).subscribe(e => console.log('addTable subscribe'));
 
   }
 
