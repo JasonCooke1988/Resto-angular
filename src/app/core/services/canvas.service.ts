@@ -42,6 +42,26 @@ export class CanvasService {
     });
   }
 
+  detectOverlap(table: Table, tables: Table[]) {
+
+    let count = 0;
+
+    tables.forEach(compare => {
+      if (table.id != compare.id) {
+        if ((!(table.x < compare.x + compare.width &&
+          table.x + table.width > compare.x &&
+          table.y < compare.y + compare.height &&
+          table.height + table.y > compare.y) && table.height >= 50 && table.width >= 50)) {
+          count++;
+        }
+      } else {
+        count++;
+      }
+    })
+
+    return count != tables.length;
+  }
+
   detectOutOfBounds(element: any, canvas: any) {
     return (element.x < 10 || element.y < 10 || element.x + element.width > canvas.width - 10 || element.y + element.height > canvas.height - 10);
   }
@@ -148,7 +168,8 @@ export class CanvasService {
 
         }
 
-        if ((!this.detectOutOfBounds(cloneTable, layoutState['ctx'])) && cloneTable.width >= 50 && cloneTable.height >= 50) {
+        if (!this.detectOutOfBounds(cloneTable, layoutState['ctx']) && !this.detectOverlap(cloneTable, tables)
+          && cloneTable.width >= 50 && cloneTable.height >= 50) {
           table = Object.assign(table,cloneTable);
         }
       }

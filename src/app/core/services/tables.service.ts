@@ -39,26 +39,4 @@ export class TablesService {
   getTables(): Table[] {
     return this.tables;
   }
-
-  detectOverlap(table: Table) {
-
-    let count = 0;
-    let length = 0;
-
-    length = this.tables.length;
-    this.tables.forEach(compare => {
-      if (table.id != compare.id) {
-        if ((!(table.x < compare.x + compare.width &&
-          table.x + table.width > compare.x &&
-          table.y < compare.y + compare.height &&
-          table.height + table.y > compare.y) && table.height >= 50 && table.width >= 50)) {
-          count++;
-        }
-      } else {
-        count++;
-      }
-    })
-
-    return count != length;
-  }
 }
