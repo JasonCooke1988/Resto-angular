@@ -9,10 +9,9 @@ import {
   map,
   Observable,
   of,
-  share,
   tap,
   withLatestFrom,
-  fromEvent, switchMap, takeUntil, take, Subject, takeWhile,
+  fromEvent, switchMap, takeUntil, take, Subject,
 } from "rxjs";
 import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
@@ -165,6 +164,9 @@ export class RestoLayoutComponent implements OnInit {
       layoutState.dragging = false
     })
 
+    //Refresh canvas size upon re entry into page
+    setTimeout(() => {this.refresh(this._layoutState)},100)
+    setTimeout(() => {this.refresh(this._layoutState)},300)
   }
 
   ngOnDestroy() {
@@ -183,7 +185,7 @@ export class RestoLayoutComponent implements OnInit {
    */
   render(state: any) {
     //TODO : Put refresh somewhere where it isnt used on every render call (animation callback ?)
-    this.refresh(state);
+    // this.refresh(state);
     // Clear the canvas
     state['ctx'].clearRect(0, 0, state['layout'].clientWidth, state['layout'].clientHeight);
 
@@ -268,5 +270,4 @@ export class RestoLayoutComponent implements OnInit {
     this.tablesSubject.next(this._tables);
     this.selectedTable$ = null;
   }
-
 }

@@ -66,7 +66,7 @@ export const slideInAnimation =
         }),
       group([
         query(':leave', [
-            animate('200ms ease-out', style({right: '100%', opacity: 0}))
+            animate('300ms ease-out', style({right: '100%', opacity: 0}))
           ],
           {
             optional: true
