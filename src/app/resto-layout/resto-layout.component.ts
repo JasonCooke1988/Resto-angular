@@ -25,7 +25,6 @@ import {CanvasService} from "../core/services/canvas.service";
   animations: [slideInAnimation, mouseState]
 })
 export class RestoLayoutComponent implements OnInit {
-  // tables$!: Observable<Table[]>;
   _tables: Table[] = [];
   selectedTable$: Observable<Table> | null = null;
   tablesSubject: BehaviorSubject<Table[]> = new BehaviorSubject<Table[]>(this.tableService.getTables());
@@ -133,14 +132,9 @@ export class RestoLayoutComponent implements OnInit {
 
     this.mouseDown$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$),
-      tap(e => console.log('mouseDown tap'))
     ).subscribe(
       ([mouse, tables, layoutState]) => {
-        console.log(layoutState)
-        console.log('mouseDown subscribe')
         if (!layoutState.placingNewTable) {
-
-          console.log('mouse down allowed')
 
           let isSelected = false;
 
@@ -249,15 +243,9 @@ export class RestoLayoutComponent implements OnInit {
 
   addTable(newTable: Table) {
 
-    console.log('start add table')
-
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
 
-    let newState = {placingNewTable: true}
-
-    this.layoutState$.next(Object.assign(this._layoutState, newState))
-
-    console.log(this._layoutState)
+    this.layoutState$.next(Object.assign(this._layoutState, {placingNewTable: true}))
 
     const addTableStart$ = this.mouseDown$;
     const addTable$ = addTableStart$.pipe(
@@ -268,12 +256,10 @@ export class RestoLayoutComponent implements OnInit {
           this.selectedTable$ = of(newTable);
           this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
           this.alert = "";
-          newState.placingNewTable = false;
-          this.layoutState$.next(Object.assign(this._layoutState, newState))
-          console.log('tap add table')
+          this.layoutState$.next(Object.assign(this._layoutState, {placingNewTable: false}))
         }
       )
-    ).subscribe(e => console.log('addTable subscribe'));
+    ).subscribe();
 
   }
 
@@ -282,6 +268,5 @@ export class RestoLayoutComponent implements OnInit {
     this.tablesSubject.next(this._tables);
     this.selectedTable$ = null;
   }
-
 
 }
