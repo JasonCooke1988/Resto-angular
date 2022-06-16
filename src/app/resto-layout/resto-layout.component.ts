@@ -66,7 +66,7 @@ export class RestoLayoutComponent implements OnInit {
       placingNewTable: false
     };
     this.layoutState$ = new BehaviorSubject(this._layoutState);
-    this.layoutState$.subscribe(state => this._layoutState = state)
+    this.layoutState$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(state => this._layoutState = state)
 
     // This is our core stream of frames. We use expand to recursively call the
     //  `calculateStep` function above that will give us each new Frame based on the
@@ -104,6 +104,7 @@ export class RestoLayoutComponent implements OnInit {
             layoutState.dragging = true;
           }),
           takeUntil(mouseUp$),
+          takeUntil(this.ngUnsubscribe)
         )
       )
     );
@@ -123,6 +124,7 @@ export class RestoLayoutComponent implements OnInit {
         layoutState,
         mouse
       })),
+      takeUntil(this.ngUnsubscribe)
     ).subscribe(
       ([evt, layoutState, mouse]) => {
         this.mouseState = mouse.state;
@@ -131,6 +133,7 @@ export class RestoLayoutComponent implements OnInit {
 
     this.mouseDown$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$),
+      takeUntil(this.ngUnsubscribe)
     ).subscribe(
       ([mouse, tables, layoutState]) => {
         if (!layoutState.placingNewTable) {
@@ -159,7 +162,8 @@ export class RestoLayoutComponent implements OnInit {
     )
 
     mouseUp$.pipe(
-      withLatestFrom(this.layoutState$)
+      withLatestFrom(this.layoutState$),
+      takeUntil(this.ngUnsubscribe)
     ).subscribe(([event, layoutState]) => {
       layoutState.dragging = false
     })
@@ -253,7 +257,8 @@ export class RestoLayoutComponent implements OnInit {
     const addTable$ = addTableStart$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$, this.mouse$),
       take(1),
-      tap(([event, tables, layoutState, mouse]) => {
+      takeUntil(this.ngUnsubscribe),
+    tap(([event, tables, layoutState, mouse]) => {
           tables.forEach(table => table.selected = false)
           this.selectedTable$ = of(newTable);
           this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
