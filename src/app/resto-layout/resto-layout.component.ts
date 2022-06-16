@@ -11,7 +11,7 @@ import {
   of,
   tap,
   withLatestFrom,
-  fromEvent, switchMap, takeUntil, take, Subject,
+  fromEvent, switchMap, takeUntil, take, Subject, takeWhile,
 } from "rxjs";
 import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
@@ -169,8 +169,12 @@ export class RestoLayoutComponent implements OnInit {
     })
 
     //Refresh canvas size upon re entry into page
-    setTimeout(() => {this.refresh(this._layoutState)},100)
-    setTimeout(() => {this.refresh(this._layoutState)},300)
+    setTimeout(() => {
+      this.refresh(this._layoutState)
+    }, 100)
+    setTimeout(() => {
+      this.refresh(this._layoutState)
+    }, 300)
   }
 
   ngOnDestroy() {
@@ -254,14 +258,29 @@ export class RestoLayoutComponent implements OnInit {
     const addTableStart$ = this.mouseDown$;
     const addTable$ = addTableStart$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$, this.mouse$),
-      take(1),
+      // take(1),
+      takeWhile(([event, tables, layoutState, mouse]) => layoutState.placingNewTable),
       takeUntil(this.ngUnsubscribe),
-    tap(([event, tables, layoutState, mouse]) => {
-          tables.forEach(table => table.selected = false)
-          this.selectedTable$ = of(newTable);
-          this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
-          this.alert = "";
-          this.layoutState$.next(Object.assign(this._layoutState, {placingNewTable: false}))
+      tap(([event, tables, layoutState, mouse]) => {
+
+        let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
+
+          if (!this.canvasService.detectOverlap(cloneTable, tables)) {
+
+            console.log(true)
+
+            tables.forEach(table => table.selected = false)
+            this.selectedTable$ = of(newTable);
+            this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
+            this.alert = "";
+            this.layoutState$.next(Object.assign(this._layoutState, {placingNewTable: false}))
+
+          } else {
+            console.log(false)
+            this.alert = "Veuillez choisir un emplacement libre.";
+
+          }
+
         }
       )
     ).subscribe();
