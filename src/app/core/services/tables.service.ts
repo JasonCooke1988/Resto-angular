@@ -61,39 +61,4 @@ export class TablesService {
 
     return count != length;
   }
-
-  drawTables(ctx: CanvasRenderingContext2D, tables: Table[]) {
-
-    tables.forEach(table => {
-      ctx.beginPath()
-      ctx.shadowColor = 'black';
-      ctx.shadowBlur = 3.5;
-      ctx.fillStyle = "rgba(75,57,44,0.70)";
-      ctx.fillRect(
-        table.x,
-        table.y,
-        table.width,
-        table.height
-      );
-
-      ctx.font = "15px roboto";
-      ctx.fillStyle = 'black';
-      let text = table.tableNumber.toString();
-      let textMeasure = ctx.measureText(text);
-      ctx.fillText(text, table.x + (table.width / 2) - (textMeasure.width / 2), table.y + (table.height / 2) + 3.5)
-
-      if (table.selected) {
-        ctx.strokeStyle = '#0677D7';
-        ctx.lineWidth = 2.5;
-        ctx.rect(
-          table.x,
-          table.y,
-          table.width,
-          table.height
-        );
-        ctx.stroke();
-        ctx.closePath();
-      }
-    });
-  }
 }

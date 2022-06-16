@@ -188,13 +188,11 @@ export class RestoLayoutComponent implements OnInit {
    * based on their latest properties.
    */
   render(state: any) {
-    //TODO : Put refresh somewhere where it isnt used on every render call (animation callback ?)
-    // this.refresh(state);
     // Clear the canvas
     state['ctx'].clearRect(0, 0, state['layout'].clientWidth, state['layout'].clientHeight);
 
     // Render all of our objects (simple rectangles for simplicity)
-    this.tableService.drawTables(state['ctx'], this._tables);
+    this.canvasService.drawTables(state['ctx'], this._tables);
   };
 
   refresh(state: any) {
