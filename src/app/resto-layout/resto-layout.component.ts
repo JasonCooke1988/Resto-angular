@@ -256,7 +256,7 @@ export class RestoLayoutComponent implements OnInit {
 
     this.selectedTable$ = null;
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
-    this.layoutState$.next(Object.assign(this._layoutState, {placingNewTable: true}))
+    this.layoutState$.next({...this._layoutState, ...{placingNewTable: false}})
 
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
@@ -276,7 +276,7 @@ export class RestoLayoutComponent implements OnInit {
             this.selectedTable$ = of(newTable);
             this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
             this.alert = "";
-            this.layoutState$.next(Object.assign(this._layoutState, {placingNewTable: false}))
+            this.layoutState$.next({...this._layoutState, ...{placingNewTable: false}})
 
           } else {
 
