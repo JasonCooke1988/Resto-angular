@@ -261,15 +261,16 @@ export class RestoLayoutComponent implements OnInit {
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
       withLatestFrom(this.tablesSubject, this.layoutState$, this.mouse$),
+      take(1),
       takeWhile(([event, tables, layoutState, mouse]) => layoutState.placingNewTable),
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
 
-        let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
+          let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
 
           if (!this.canvasService.detectOverlap(cloneTable, tables)) {
 
-            newTable = {...cloneTable, ...newTable}
+            newTable = {...newTable, ...cloneTable}
 
             tables.forEach(table => table.selected = false)
             this.selectedTable$ = of(newTable);
