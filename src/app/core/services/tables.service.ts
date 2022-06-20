@@ -9,7 +9,7 @@ export class TablesService {
 
   tables: Table[] = [
     {
-      id: 400,
+      id: 1,
       width: 50,
       height: 50,
       x: 100,

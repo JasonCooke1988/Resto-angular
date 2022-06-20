@@ -1,7 +1,7 @@
 <div class="mt-4 flex">
   <app-button class="mr-4" (click)="addNewTable()" buttonText="+ table"></app-button>
-  <app-button *ngIf="selectedTable" [@popInAnimation] class="mx-4" (click)="copyTable()" buttonText="Dupliquer table"></app-button>
-  <app-button *ngIf="selectedTable" [@popInAnimation] class="mx-4" (click)="deleteTable()" buttonText="- table"></app-button>
+  <app-button *ngIf="selectedTable != null" [@popInAnimation] class="mx-4" (click)="copyTable()" buttonText="Dupliquer table"></app-button>
+  <app-button *ngIf="selectedTable != null" [@popInAnimation] class="mx-4" (click)="deleteTable()" buttonText="- table"></app-button>
 </div>
 
 <div *ngIf="alert != ''" [@popInAnimation] class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mt-4" role="alert">
