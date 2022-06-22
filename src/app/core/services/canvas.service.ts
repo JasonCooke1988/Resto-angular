@@ -21,11 +21,13 @@ export class CanvasService {
         table.height
       );
 
-      ctx.font = "15px roboto";
-      ctx.fillStyle = 'black';
-      let text = table.tableNumber.toString();
-      let textMeasure = ctx.measureText(text);
-      ctx.fillText(text, table.x + (table.width / 2) - (textMeasure.width / 2), table.y + (table.height / 2) + 3.5)
+      if(table.tableNumber) {
+        ctx.font = "15px roboto";
+        ctx.fillStyle = 'black';
+        let text = table.tableNumber.toString();
+        let textMeasure = ctx.measureText(text);
+        ctx.fillText(text, table.x + (table.width / 2) - (textMeasure.width / 2), table.y + (table.height / 2) + 3.5)
+      }
 
       if (table.selected) {
         ctx.strokeStyle = '#0677D7';
