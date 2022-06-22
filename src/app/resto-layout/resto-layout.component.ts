@@ -251,12 +251,10 @@ export class RestoLayoutComponent implements OnInit {
 
   addTable(newTable: Table) {
 
-    console.log('RL/addTable : newTable')
-    console.log(newTable)
-
     this.selectedTable$ = null;
+    this.tablesSubject.next(this._tables.map(table => table = {...table,selected: false}));
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
-    this.layoutState$.next({...this._layoutState, ...{placingNewTable: false}})
+    this.layoutState$.next({...this._layoutState, placingNewTable: true})
 
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
@@ -266,17 +264,15 @@ export class RestoLayoutComponent implements OnInit {
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
 
-          let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
+        let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
 
-          if (!this.canvasService.detectOverlap(cloneTable, tables)) {
+        if (!this.canvasService.detectOverlap(cloneTable, tables)) {
 
             newTable = {...newTable, ...cloneTable}
-
-            tables.forEach(table => table.selected = false)
             this.selectedTable$ = of(newTable);
             this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
             this.alert = "";
-            this.layoutState$.next({...this._layoutState, ...{placingNewTable: false}})
+            this.layoutState$.next({...this._layoutState, placingNewTable: false})
 
           } else {
 
@@ -291,8 +287,7 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   deleteTable(selectedTable: Table) {
-    this._tables = this._tables.filter(table => table.id != selectedTable.id);
-    this.tablesSubject.next(this._tables);
+    this.tablesSubject.next(this._tables.filter(table => table.id != selectedTable.id));
     this.selectedTable$ = null;
   }
 
