@@ -7,6 +7,7 @@ import {RestoLayoutModule} from "./resto-layout/resto-layout.module";
 import {ComponentsModule} from "./components/components.module";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {HomeModule} from "./home/home.module";
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {HomeModule} from "./home/home.module";
     RestoLayoutModule,
     ComponentsModule,
     BrowserAnimationsModule,
-    HomeModule
+    HomeModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

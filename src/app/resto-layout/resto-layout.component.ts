@@ -295,4 +295,5 @@ export class RestoLayoutComponent implements OnInit {
     this.tablesSubject.next(this._tables);
     this.selectedTable$ = null;
   }
+
 }
