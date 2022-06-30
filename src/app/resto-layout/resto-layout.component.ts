@@ -24,9 +24,10 @@ import {CanvasService} from "../core/services/canvas.service";
   animations: [slideInAnimation, mouseState]
 })
 export class RestoLayoutComponent implements OnInit {
-  _tables: Table[] = [];
+  tables$!: Observable<Table[]>;
+  // _tables: Table[] = [];
   selectedTable$: Observable<Table> | null = null;
-  tablesSubject: BehaviorSubject<Table[]> = new BehaviorSubject<Table[]>(this.tableService.getTables());
+  // tablesSubject: BehaviorSubject<Table[]> = new BehaviorSubject<Table[]>(this.tableService.getTables());
   alert: String = '';
 
   private ngUnsubscribe = new Subject<void>();
@@ -48,13 +49,15 @@ export class RestoLayoutComponent implements OnInit {
     this.mouse$.subscribe(mouse => mouse)
 
     //Set up tables subject
-    this.tablesSubject.subscribe(data => {
-      this._tables = <Table[]>data;
-    });
+    // this.tablesSubject.subscribe(data => {
+    //   this._tables = <Table[]>data;
+    // });
 
   }
 
   ngOnInit(): void {
+
+    this.tables$ = this.tableService.tables$;
 
     //Set up layout config
     this.layout = document.getElementById('canvas')!;
@@ -81,13 +84,13 @@ export class RestoLayoutComponent implements OnInit {
     // This is where we run our layout and perform our layoutState updates.
     this.frames$
       .pipe(
-        withLatestFrom(this.layoutState$, this._tables),
-        map(([deltaTime, layoutState, tables]) => this.update(layoutState)),
-        tap((layoutState) => this.layoutState$.next(layoutState)),
+        withLatestFrom(this.layoutState$, this.tables$),
+        // map(([deltaTime, layoutState, tables]) => this.update(layoutState)),
+        tap(([deltaTime,layoutState, tables]) => this.layoutState$.next(layoutState)),
         takeUntil(this.ngUnsubscribe)
       )
-      .subscribe((layoutState) => {
-        this.render(layoutState);
+      .subscribe(([deltaTime,layoutState, tables]) => {
+        this.render(layoutState, tables);
       });
 
     //Mouse interactions observables
@@ -99,8 +102,8 @@ export class RestoLayoutComponent implements OnInit {
     const dragMove$ = dragStart$.pipe(
       switchMap(start =>
         this.mouseMove$.pipe(
-          withLatestFrom(this.layoutState$, this.mouse$),
-          tap(([event, layoutState, mouse]) => {
+          withLatestFrom(this.layoutState$, this.mouse$, this.tables$),
+          tap(([event, layoutState, mouse, tables]) => {
             layoutState.dragging = true;
           }),
           takeUntil(mouseUp$),
@@ -110,14 +113,14 @@ export class RestoLayoutComponent implements OnInit {
     );
 
     dragMove$.subscribe(
-      ([event, layoutState, mouse]) => {
-        this.canvasService.editTablePlaceSize(event, this._tables, layoutState, mouse)
+      ([event, layoutState, mouse, tables]) => {
+        this.canvasService.editTablePlaceSize(event, tables, layoutState, mouse)
       }
     );
 
     //Update mouse position
     this.mouseMove$.pipe(
-      withLatestFrom(this.layoutState$, this.mouse$, this.tablesSubject),
+      withLatestFrom(this.layoutState$, this.mouse$, this.tables$),
       tap(([evt, layoutState, mouse, tables]) => this.canvasService.updateMousePos({
         evt,
         tables,
@@ -132,7 +135,7 @@ export class RestoLayoutComponent implements OnInit {
     )
 
     this.mouseDown$.pipe(
-      withLatestFrom(this.tablesSubject, this.layoutState$),
+      withLatestFrom(this.tables$, this.layoutState$),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(
       ([mouse, tables, layoutState]) => {
@@ -140,7 +143,7 @@ export class RestoLayoutComponent implements OnInit {
 
           let isSelected = false;
 
-          this._tables = this._tables.map(table => {
+          tables = tables.map(table => {
               table.selected = table.hovering;
 
               if (table.selected) {
@@ -155,7 +158,9 @@ export class RestoLayoutComponent implements OnInit {
             this.selectedTable$ = null
           }
 
-          this.tablesSubject.next(this._tables)
+          this.tableService.saveTablesLocally(tables);
+
+          // this.tablesSubject.next(this._tables)
 
         }
       }
@@ -191,12 +196,12 @@ export class RestoLayoutComponent implements OnInit {
    * This is our rendering function. We take the given game state and render the items
    * based on their latest properties.
    */
-  render(state: any) {
+  render(state: any, tables: Table[]) {
     // Clear the canvas
     state['ctx'].clearRect(0, 0, state['layout'].clientWidth, state['layout'].clientHeight);
 
     // Render all of our objects (simple rectangles for simplicity)
-    this.canvasService.drawTables(state['ctx'], this._tables);
+    this.canvasService.drawTables(state['ctx'], tables);
   };
 
   refresh(state: any) {
@@ -252,13 +257,15 @@ export class RestoLayoutComponent implements OnInit {
   addTable(newTable: Table) {
 
     this.selectedTable$ = null;
-    this.tablesSubject.next(this._tables.map(table => table = {...table,selected: false}));
+
+    this.tableService.clearSelected()
+
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
     this.layoutState$.next({...this._layoutState, placingNewTable: true})
 
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
-      withLatestFrom(this.tablesSubject, this.layoutState$, this.mouse$),
+      withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
       take(1),
       takeWhile(([event, tables, layoutState, mouse]) => layoutState.placingNewTable),
       takeUntil(this.ngUnsubscribe),
@@ -287,7 +294,8 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   deleteTable(selectedTable: Table) {
-    this.tablesSubject.next(this._tables.filter(table => table.id != selectedTable.id));
+
+    this.tableService.deleteTable(selectedTable);;
     this.selectedTable$ = null;
   }
 

@@ -1,6 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ChildrenOutletContexts} from "@angular/router";
 import {slideInAnimation} from "./animation";
+import {TablesService} from "./core/services/tables.service";
 
 
 @Component({
@@ -11,10 +12,14 @@ import {slideInAnimation} from "./animation";
     slideInAnimation
   ]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Resto : Application de reservation';
 
-  constructor(private contexts: ChildrenOutletContexts) {
+  constructor(private contexts: ChildrenOutletContexts, private tableService: TablesService) {
+  }
+
+  ngOnInit() {
+    this.tableService.init();
   }
 
   getRouteAnimationData() {

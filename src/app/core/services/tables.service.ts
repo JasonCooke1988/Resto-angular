@@ -1,42 +1,45 @@
 import {Injectable} from "@angular/core";
 import {Table} from "../models/table.model";
-import { Observable, of} from "rxjs";
+import {BehaviorSubject, filter, map, Observable, of} from "rxjs";
+import {createHttpObservable} from "./util";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TablesService {
 
-  tables: Table[] = [
-    {
-      id: 1,
-      width: 50,
-      height: 50,
-      x: 100,
-      y: 100,
-      tableNumber: 1,
-      seats: 2,
-      selected: false,
-      hovering: false
-    },
-    {
-      id: 2,
-      width: 100,
-      height: 50,
-      x: 200,
-      y: 200,
-      tableNumber: 2,
-      seats: 5,
-      selected: false,
-      hovering: false
-    }
-  ]
+  private subject = new BehaviorSubject(<Table[]>([]))
+  tables$: Observable<Table[]> = this.subject.asObservable();
 
   constructor() {
   }
 
 
-  getTables(): Table[] {
-    return this.tables;
+  init() {
+
+    const tables$ = createHttpObservable('/tables');
+
+    tables$.subscribe(courses => this.subject.next(courses))
+
+  }
+
+  saveTablesLocally(tables: Table[]) {
+    this.subject.next(tables);
+  }
+
+  clearSelected() {
+
+    const tables = this.subject.getValue();
+    const newTables = tables.map(table => table = {...table, ...{selected: false}});
+    this.subject.next(newTables);
+
+  }
+
+  deleteTable(selectedTable: Table) {
+
+    const tables = this.subject.getValue();
+    const newTables = tables.filter(table => table.id != selectedTable.id);
+    this.subject.next(newTables);
+
   }
 }

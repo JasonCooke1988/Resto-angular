@@ -6,7 +6,7 @@
     <app-controls (newTableEvent)="addTable($event)"
                   (deleteTableEvent)="deleteTable($event)"
                   [selectedTable]="selectedTable$ | async"
-                  [tables]="(tablesSubject | async) ?? []" [alert]="alert"></app-controls>
+                  [tables]="(tables$ | async) ?? []" [alert]="alert"></app-controls>
 
   </div>
   <div class="px-5 col-span-1">
