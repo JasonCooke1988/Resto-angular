@@ -25,9 +25,7 @@ import {CanvasService} from "../core/services/canvas.service";
 })
 export class RestoLayoutComponent implements OnInit {
   tables$!: Observable<Table[]>;
-  // _tables: Table[] = [];
   selectedTable$: Observable<Table> | null = null;
-  // tablesSubject: BehaviorSubject<Table[]> = new BehaviorSubject<Table[]>(this.tableService.getTables());
   alert: String = '';
 
   private ngUnsubscribe = new Subject<void>();
@@ -47,11 +45,6 @@ export class RestoLayoutComponent implements OnInit {
 
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
-
-    //Set up tables subject
-    // this.tablesSubject.subscribe(data => {
-    //   this._tables = <Table[]>data;
-    // });
 
   }
 

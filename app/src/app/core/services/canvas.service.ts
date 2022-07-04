@@ -65,6 +65,10 @@ export class CanvasService {
   }
 
   detectOutOfBounds(element: any, canvas: any) {
+
+    console.log(element.x + element.width)
+    console.log(canvas)
+
     return (element.x < 10 || element.y < 10 || element.x + element.width > canvas.width - 10 || element.y + element.height > canvas.height - 10);
   }
 
@@ -170,7 +174,7 @@ export class CanvasService {
 
         }
 
-        if (!this.detectOutOfBounds(cloneTable, layoutState['ctx']) && !this.detectOverlap(cloneTable, tables)
+        if (!this.detectOutOfBounds(cloneTable, layoutState['layout']) && !this.detectOverlap(cloneTable, tables)
           && cloneTable.width >= 50 && cloneTable.height >= 50) {
           table = Object.assign(table,cloneTable);
         }
