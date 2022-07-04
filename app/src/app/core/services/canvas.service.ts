@@ -1,11 +1,15 @@
 import {Injectable} from '@angular/core';
 import {Table} from "../models/table.model";
 import {Mouse} from "../models/mouse.model";
+import {TablesService} from "./tables.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CanvasService {
+
+  constructor(private tableService: TablesService) {
+  }
 
   drawTables(ctx: CanvasRenderingContext2D, tables: Table[]) {
 
@@ -21,7 +25,7 @@ export class CanvasService {
         table.height
       );
 
-      if(table.tableNumber) {
+      if (table.tableNumber) {
         ctx.font = "15px roboto";
         ctx.fillStyle = 'black';
         let text = table.tableNumber.toString();
@@ -65,10 +69,6 @@ export class CanvasService {
   }
 
   detectOutOfBounds(element: any, canvas: any) {
-
-    console.log(element.x + element.width)
-    console.log(canvas)
-
     return (element.x < 10 || element.y < 10 || element.x + element.width > canvas.width - 10 || element.y + element.height > canvas.height - 10);
   }
 
@@ -91,6 +91,8 @@ export class CanvasService {
       y: mouse.y
     }));
 
+    this.tableService.addTableRemote(newTable)
+
   }
 
   editTablePlaceSize(event: Event, tables: Table[], layoutState: any, mouse: Mouse) {
@@ -104,7 +106,7 @@ export class CanvasService {
 
         switch (mouse.state) {
           case 'move':
-            cloneTable = Object.assign(cloneTable,{
+            cloneTable = Object.assign(cloneTable, {
               x: mouse.x - table.width / 2,
               y: mouse.y - table.height / 2
             });
@@ -176,7 +178,7 @@ export class CanvasService {
 
         if (!this.detectOutOfBounds(cloneTable, layoutState['layout']) && !this.detectOverlap(cloneTable, tables)
           && cloneTable.width >= 50 && cloneTable.height >= 50) {
-          table = Object.assign(table,cloneTable);
+          table = Object.assign(table, cloneTable);
         }
       }
     })

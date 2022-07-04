@@ -2,6 +2,7 @@ const express = require('express');
 
 const app = express(),
 bodyParser = require('body-parser');
+const tableModel = require("./models");
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,6 +49,17 @@ app.get('/api/tables', (req, res, next) => {
         ]
     ;
     res.status(200).json(tables);
+});
+
+app.post("/api/add_table", async (request, response) => {
+    const table = new tableModel(request.body);
+
+    try {
+        await table.save();
+        response.send(table);
+    } catch (error) {
+        response.status(500).send(error);
+    }
 });
 
 module.exports = app;

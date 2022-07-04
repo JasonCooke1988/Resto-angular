@@ -1,5 +1,27 @@
 const http = require('http');
 const app = require('./app');
+const express = require('express');
+const mongoose = require('mongoose');
+const mongo = require('./mongo');
+
+app.use(express.json());
+
+const {username, password, cluster} = mongo;
+
+/**
+ * Database connection
+ */
+mongoose.connect(
+    `mongodb+srv://${username}:${password}@${cluster}.mongodb.net/Resto?retryWrites=true&w=majority`
+);
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error: "));
+db.once("open", function () {
+    console.log("Connected successfully");
+});
+
+
 
 const normalizePort = val => {
     const port = parseInt(val, 10);

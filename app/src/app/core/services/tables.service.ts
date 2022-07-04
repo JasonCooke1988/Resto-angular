@@ -26,6 +26,16 @@ export class TablesService {
     this.subject.next(tables);
   }
 
+  addTableRemote(table: Table) {
+    fetch(`/api/add_table`, {
+      method: 'POST',
+      body: JSON.stringify(table),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then(r => console.log)
+  }
+
   clearSelected() {
 
     const tables = this.subject.getValue();
