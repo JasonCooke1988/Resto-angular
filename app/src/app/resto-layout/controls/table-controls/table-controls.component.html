@@ -1,12 +1,16 @@
 <form *ngIf="selectedTable" [formGroup]="selectedTableForm">
 
-  <div class="my-4">
-    <label for="seats">Couverts : </label>
-    <input id="seats" type="number" class="p-2 w-20" [(ngModel)]="selectedTable.seats" [ngModelOptions]="{standalone: true}" min="0">
+  <div class="my-4 w-1/2 justify-between align-middle flex">
+    <label for="seats" class="flex align-middle">Couverts : </label>
+    <input id="seats" type="number"
+           class="pl-2 py-1 w-12 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+           [(ngModel)]="selectedTable.seats" [ngModelOptions]="{standalone: true}" min="0">
   </div>
-  <div class="my-4">
-    <label for="table-number">Numéro de table: </label>
-    <input id="table-number" type="number" class="p-2 w-20" [(ngModel)]="selectedTable.tableNumber" [ngModelOptions]="{standalone: true}"
+  <div class="my-4 w-1/2 justify-between align-middle flex">
+    <label for="table-number" class="flex align-middle">Numéro de table: </label>
+    <input id="table-number" type="number"
+           class="pl-2 py-1 w-16 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+           [(ngModel)]="selectedTable.tableNumber" [ngModelOptions]="{standalone: true}"
            min="0">
   </div>
 </form>

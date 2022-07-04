@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0796ffe8-b34a-42d9-b649-91a27f492ddf" name="Prod" url="http://resto.jasoncooke.net">
+        <fileTransfer rootFolder="/home/zkei0353/resto.jasoncooke.net" accessType="SFTP" host="ftp.zkei0353.odns.fr" port="22" sshConfigId="9c3ee147-4808-4f3d-b735-a5b8e5268b05" sshConfig="zkei0353@ftp.zkei0353.odns.fr:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
