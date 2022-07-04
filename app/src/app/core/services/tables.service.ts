@@ -33,7 +33,7 @@ export class TablesService {
       headers: {
         'content-type': 'application/json'
       }
-    }).then(r => console.log)
+    }).then(r => console.log('new table saved'))
   }
 
   clearSelected() {

@@ -22,33 +22,14 @@ app.get('/resto-admin', (req,res) => {
     res.sendFile(process.cwd()+"/app/dist/resto/index.html")
 });
 
-app.get('/api/tables', (req, res, next) => {
-    const tables = [
-            {
-                id: 1,
-                width: 50,
-                height: 50,
-                x: 100,
-                y: 100,
-                tableNumber: 1,
-                seats: 2,
-                selected: false,
-                hovering: false
-            },
-            {
-                id: 2,
-                width: 100,
-                height: 50,
-                x: 200,
-                y: 200,
-                tableNumber: 2,
-                seats: 5,
-                selected: false,
-                hovering: false
-            }
-        ]
-    ;
-    res.status(200).json(tables);
+app.get('/api/tables', async (req, res, next) => {
+    const tables = await tableModel.find();
+
+    try{
+        res.status(200).json(tables);
+    } catch (error){
+        res.status(500).send(error);
+    }
 });
 
 app.post("/api/add_table", async (request, response) => {
