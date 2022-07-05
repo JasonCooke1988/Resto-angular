@@ -11,7 +11,7 @@
   </div>
   <div class="px-5 col-span-1">
     <h2 class="font-montserrat justify-center flex uppercase text-denim font-bold mb-4 text-xl">Table sélectionné :</h2>
-    <app-table-controls
+    <app-table-controls *ngIf="selectedTable$"
       [selectedTable]="selectedTable$ | async"></app-table-controls>
     <!--    TODO: Calendar + time component for reservation-->
   </div>

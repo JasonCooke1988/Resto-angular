@@ -43,4 +43,15 @@ app.post("/api/add_table", async (request, response) => {
     }
 });
 
+app.put('/api/save_table', async (request, response) => {
+    const table = new tableModel(request.body);
+
+    try {
+        await table.updateOne({id: table.id});
+        response.send(table);
+    } catch (error) {
+        response.status(500).send(error);
+    }
+})
+
 module.exports = app;

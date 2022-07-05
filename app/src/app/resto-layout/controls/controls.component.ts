@@ -20,15 +20,24 @@ export class ControlsComponent {
 
   addNewTable() {
 
-    this.tables.sort((a, b) => {
-      return a.id - b.id;
-    })
+    let lastId = 0;
 
-    const lastId = this.tables[this.tables.length - 1].id;
+    if (this.tables.length) {
+
+      this.tables.sort((a, b) => {
+        return a.tableId - b.tableId;
+      })
+
+      lastId = this.tables[this.tables.length - 1].tableId;
+
+    }
+
+    console.log('coucou')
+    console.log(lastId)
 
     this.newTableEvent.emit(
       {
-        id: lastId + 1,
+        tableId: lastId + 1,
         width: 50,
         height: 50,
         x: 0,
@@ -44,12 +53,12 @@ export class ControlsComponent {
   copyTable() {
 
     this.tables!.sort((a, b) => {
-      return a.id - b.id;
+      return a.tableId - b.tableId;
     })
 
     this.newTableEvent.emit(
       {
-        id: this.tables![this.tables!.length - 1].id + 1,
+        tableId: this.tables![this.tables!.length - 1].tableId + 1,
         width: this.selectedTable!.width,
         height: this.selectedTable!.height,
         x: 0,
@@ -65,7 +74,7 @@ export class ControlsComponent {
   deleteTable() {
 
     this.tables!.forEach(table => {
-        if (table.id === this.selectedTable!.id) {
+        if (table.tableId === this.selectedTable!.tableId) {
           this.deleteTableEvent.emit(table);
         }
       }

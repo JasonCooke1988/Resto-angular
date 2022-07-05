@@ -18,7 +18,7 @@ export class TablesService {
   init() {
 
     const tables$ = createHttpObservable('/tables');
-    tables$.subscribe(courses => this.subject.next(courses))
+    tables$.subscribe(tables => this.subject.next(tables))
 
   }
 
@@ -36,6 +36,16 @@ export class TablesService {
     }).then(r => console.log('new table saved'))
   }
 
+  modifyTable(table: Table) {
+    fetch('/api/save_table', {
+      method:'PUT',
+      body: JSON.stringify(table),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then(r => console.log(table))
+  }
+
   clearSelected() {
 
     const tables = this.subject.getValue();
@@ -47,7 +57,7 @@ export class TablesService {
   deleteTable(selectedTable: Table) {
 
     const tables = this.subject.getValue();
-    const newTables = tables.filter(table => table.id != selectedTable.id);
+    const newTables = tables.filter(table => table.tableId != selectedTable.tableId);
     this.subject.next(newTables);
 
   }

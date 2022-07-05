@@ -1,5 +1,5 @@
 export class Table {
-  readonly id!: number;
+  tableId!: number;
   width!: number;
   height!: number;
   x!: number;

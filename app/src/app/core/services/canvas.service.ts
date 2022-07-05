@@ -53,7 +53,7 @@ export class CanvasService {
     let count = 0;
 
     tables.forEach(compare => {
-      if (table.id != compare.id) {
+      if (table.tableId != compare.tableId) {
         if ((!(table.x < compare.x + compare.width &&
           table.x + table.width > compare.x &&
           table.y < compare.y + compare.height &&
