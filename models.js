@@ -6,11 +6,11 @@ const TableSchema = new mongoose.Schema({
       required: true
     },
     width: {
-        type: String,
+        type: Number,
         required: true,
     },
     height: {
-        type: String,
+        type: Number,
         required: true,
     },
     x: {
