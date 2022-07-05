@@ -189,8 +189,6 @@ export class CanvasService {
 
     tables.forEach(table => {
 
-      console.log(table)
-
       if (mouse.y > table.y - 10 && mouse.y < table.y + 10 &&
         mouse.x > table.x + table.width - 10 && mouse.x < table.x + table.width + 10) {
 
