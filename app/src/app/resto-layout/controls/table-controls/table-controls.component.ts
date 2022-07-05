@@ -28,36 +28,19 @@ export class TableControlsComponent implements OnInit {
       tableNumber: this.selectedTable?.tableNumber
     })
 
-    // this.selectedTableForm.valueChanges.pipe(
-    //   tap(formValue => {
-    //
-    //     console.log('coucou')
-    //
-    //
-    //     console.log(this.selectedTable)
-    //
-    //     //delete this
-    //     if (this.selectedTable != null) {
-    //       this.selectedTable.seats = formValue.seats ? formValue.seats : this.selectedTable?.seats;
-    //       this.selectedTable.tableNumber = formValue.tableNumber ? formValue.tableNumber : this.selectedTable?.tableNumber;
-    //     }
-    //   })
-    // ).subscribe(v => console.log('ouasih'));
   }
 
   ngAfterViewInit() {
-    console.log(this.seatsInput)
 
     const tableSeats$ = fromEvent(this.seatsInput.nativeElement, 'change');
     const tableNumber$ = fromEvent(this.tableNumberInput.nativeElement, 'change');
 
-    const formValueChanges = tableSeats$.pipe(mergeWith(tableNumber$));
+    const fromValueChanges$ = tableSeats$.pipe(mergeWith(tableNumber$));
 
-    tableSeats$.pipe(
+    fromValueChanges$.pipe(
       debounceTime(400),
       tap(formValue => {
         this.tableService.modifyTable(this.selectedTable!);
-        console.log('coucou')
       })
     ).subscribe(v => console.log())
 

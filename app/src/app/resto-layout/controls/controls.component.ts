@@ -1,6 +1,7 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
 import {Table} from "../../core/models/table.model";
 import {popInAnimation} from "../../animation";
+import * as mongoose from "mongoose";
 
 @Component({
   selector: 'app-controls',
@@ -35,8 +36,11 @@ export class ControlsComponent {
     console.log('coucou')
     console.log(lastId)
 
+    const _id = new mongoose.Types.ObjectId();
+
     this.newTableEvent.emit(
       {
+        _id: _id,
         tableId: lastId + 1,
         width: 50,
         height: 50,
@@ -56,8 +60,11 @@ export class ControlsComponent {
       return a.tableId - b.tableId;
     })
 
+    const _id = new mongoose.Types.ObjectId();
+
     this.newTableEvent.emit(
       {
+        _id: _id,
         tableId: this.tables![this.tables!.length - 1].tableId + 1,
         width: this.selectedTable!.width,
         height: this.selectedTable!.height,

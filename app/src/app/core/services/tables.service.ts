@@ -37,13 +37,16 @@ export class TablesService {
   }
 
   modifyTable(table: Table) {
+    console.log(table)
     fetch('/api/save_table', {
       method:'PUT',
       body: JSON.stringify(table),
       headers: {
         'content-type': 'application/json'
       }
-    }).then(r => console.log(table))
+    }).then(r =>{
+      console.log('saved table :', table)
+    }).catch( e => console.error(e))
   }
 
   clearSelected() {

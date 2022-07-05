@@ -47,7 +47,7 @@ app.put('/api/save_table', async (request, response) => {
     const table = new tableModel(request.body);
 
     try {
-        await table.updateOne({id: table.id});
+        await table.updateOne(table);
         response.send(table);
     } catch (error) {
         response.status(500).send(error);

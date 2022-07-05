@@ -3,13 +3,13 @@
   <div class="my-4 w-1/2 justify-between align-middle flex">
     <label for="seats" class="flex align-middle">Couverts : </label>
     <input #seatsInput id="seats" type="number"
-           class="pl-2 py-1 w-12 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+           class="pl-2 py-1 w-16 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
            [(ngModel)]="selectedTable.seats" [ngModelOptions]="{standalone: true}" min="0">
   </div>
   <div class="my-4 w-1/2 justify-between align-middle flex">
     <label for="table-number" class="flex align-middle">Numéro de table: </label>
     <input #tableNumberInput id="table-number" type="number"
-           class="pl-2 py-1 w-16 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+           class="pl-2 py-1 w-16 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
            [(ngModel)]="selectedTable.tableNumber" [ngModelOptions]="{standalone: true}"
            min="0">
   </div>
