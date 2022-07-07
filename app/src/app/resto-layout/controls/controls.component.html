@@ -8,9 +8,13 @@
   <app-button *ngIf="selectedTable != null" [@popInAnimation] class="mx-4"
               (click)="deleteTable()" buttonState="alert" buttonText="- table"></app-button>
 
+  <app-button *ngIf="!layoutState.isSaved" class="mx-4"
+              (click)="saveLayout()" buttonText="Enregistrer plan de salle"></app-button>
+
 </div>
 
-<div *ngIf="alert != ''" [@popInAnimation] class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mt-4" role="alert">
+<div *ngIf="alert != ''" [@popInAnimation] class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4 mt-4"
+     role="alert">
 
   <p class="font-bold font-montserrat">Attention !</p>
   <p class="font-montserrat">{{alert}}</p>

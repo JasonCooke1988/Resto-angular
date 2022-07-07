@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Table} from "../models/table.model";
-import {BehaviorSubject, filter, map, Observable, of} from "rxjs";
+import {BehaviorSubject, filter, from, map, Observable, of} from "rxjs";
 import {createHttpObservable} from "./util";
 
 @Injectable({
@@ -36,17 +36,22 @@ export class TablesService {
     }).then(r => console.log('new table saved'))
   }
 
-  modifyTable(table: Table) {
-    console.log(table)
+  modifyTable(selectedTable: Table) {
     fetch('/api/save_table', {
-      method:'PUT',
-      body: JSON.stringify(table),
+      method: 'PUT',
+      body: JSON.stringify(selectedTable),
       headers: {
         'content-type': 'application/json'
       }
-    }).then(r =>{
-      console.log('saved table :', table)
-    }).catch( e => console.error(e))
+      // @ts-ignore
+    }).then( response => {
+      if(response.ok) {
+        return response.json();
+      }  else{
+        console.error('Request failed with status code: ' + response.status)
+      }
+    }).catch(e => console.error(e))
+
   }
 
   clearSelected() {
@@ -63,5 +68,27 @@ export class TablesService {
     const newTables = tables.filter(table => table.tableId != selectedTable.tableId);
     this.subject.next(newTables);
 
+  }
+
+  saveLayout() {
+    const tables = this.subject.getValue();
+
+    console.log('table service save layout medthod')
+    console.log(JSON.stringify(tables))
+
+    return from(fetch('/api/save_all_tables', {
+      method: 'PUT',
+      body: JSON.stringify(tables),
+      headers: {
+        'content-type': 'application/json'
+      }
+      // @ts-ignore
+    }).then( response => {
+      if(response.ok) {
+        return response.json();
+      }  else{
+        console.error('Request failed with status code: ' + response.status)
+      }
+    }).catch(e => console.error(e)))
   }
 }

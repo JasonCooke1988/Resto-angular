@@ -5,7 +5,9 @@
 
     <app-controls (newTableEvent)="addTable($event)"
                   (deleteTableEvent)="deleteTable($event)"
+                  (saveLayoutEvent)="saveLayout()"
                   [selectedTable]="selectedTable$ | async"
+                  [layoutState]="(layoutState$ | async)!"
                   [tables]="(tables$ | async) ?? []" [alert]="alert"></app-controls>
 
   </div>

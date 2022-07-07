@@ -3,7 +3,6 @@ import {Table} from "../core/models/table.model";
 import {TablesService} from "../core/services/tables.service";
 import {mouseState, slideInAnimation} from "../animation";
 import {
-  BehaviorSubject,
   expand,
   filter,
   map,
@@ -11,11 +10,12 @@ import {
   of,
   tap,
   withLatestFrom,
-  fromEvent, switchMap, takeUntil, take, Subject, takeWhile,
+  fromEvent, switchMap, takeUntil, take, Subject, takeWhile, first,
 } from "rxjs";
 import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
 import {CanvasService} from "../core/services/canvas.service";
+import {LayoutState} from "../core/models/layoutState.model";
 
 @Component({
   selector: 'app-resto-layout',
@@ -30,10 +30,9 @@ export class RestoLayoutComponent implements OnInit {
 
   private ngUnsubscribe = new Subject<void>();
   private frames$!: Observable<number>;
-  private layoutState$!: BehaviorSubject<any>;
-  _layoutState!: any;
-  private layout!: HTMLElement;
-  private ctx!: CanvasRenderingContext2D;
+  layoutState$!: Observable<LayoutState>;
+  private canvas!: HTMLElement;
+
 
   mouse$!: Observable<Mouse>;
   mouseState: String = 'default';
@@ -50,19 +49,13 @@ export class RestoLayoutComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.canvasService.init();
+
     this.tables$ = this.tableService.tables$;
 
     //Set up layout config
-    this.layout = document.getElementById('canvas')!;
-    this.ctx = (<HTMLCanvasElement>document.getElementById('canvas')).getContext('2d')!;
-    this._layoutState = {
-      layout: this.layout,
-      ctx: this.ctx,
-      isDragging: false,
-      placingNewTable: false
-    };
-    this.layoutState$ = new BehaviorSubject(this._layoutState);
-    this.layoutState$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(state => this._layoutState = state)
+    this.layoutState$ = this.canvasService.layoutState$;
+    this.canvas = document.getElementById('canvas')!;
 
     // This is our core stream of frames. We use expand to recursively call the
     //  `calculateStep` function above that will give us each new Frame based on the
@@ -79,17 +72,17 @@ export class RestoLayoutComponent implements OnInit {
       .pipe(
         withLatestFrom(this.layoutState$, this.tables$),
         // map(([deltaTime, layoutState, tables]) => this.update(layoutState)),
-        tap(([deltaTime,layoutState, tables]) => this.layoutState$.next(layoutState)),
+        tap(([deltaTime, layoutState, tables]) => this.canvasService.updateLayout(layoutState)),
         takeUntil(this.ngUnsubscribe)
       )
-      .subscribe(([deltaTime,layoutState, tables]) => {
+      .subscribe(([deltaTime, layoutState, tables]) => {
         this.render(layoutState, tables);
       });
 
     //Mouse interactions observables
-    this.mouseDown$ = fromEvent(this.layout, 'mousedown');
-    this.mouseMove$ = fromEvent(this.layout, 'mousemove');
-    const mouseUp$ = fromEvent(this.layout, 'mouseup');
+    this.mouseDown$ = fromEvent(this.canvas, 'mousedown');
+    this.mouseMove$ = fromEvent(this.canvas, 'mousemove');
+    const mouseUp$ = fromEvent(this.canvas, 'mouseup');
 
     const dragStart$ = this.mouseDown$;
     const dragMove$ = dragStart$.pipe(
@@ -97,7 +90,7 @@ export class RestoLayoutComponent implements OnInit {
         this.mouseMove$.pipe(
           withLatestFrom(this.layoutState$, this.mouse$, this.tables$),
           tap(([event, layoutState, mouse, tables]) => {
-            layoutState.dragging = true;
+            layoutState.isDragging = true;
           }),
           takeUntil(mouseUp$),
           takeUntil(this.ngUnsubscribe)
@@ -153,8 +146,6 @@ export class RestoLayoutComponent implements OnInit {
 
           this.tableService.saveTablesLocally(tables);
 
-          // this.tablesSubject.next(this._tables)
-
         }
       }
     )
@@ -163,15 +154,15 @@ export class RestoLayoutComponent implements OnInit {
       withLatestFrom(this.layoutState$),
       takeUntil(this.ngUnsubscribe)
     ).subscribe(([event, layoutState]) => {
-      layoutState.dragging = false
+      layoutState.isDragging = false
     })
 
     //Refresh canvas size upon re entry into page
     setTimeout(() => {
-      this.refresh(this._layoutState)
+      this.canvasService.refresh();
     }, 100)
     setTimeout(() => {
-      this.refresh(this._layoutState)
+      this.canvasService.refresh();
     }, 300)
   }
 
@@ -196,16 +187,6 @@ export class RestoLayoutComponent implements OnInit {
     // Render all of our objects (simple rectangles for simplicity)
     this.canvasService.drawTables(state['ctx'], tables);
   };
-
-  refresh(state: any) {
-    let canvasWrap = document.getElementById('canvas-wrap');
-    let canvasWrapWidth = canvasWrap!.clientWidth;
-    let canvasWrapHeight = canvasWrap!.clientHeight;
-
-    state['ctx'].canvas.width = canvasWrapWidth;
-    state['ctx'].canvas.height = canvasWrapHeight;
-    state['ctx'].translate(canvasWrapWidth / canvasWrapWidth, canvasWrapHeight / canvasWrapHeight);
-  }
 
   /**
    * This function returns an observable that will emit the next frame once the
@@ -254,7 +235,10 @@ export class RestoLayoutComponent implements OnInit {
     this.tableService.clearSelected()
 
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
-    this.layoutState$.next({...this._layoutState, placingNewTable: true})
+
+    this.canvasService.togglePlacingNewTable();
+
+    // this.layoutState$.next({...this._layoutState, placingNewTable: true})
 
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
@@ -264,15 +248,17 @@ export class RestoLayoutComponent implements OnInit {
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
 
-        let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
+          let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
 
-        if (!this.canvasService.detectOverlap(cloneTable, tables)) {
+          if (!this.canvasService.detectOverlap(cloneTable, tables)) {
 
             newTable = {...newTable, ...cloneTable}
             this.selectedTable$ = of(newTable);
             this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
+            this.tableService.addTableRemote(newTable)
             this.alert = "";
-            this.layoutState$.next({...this._layoutState, placingNewTable: false})
+            this.canvasService.togglePlacingNewTable();
+            // this.layoutState$.next({...this._layoutState, placingNewTable: false})
 
           } else {
 
@@ -288,8 +274,17 @@ export class RestoLayoutComponent implements OnInit {
 
   deleteTable(selectedTable: Table) {
 
-    this.tableService.deleteTable(selectedTable);;
+    this.tableService.deleteTable(selectedTable);
+
     this.selectedTable$ = null;
   }
 
+  saveLayout() {
+    this.tableService.saveLayout().pipe(
+    ).subscribe(
+      (e) => {
+        this.canvasService.toggleIsSaved();
+      }
+    );
+  }
 }

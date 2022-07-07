@@ -1,8 +1,9 @@
 const express = require('express');
-
 const app = express(),
-bodyParser = require('body-parser');
-const tableModel = require("./models");
+    bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const tableSchema = require("./models");
+const tableModel = mongoose.model('table', tableSchema);
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,45 +13,79 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
-app.use(express.static(process.cwd()+"/app/dist/resto/"));
+app.use(express.static(process.cwd() + "/app/dist/resto/"));
 
-app.get('/', (req,res) => {
-    res.sendFile(process.cwd()+"/app/dist/resto/index.html")
+app.get('/', (req, res) => {
+    res.sendFile(process.cwd() + "/app/dist/resto/index.html")
 });
 
-app.get('/resto-admin', (req,res) => {
-    res.sendFile(process.cwd()+"/app/dist/resto/index.html")
+app.get('/resto-admin', (req, res) => {
+    res.sendFile(process.cwd() + "/app/dist/resto/index.html")
 });
 
 app.get('/api/tables', async (req, res, next) => {
+
     const tables = await tableModel.find();
 
-    try{
+    try {
         res.status(200).json(tables);
-    } catch (error){
+    } catch (error) {
+        res.status(500).send(error);
+        console.log(error)
+    }
+});
+
+app.post("/api/add_table", async (req, res) => {
+
+
+    const table = new tableModel({...req.body});
+
+    try {
+        await table.save();
+        res.send(table);
+    } catch (error) {
         res.status(500).send(error);
     }
 });
 
-app.post("/api/add_table", async (request, response) => {
-    const table = new tableModel(request.body);
+app.put('/api/save_table', async (req, res) => {
 
-    try {
-        await table.save();
-        response.send(table);
-    } catch (error) {
-        response.status(500).send(error);
-    }
-});
-
-app.put('/api/save_table', async (request, response) => {
-    const table = new tableModel(request.body);
+    const table = new tableModel({...req.body});
 
     try {
         await table.updateOne(table);
-        response.send(table);
+        res.send(table);
     } catch (error) {
-        response.status(500).send(error);
+        res.status(500).send(error);
+    }
+})
+
+app.put('/api/save_all_tables', async (req, res) => {
+
+    // const tables = new tableModel.hydrate(req.body);
+    const tables = tableModel.hydrate(req.body);
+
+    const bulkOps = req.body.map(obj => {
+
+        return {
+            updateOne: {
+                filter: {
+                    _id: obj._id
+                },
+                update: {'$set': obj},
+                upsert: true
+            }
+        }
+    })
+
+    try {
+        tableModel.bulkWrite(bulkOps).then((BulkWriteResult) => {
+            console.log("Tables updated", BulkWriteResult.modifiedCount)
+        });
+        res.send(tables);
+    } catch (error) {
+        console.log('error', error)
+        res.status(500).send(error);
     }
 })
 

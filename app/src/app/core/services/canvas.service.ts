@@ -2,13 +2,32 @@ import {Injectable} from '@angular/core';
 import {Table} from "../models/table.model";
 import {Mouse} from "../models/mouse.model";
 import {TablesService} from "./tables.service";
+import {BehaviorSubject, Observable, of} from "rxjs";
+import {LayoutState} from "../models/layoutState.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CanvasService {
 
+  private subject = new BehaviorSubject(<LayoutState>({}))
+  layoutState$: Observable<LayoutState> = this.subject.asObservable();
+
   constructor(private tableService: TablesService) {
+  }
+
+  init() {
+
+    const ctx = (<HTMLCanvasElement>document.getElementById('canvas')).getContext('2d')!;
+    const layout = document.getElementById('canvas')!;
+
+    const layoutState$ = of(new LayoutState(layout, ctx))
+    layoutState$.subscribe(state => this.subject.next(state))
+
+  }
+
+  updateLayout(layoutState: LayoutState) {
+    this.subject.next(layoutState)
   }
 
   drawTables(ctx: CanvasRenderingContext2D, tables: Table[]) {
@@ -77,7 +96,7 @@ export class CanvasService {
     args['mouse'].x = args['evt'].clientX - args['layoutState']['layout'].offsetLeft;
     args['mouse'].y = args['evt'].clientY - args['layoutState']['layout'].offsetTop;
 
-    if (!args['layoutState']['dragging'] && !args['layoutState']['addingTable']) {
+    if (!args['layoutState']['isDragging'] && !args['layoutState']['addingTable']) {
       args['mouse'].state = 'default';
       this.mouseHoverDetection(args['tables'], args['mouse']);
     }
@@ -90,8 +109,6 @@ export class CanvasService {
       x: mouse.x,
       y: mouse.y
     }));
-
-    this.tableService.addTableRemote(newTable)
 
   }
 
@@ -178,6 +195,7 @@ export class CanvasService {
 
         if (!this.detectOutOfBounds(cloneTable, layoutState['layout']) && !this.detectOverlap(cloneTable, tables)
           && cloneTable.width >= 50 && cloneTable.height >= 50) {
+          layoutState.isSaved = false;
           table = Object.assign(table, cloneTable);
         }
       }
@@ -264,4 +282,30 @@ export class CanvasService {
 
   }
 
+  togglePlacingNewTable() {
+
+    const layoutState = this.subject.getValue();
+    this.subject.next({...layoutState, placingNewTable: !layoutState.placingNewTable})
+
+  }
+
+  toggleIsSaved() {
+
+    const layoutState = this.subject.getValue();
+    this.subject.next({...layoutState, isSaved: !layoutState.isSaved})
+
+  }
+
+  refresh() {
+    let canvasWrap = document.getElementById('canvas-wrap');
+    let canvasWrapWidth = canvasWrap!.clientWidth;
+    let canvasWrapHeight = canvasWrap!.clientHeight;
+
+    const layoutState = this.subject.getValue();
+    layoutState.ctx.canvas.width = canvasWrapWidth;
+    layoutState.ctx.canvas.height = canvasWrapHeight;
+    layoutState.ctx.translate(canvasWrapWidth / canvasWrapWidth, canvasWrapHeight / canvasWrapHeight);
+
+    this.subject.next(layoutState)
+  }
 }

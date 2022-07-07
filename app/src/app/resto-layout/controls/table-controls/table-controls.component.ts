@@ -42,7 +42,7 @@ export class TableControlsComponent implements OnInit {
       tap(formValue => {
         this.tableService.modifyTable(this.selectedTable!);
       })
-    ).subscribe(v => console.log())
+    ).subscribe()
 
   }
 

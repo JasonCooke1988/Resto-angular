@@ -2,11 +2,11 @@ const http = require('http');
 const app = require('./app');
 const express = require('express');
 const mongoose = require('mongoose');
-const mongo = require('./mongo');
+const dbConfig = require('./db-config');
 
 app.use(express.json());
 
-const {username, password, cluster} = mongo;
+const {username, password, cluster} = dbConfig;
 
 /**
  * Database connection

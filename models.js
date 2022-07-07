@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
-const TableSchema = new mongoose.Schema({
-    tableId : {
-      type: Number,
-      required: true
+const tableSchema = new mongoose.Schema({
+    tableId: {
+        type: Number,
+        required: true
     },
     width: {
         type: Number,
@@ -31,6 +31,8 @@ const TableSchema = new mongoose.Schema({
     },
 });
 
-const tableModel = mongoose.model("Table", TableSchema);
+// const tablesSchema = new mongoose.Schema({
+//     tables: [tableSchema]
+// })
 
-module.exports = tableModel;
+module.exports =  tableSchema;

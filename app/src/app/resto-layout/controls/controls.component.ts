@@ -2,6 +2,8 @@ import {Component, Output, EventEmitter, Input} from '@angular/core';
 import {Table} from "../../core/models/table.model";
 import {popInAnimation} from "../../animation";
 import * as mongoose from "mongoose";
+import {LayoutState} from "../../core/models/layoutState.model";
+import {TablesService} from "../../core/services/tables.service";
 
 @Component({
   selector: 'app-controls',
@@ -12,11 +14,13 @@ export class ControlsComponent {
 
   @Output() newTableEvent = new EventEmitter<Table>();
   @Output() deleteTableEvent = new EventEmitter<Table>();
+  @Output() saveLayoutEvent = new EventEmitter();
   @Input() tables!: Table[];
   @Input() alert!: String | undefined;
   @Input() selectedTable?: Table | null = null;
+  @Input() layoutState!: LayoutState;
 
-  constructor() {
+  constructor(private tableService: TablesService) {
   }
 
   addNewTable() {
@@ -88,4 +92,7 @@ export class ControlsComponent {
     )
   }
 
+  saveLayout() {
+    this.saveLayoutEvent.emit();
+  }
 }
