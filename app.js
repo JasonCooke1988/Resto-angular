@@ -89,4 +89,18 @@ app.put('/api/save_all_tables', async (req, res) => {
     }
 })
 
+app.delete('/api/delete_table', async (req, res) => {
+
+    const table = new tableModel({...req.body});
+
+    console.log(table)
+
+    try {
+        await table.deleteOne(table);
+        res.send(table);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+})
+
 module.exports = app;

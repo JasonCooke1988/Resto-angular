@@ -72,8 +72,27 @@ export class CanvasService {
   deleteTable(selectedTable: Table) {
 
     const tables = this.tableSubject.getValue();
+
+    this.layoutSaving()
+
     const newTables = tables.filter(table => table.tableId != selectedTable.tableId);
     this.tableSubject.next(newTables);
+
+    return from(fetch('/api/delete_table', {
+      method: 'DELETE',
+      body: JSON.stringify(selectedTable),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then( response => {
+      if(response.ok) {
+        return response.json();
+      }  else{
+        console.error('Request failed with status code: ' + response.status)
+        return {error: 'Request failed with status code: ' + response.status}
+      }
+    }).catch(e => console.error(e)))
+
 
   }
 
