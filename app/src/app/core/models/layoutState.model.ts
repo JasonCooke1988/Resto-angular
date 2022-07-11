@@ -3,13 +3,13 @@ export class LayoutState {
   ctx: CanvasRenderingContext2D;
   isDragging: boolean;
   placingNewTable: boolean;
-  isSaved: boolean;
+  saveState: string;
 
   constructor(layout: HTMLElement, ctx: CanvasRenderingContext2D) {
     this.layout = layout;
     this.ctx = ctx;
     this.isDragging = false;
     this.placingNewTable = false;
-    this.isSaved = true;
+    this.saveState = 'saved';
   }
 }

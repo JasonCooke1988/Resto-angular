@@ -1,3 +1,10 @@
+<div class="mt-4 flex justify-end items-center">
+  <p class="save-state-msg">État de la sauvegarde du plan de salle : </p>
+  <i class="ml-2" [ngClass]="{'icon-checkmark': layoutState.saveState === 'saved',
+                 'icon-cross': layoutState.saveState === 'notSaved',
+                 'icon-spinner': layoutState.saveState === 'saving'}"></i>
+</div>
+
 <div class="mt-4 flex">
 
   <app-button class="mr-4" (click)="addNewTable()" buttonText="+ table"></app-button>
@@ -8,7 +15,7 @@
   <app-button *ngIf="selectedTable != null" [@popInAnimation] class="mx-4"
               (click)="deleteTable()" buttonState="alert" buttonText="- table"></app-button>
 
-  <app-button *ngIf="!layoutState.isSaved" class="mx-4"
+  <app-button *ngIf="layoutState.saveState === 'notSaved'" class="mx-4"
               (click)="saveLayout()" buttonText="Enregistrer plan de salle"></app-button>
 
 </div>

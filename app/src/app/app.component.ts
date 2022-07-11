@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ChildrenOutletContexts} from "@angular/router";
 import {slideInAnimation} from "./animation";
-import {TablesService} from "./core/services/tables.service";
+import {CanvasService} from "./core/services/canvas.service";
 
 
 @Component({
@@ -15,11 +15,11 @@ import {TablesService} from "./core/services/tables.service";
 export class AppComponent implements OnInit {
   title = 'Resto : Application de reservation';
 
-  constructor(private contexts: ChildrenOutletContexts, private tableService: TablesService) {
+  constructor(private contexts: ChildrenOutletContexts, private canvasService: CanvasService) {
   }
 
   ngOnInit() {
-    this.tableService.init();
+    this.canvasService.init();
   }
 
   getRouteAnimationData() {

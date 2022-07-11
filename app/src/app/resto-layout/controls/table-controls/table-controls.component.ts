@@ -2,7 +2,6 @@ import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} f
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Table} from "../../../core/models/table.model";
 import {debounceTime, fromEvent, mergeWith, tap} from "rxjs";
-import {TablesService} from "../../../core/services/tables.service";
 
 @Component({
   selector: 'app-table-controls',
@@ -19,8 +18,7 @@ export class TableControlsComponent implements OnInit {
   @ViewChild('seatsInput') seatsInput!: ElementRef;
   @ViewChild('tableNumberInput') tableNumberInput!: ElementRef;
 
-  constructor(private formBuilder: FormBuilder,
-              private tableService: TablesService) {
+  constructor(private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
@@ -43,7 +41,6 @@ export class TableControlsComponent implements OnInit {
       debounceTime(400),
       tap(formValue => {
         this.modifyTableEvent.emit();
-        // this.tableService.modifyTable(this.selectedTable!);
       })
     ).subscribe()
 

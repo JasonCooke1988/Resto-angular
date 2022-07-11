@@ -3,12 +3,12 @@ import {Table} from "../../core/models/table.model";
 import {popInAnimation} from "../../animation";
 import * as mongoose from "mongoose";
 import {LayoutState} from "../../core/models/layoutState.model";
-import {TablesService} from "../../core/services/tables.service";
 
 @Component({
   selector: 'app-controls',
   templateUrl: './controls.component.html',
-  animations: [popInAnimation]
+  animations: [popInAnimation],
+  styleUrls:['controls.component.scss']
 })
 export class ControlsComponent {
 
@@ -19,9 +19,6 @@ export class ControlsComponent {
   @Input() alert!: String | undefined;
   @Input() selectedTable?: Table | null = null;
   @Input() layoutState!: LayoutState;
-
-  constructor(private tableService: TablesService) {
-  }
 
   addNewTable() {
 

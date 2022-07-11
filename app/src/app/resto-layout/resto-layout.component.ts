@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Table} from "../core/models/table.model";
-import {TablesService} from "../core/services/tables.service";
 import {mouseState, slideInAnimation} from "../animation";
 import {
   expand,
@@ -10,7 +9,7 @@ import {
   of,
   tap,
   withLatestFrom,
-  fromEvent, switchMap, takeUntil, take, Subject, takeWhile, first,
+  fromEvent, switchMap, takeUntil, take, Subject, takeWhile,
 } from "rxjs";
 import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
@@ -39,8 +38,7 @@ export class RestoLayoutComponent implements OnInit {
   private mouseDown$!: Observable<Event>;
   private mouseMove$!: Observable<Event>;
 
-  constructor(private tableService: TablesService,
-              private canvasService: CanvasService) {
+  constructor(private canvasService: CanvasService) {
 
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
@@ -51,7 +49,7 @@ export class RestoLayoutComponent implements OnInit {
 
     this.canvasService.init();
 
-    this.tables$ = this.tableService.tables$;
+    this.tables$ = this.canvasService.tables$;
 
     //Set up layout config
     this.layoutState$ = this.canvasService.layoutState$;
@@ -144,7 +142,7 @@ export class RestoLayoutComponent implements OnInit {
             this.selectedTable$ = null
           }
 
-          this.tableService.saveTablesLocally(tables);
+          this.canvasService.saveTablesLocally(tables);
 
         }
       }
@@ -232,13 +230,11 @@ export class RestoLayoutComponent implements OnInit {
 
     this.selectedTable$ = null;
 
-    this.tableService.clearSelected()
+    this.canvasService.clearSelected()
 
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
 
     this.canvasService.togglePlacingNewTable();
-
-    // this.layoutState$.next({...this._layoutState, placingNewTable: true})
 
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
@@ -255,10 +251,9 @@ export class RestoLayoutComponent implements OnInit {
             newTable = {...newTable, ...cloneTable}
             this.selectedTable$ = of(newTable);
             this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
-            this.tableService.addTableRemote(newTable)
+            this.canvasService.addTableRemote(newTable)
             this.alert = "";
             this.canvasService.togglePlacingNewTable();
-            // this.layoutState$.next({...this._layoutState, placingNewTable: false})
 
           } else {
 
@@ -274,12 +269,12 @@ export class RestoLayoutComponent implements OnInit {
 
   deleteTable(selectedTable: Table) {
 
-    this.tableService.deleteTable(selectedTable);
+    this.canvasService.deleteTable(selectedTable);
     this.selectedTable$ = null;
   }
 
   saveLayout() {
-    this.tableService.saveLayout().pipe().subscribe(
+    this.canvasService.saveLayout().pipe().subscribe(
       (e) => {
         this.canvasService.toggleIsSaved();
       }
@@ -287,7 +282,7 @@ export class RestoLayoutComponent implements OnInit {
   }
 
   modifyTable() {
-    if (this.canvasService.isSaved()) {
+    if (this.canvasService.isSaved() === 'saved') {
       this.canvasService.toggleIsSaved();
     }
   }

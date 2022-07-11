@@ -1,33 +1,105 @@
 import {Injectable} from '@angular/core';
 import {Table} from "../models/table.model";
 import {Mouse} from "../models/mouse.model";
-import {TablesService} from "./tables.service";
-import {BehaviorSubject, Observable, of} from "rxjs";
+import {BehaviorSubject, from, Observable, of} from "rxjs";
 import {LayoutState} from "../models/layoutState.model";
+import {createHttpObservable} from "./util";
 
 @Injectable({
   providedIn: 'root'
 })
 export class CanvasService {
 
-  private subject = new BehaviorSubject(<LayoutState>({}))
-  layoutState$: Observable<LayoutState> = this.subject.asObservable();
+  private layoutSubject = new BehaviorSubject(<LayoutState>({}))
+  layoutState$: Observable<LayoutState> = this.layoutSubject.asObservable();
 
-  constructor(private tableService: TablesService) {
-  }
+  private tableSubject = new BehaviorSubject(<Table[]>([]))
+  tables$: Observable<Table[]> = this.tableSubject.asObservable();
+
 
   init() {
+
+    const tables$ = createHttpObservable('/tables');
+    tables$.subscribe(tables => this.tableSubject.next(tables))
 
     const ctx = (<HTMLCanvasElement>document.getElementById('canvas')).getContext('2d')!;
     const layout = document.getElementById('canvas')!;
 
     const layoutState$ = of(new LayoutState(layout, ctx))
-    layoutState$.subscribe(state => this.subject.next(state))
+    layoutState$.subscribe(state => this.layoutSubject.next(state))
 
   }
 
+  saveTablesLocally(tables: Table[]) {
+    this.tableSubject.next(tables);
+  }
+
+  addTableRemote(table: Table) {
+    fetch(`/api/add_table`, {
+      method: 'POST',
+      body: JSON.stringify(table),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then(r => console.log('new table saved'))
+  }
+
+  modifyTable(selectedTable: Table) {
+    fetch('/api/save_table', {
+      method: 'PUT',
+      body: JSON.stringify(selectedTable),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then( response => {
+      if(response.ok) {
+        return response.json();
+      }  else{
+        console.error('Request failed with status code: ' + response.status)
+        return {error: 'Request failed with status code: ' + response.status}
+      }
+    }).catch(e => console.error(e))
+  }
+
+  clearSelected() {
+
+    const tables = this.tableSubject.getValue();
+    const newTables = tables.map(table => table = {...table, ...{selected: false}});
+    this.tableSubject.next(newTables);
+
+  }
+
+  deleteTable(selectedTable: Table) {
+
+    const tables = this.tableSubject.getValue();
+    const newTables = tables.filter(table => table.tableId != selectedTable.tableId);
+    this.tableSubject.next(newTables);
+
+  }
+
+  saveLayout() {
+    const tables = this.tableSubject.getValue();
+
+    this.layoutSaving();
+
+    return from(fetch('/api/save_all_tables', {
+      method: 'PUT',
+      body: JSON.stringify(tables),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then( response => {
+      if(response.ok) {
+        return response.json();
+      }  else{
+        console.error('Request failed with status code: ' + response.status)
+        return {error: 'Request failed with status code: ' + response.status}
+      }
+    }).catch(e => console.error(e)))
+  }
+
   updateLayout(layoutState: LayoutState) {
-    this.subject.next(layoutState)
+    this.layoutSubject.next(layoutState)
   }
 
   drawTables(ctx: CanvasRenderingContext2D, tables: Table[]) {
@@ -195,7 +267,7 @@ export class CanvasService {
 
         if (!this.detectOutOfBounds(cloneTable, layoutState['layout']) && !this.detectOverlap(cloneTable, tables)
           && cloneTable.width >= 50 && cloneTable.height >= 50) {
-          layoutState.isSaved = false;
+          layoutState.saveState = 'notSaved';
           table = Object.assign(table, cloneTable);
         }
       }
@@ -284,21 +356,27 @@ export class CanvasService {
 
   togglePlacingNewTable() {
 
-    const layoutState = this.subject.getValue();
-    this.subject.next({...layoutState, placingNewTable: !layoutState.placingNewTable})
+    const layoutState = this.layoutSubject.getValue();
+    this.layoutSubject.next({...layoutState, placingNewTable: !layoutState.placingNewTable})
 
   }
 
   toggleIsSaved() {
 
-    const layoutState = this.subject.getValue();
-    this.subject.next({...layoutState, isSaved: !layoutState.isSaved})
+    const layoutState = this.layoutSubject.getValue();
+    let newState = layoutState.saveState === 'saved' ? 'notSaved' : 'saved';
+    this.layoutSubject.next({...layoutState, saveState: newState})
 
   }
 
   isSaved() {
-    const layoutState = this.subject.getValue();
-    return layoutState.isSaved;
+    const layoutState = this.layoutSubject.getValue();
+    return layoutState.saveState;
+  }
+
+  layoutSaving() {
+    const layoutState = this.layoutSubject.getValue();
+    this.layoutSubject.next({...layoutState, saveState: 'saving'})
   }
 
   refresh() {
@@ -306,11 +384,11 @@ export class CanvasService {
     let canvasWrapWidth = canvasWrap!.clientWidth;
     let canvasWrapHeight = canvasWrap!.clientHeight;
 
-    const layoutState = this.subject.getValue();
+    const layoutState = this.layoutSubject.getValue();
     layoutState.ctx.canvas.width = canvasWrapWidth;
     layoutState.ctx.canvas.height = canvasWrapHeight;
     layoutState.ctx.translate(canvasWrapWidth / canvasWrapWidth, canvasWrapHeight / canvasWrapHeight);
 
-    this.subject.next(layoutState)
+    this.layoutSubject.next(layoutState)
   }
 }
