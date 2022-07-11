@@ -296,6 +296,11 @@ export class CanvasService {
 
   }
 
+  isSaved() {
+    const layoutState = this.subject.getValue();
+    return layoutState.isSaved;
+  }
+
   refresh() {
     let canvasWrap = document.getElementById('canvas-wrap');
     let canvasWrapWidth = canvasWrap!.clientWidth;

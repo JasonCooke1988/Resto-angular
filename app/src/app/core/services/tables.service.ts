@@ -43,15 +43,14 @@ export class TablesService {
       headers: {
         'content-type': 'application/json'
       }
-      // @ts-ignore
     }).then( response => {
       if(response.ok) {
         return response.json();
       }  else{
         console.error('Request failed with status code: ' + response.status)
+        return {error: 'Request failed with status code: ' + response.status}
       }
     }).catch(e => console.error(e))
-
   }
 
   clearSelected() {

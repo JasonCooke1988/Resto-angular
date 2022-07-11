@@ -275,16 +275,20 @@ export class RestoLayoutComponent implements OnInit {
   deleteTable(selectedTable: Table) {
 
     this.tableService.deleteTable(selectedTable);
-
     this.selectedTable$ = null;
   }
 
   saveLayout() {
-    this.tableService.saveLayout().pipe(
-    ).subscribe(
+    this.tableService.saveLayout().pipe().subscribe(
       (e) => {
         this.canvasService.toggleIsSaved();
       }
     );
+  }
+
+  modifyTable() {
+    if (this.canvasService.isSaved()) {
+      this.canvasService.toggleIsSaved();
+    }
   }
 }
