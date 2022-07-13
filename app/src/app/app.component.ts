@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {ChildrenOutletContexts} from "@angular/router";
 import {slideInAnimation} from "./animation";
 import {CanvasService} from "./core/services/canvas.service";
@@ -12,15 +12,12 @@ import {CanvasService} from "./core/services/canvas.service";
     slideInAnimation
   ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'Resto : Application de reservation';
 
   constructor(private contexts: ChildrenOutletContexts, private canvasService: CanvasService) {
   }
 
-  ngOnInit() {
-    this.canvasService.init();
-  }
 
   getRouteAnimationData() {
     return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];

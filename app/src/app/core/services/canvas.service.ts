@@ -1,13 +1,10 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgModule} from '@angular/core';
 import {Table} from "../models/table.model";
 import {Mouse} from "../models/mouse.model";
 import {BehaviorSubject, from, Observable, of} from "rxjs";
 import {LayoutState} from "../models/layoutState.model";
 import {createHttpObservable} from "./util";
 
-@Injectable({
-  providedIn: 'root'
-})
 export class CanvasService {
 
   private layoutSubject = new BehaviorSubject(<LayoutState>({}))

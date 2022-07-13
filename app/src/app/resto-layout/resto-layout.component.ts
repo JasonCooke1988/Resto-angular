@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, NgModule, OnInit} from '@angular/core';
 import {Table} from "../core/models/table.model";
 import {mouseState, slideInAnimation} from "../animation";
 import {

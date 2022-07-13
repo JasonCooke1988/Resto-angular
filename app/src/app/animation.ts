@@ -41,7 +41,7 @@ export const slideInAnimation =
           }),
       ]),
     ]),
-    transition('Home <= RestoAdmin', [
+    transition('RestoAdmin => Home', [
       style({position: 'relative'}),
       query(':enter, :leave', [
           style({

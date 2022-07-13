@@ -5,6 +5,7 @@ import { ControlsComponent } from './controls/controls.component';
 import {ComponentsModule} from "../components/components.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { TableControlsComponent } from './controls/table-controls/table-controls.component';
+import {CanvasService} from "../core/services/canvas.service";
 
 @NgModule({
   declarations: [
@@ -20,6 +21,9 @@ import { TableControlsComponent } from './controls/table-controls/table-controls
   ],
   exports: [
     RestoLayoutComponent
+  ],
+  providers: [
+    CanvasService
   ]
 })
 
