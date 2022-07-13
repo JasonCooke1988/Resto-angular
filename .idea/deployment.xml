@@ -5,8 +5,26 @@
       <paths name="Prod">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
           </mappings>
+          <excludedPaths>
+            <excludedPath path="/node_modules" />
+            <excludedPath path="/tmp" />
+            <excludedPath path="/package-lock.json" />
+            <excludedPath path="/package.json" />
+            <excludedPath path="/.htaccess" />
+            <excludedPath path="/public" />
+            <excludedPath path="/cgi-bin" />
+            <excludedPath path="/app/node_modules" />
+            <excludedPath path="/app/README.md" />
+            <excludedPath path="/app/.browserslistrc" />
+            <excludedPath path="/app/angular.json" />
+            <excludedPath path="/app/.gitignore" />
+            <excludedPath path="/app/package.json" />
+            <excludedPath path="/app/.editorconfig" />
+            <excludedPath path="/app/package-lock.json" />
+            <excludedPath path="/app/.angular" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
