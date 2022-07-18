@@ -133,6 +133,7 @@ export class RestoLayoutComponent implements OnInit {
               if (table.selected) {
                 isSelected = true;
                 this.selectedTable$ = of(table);
+                console.log(table)
               }
               return table;
             }
@@ -183,7 +184,7 @@ export class RestoLayoutComponent implements OnInit {
     state['ctx'].clearRect(0, 0, state['layout'].clientWidth, state['layout'].clientHeight);
 
     // Render all of our objects (simple rectangles for simplicity)
-    this.canvasService.drawTables(state['ctx'], tables);
+    this.canvasService.drawTables(state['ctx'], state['layout'], tables);
   };
 
   /**
@@ -202,11 +203,10 @@ export class RestoLayoutComponent implements OnInit {
           deltaTime
         });
       })
-    })
-      .pipe(
-        // @ts-ignore
-        map(this.clampTo30FPS)
-      )
+    }).pipe(
+      // @ts-ignore
+      map(this.clampTo30FPS)
+    )
   };
 
   /**
@@ -244,14 +244,13 @@ export class RestoLayoutComponent implements OnInit {
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
 
-          let cloneTable = {...newTable, ...{x: mouse.x, y: mouse.y}}
+          let cloneTable = this.canvasService.tablesCalcRealSizeAndPlace(newTable, layoutState['layout']);
 
           if (!this.canvasService.detectOverlap(cloneTable, tables)) {
 
-            newTable = {...newTable, ...cloneTable}
             this.selectedTable$ = of(newTable);
-            this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
-            this.canvasService.addTableRemote(newTable)
+            cloneTable = this.canvasService.placeNewTable(event, tables, layoutState, mouse, newTable)
+            this.canvasService.addTableRemote(cloneTable)
             this.alert = "";
             this.canvasService.togglePlacingNewTable();
 

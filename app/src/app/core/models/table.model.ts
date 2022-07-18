@@ -3,12 +3,16 @@ import * as mongoose from "mongoose";
 export class Table {
   _id!: mongoose.Types.ObjectId;
   tableId!: number;
-  width!: number;
-  height!: number;
-  x!: number;
-  y!: number;
-  tableNumber!: number;
-  seats!: number;
-  selected!: Boolean;
-  hovering!: Boolean;
+  width: number = 1;
+  height: number = 1;
+  x: number = 0;
+  y: number = 0;
+  calcX: number = 0;
+  calcY: number = 0;
+  calcWidth: number = 0;
+  calcHeight: number = 0;
+  tableNumber: number = 0;
+  seats: number = 0;
+  selected: Boolean = false;
+  hovering: Boolean = false;
 }

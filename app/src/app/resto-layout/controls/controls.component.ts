@@ -34,23 +34,24 @@ export class ControlsComponent {
 
     }
 
-    console.log('coucou')
-    console.log(lastId)
-
     const _id = new mongoose.Types.ObjectId();
 
     this.newTableEvent.emit(
       {
         _id: _id,
         tableId: lastId + 1,
-        width: 50,
-        height: 50,
+        width: 5,
+        height: 5,
         x: 0,
         y: 0,
-        tableNumber: 0,
+        calcX: 0,
+        calcY: 0,
+        calcHeight: 0,
+        calcWidth: 0,
         seats: 0,
         selected: true,
-        hovering: false
+        hovering: false,
+        tableNumber: 0
       }
     );
   }
@@ -71,6 +72,10 @@ export class ControlsComponent {
         height: this.selectedTable!.height,
         x: 0,
         y: 0,
+        calcX: 0,
+        calcY: 0,
+        calcHeight: 0,
+        calcWidth: 0,
         tableNumber: this.selectedTable!.tableNumber,
         seats: this.selectedTable!.seats,
         selected: true,
