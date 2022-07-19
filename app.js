@@ -62,7 +62,6 @@ app.put('/api/save_table', async (req, res) => {
 
 app.put('/api/save_all_tables', async (req, res) => {
 
-    // const tables = new tableModel.hydrate(req.body);
     const tables = tableModel.hydrate(req.body);
 
     const bulkOps = req.body.map(obj => {
@@ -92,8 +91,6 @@ app.put('/api/save_all_tables', async (req, res) => {
 app.delete('/api/delete_table', async (req, res) => {
 
     const table = new tableModel({...req.body});
-
-    console.log(table)
 
     try {
         await table.deleteOne(table);

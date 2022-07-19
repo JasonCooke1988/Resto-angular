@@ -3,6 +3,7 @@ import {Table} from "../../core/models/table.model";
 import {popInAnimation} from "../../animation";
 import * as mongoose from "mongoose";
 import {LayoutState} from "../../core/models/layoutState.model";
+import {CanvasService} from "../../core/services/canvas.service";
 
 @Component({
   selector: 'app-controls',
@@ -20,68 +21,22 @@ export class ControlsComponent {
   @Input() selectedTable?: Table | null = null;
   @Input() layoutState!: LayoutState;
 
+  constructor(private canvasService: CanvasService) {
+  }
+
   addNewTable() {
 
-    let lastId = 0;
+    const table = new Table(this.canvasService.calcLastTableId());
+    this.newTableEvent.emit(table);
 
-    if (this.tables.length) {
-
-      this.tables.sort((a, b) => {
-        return a.tableId - b.tableId;
-      })
-
-      lastId = this.tables[this.tables.length - 1].tableId;
-
-    }
-
-    const _id = new mongoose.Types.ObjectId();
-
-    this.newTableEvent.emit(
-      {
-        _id: _id,
-        tableId: lastId + 1,
-        width: 5,
-        height: 5,
-        x: 0,
-        y: 0,
-        calcX: 0,
-        calcY: 0,
-        calcHeight: 0,
-        calcWidth: 0,
-        seats: 0,
-        selected: true,
-        hovering: false,
-        tableNumber: 0
-      }
-    );
   }
 
   copyTable() {
 
-    this.tables!.sort((a, b) => {
-      return a.tableId - b.tableId;
-    })
+    const table = Object.assign(new Table(this.canvasService.calcLastTableId()),{width:this.selectedTable!.width, height: this.selectedTable!.height})
+    table.recalculatePlaceAndSize();
+    this.newTableEvent.emit(table)
 
-    const _id = new mongoose.Types.ObjectId();
-
-    this.newTableEvent.emit(
-      {
-        _id: _id,
-        tableId: this.tables![this.tables!.length - 1].tableId + 1,
-        width: this.selectedTable!.width,
-        height: this.selectedTable!.height,
-        x: 0,
-        y: 0,
-        calcX: 0,
-        calcY: 0,
-        calcHeight: 0,
-        calcWidth: 0,
-        tableNumber: this.selectedTable!.tableNumber,
-        seats: this.selectedTable!.seats,
-        selected: true,
-        hovering: false,
-      }
-    )
   }
 
   deleteTable() {
@@ -92,9 +47,12 @@ export class ControlsComponent {
         }
       }
     )
+
   }
 
   saveLayout() {
+
     this.saveLayoutEvent.emit();
+
   }
 }

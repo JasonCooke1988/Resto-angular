@@ -1,8 +1,8 @@
 import * as mongoose from "mongoose";
 
 export class Table {
-  _id!: mongoose.Types.ObjectId;
-  tableId!: number;
+  _id: mongoose.Types.ObjectId;
+  tableId: number;
   width: number = 1;
   height: number = 1;
   x: number = 0;
@@ -15,4 +15,20 @@ export class Table {
   seats: number = 0;
   selected: Boolean = false;
   hovering: Boolean = false;
+
+  constructor(tableId: number) {
+    this._id = new mongoose.Types.ObjectId();
+    this.tableId = tableId;
+    this.recalculatePlaceAndSize();
+  }
+
+  public recalculatePlaceAndSize() {
+
+    const layout = document.getElementById('canvas')!;
+    this.calcX = layout.clientWidth / 100 * this.x;
+    this.calcY = layout.clientHeight / 100 * this.y;
+    this.calcHeight = layout.clientHeight / 100 * this.height;
+    this.calcWidth = layout.clientWidth / 100 * this.width;
+
+  }
 }

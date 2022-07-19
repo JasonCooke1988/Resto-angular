@@ -30,6 +30,20 @@ export class CanvasService {
     this.tableSubject.next(tables);
   }
 
+  calcLastTableId() {
+
+    let tables = this.tableSubject.getValue();
+    let tableId = 0;
+    if (tables.length) {
+      tables.sort((a, b) => {
+        return a.tableId - b.tableId;
+      })
+      tableId = tables[tables.length - 1].tableId + 1;
+    }
+    return tableId
+
+  }
+
   addTableRemote(table: Table) {
     fetch(`/api/add_table`, {
       method: 'POST',
@@ -59,9 +73,8 @@ export class CanvasService {
 
   clearSelected() {
 
-    const tables = this.tableSubject.getValue();
-    const newTables = tables.map(table => table = {...table, ...{selected: false}});
-    this.tableSubject.next(newTables);
+    const tables = this.tableSubject.getValue().map(table => Object.assign(table, {selected: false}));
+    this.tableSubject.next(tables);
 
   }
 
@@ -175,10 +188,6 @@ export class CanvasService {
     return count != tables.length;
   }
 
-  detectOutOfBounds(element: any, canvas: any) {
-    return (element.calcX < 10 || element.calcY < 10 || element.calcX + element.calcWidth > canvas.width - 10 || element.calcY + element.calcHeight > canvas.height - 10);
-  }
-
   updateMousePos(args: any) {
 
     args['mouse'].x = args['evt'].clientX - args['layoutState']['layout'].offsetLeft;
@@ -193,26 +202,11 @@ export class CanvasService {
 
   placeNewTable(event: Event, tables: Table[], layoutState: LayoutState, mouse: Mouse, newTable: Table) {
 
-    newTable = {
-      ...newTable, ...this.relativeSizeAndPlacement(newTable, mouse, layoutState['layout'])
-    }
-
-    console.log(newTable)
-
-    let table = this.tablesCalcRealSizeAndPlace(newTable, layoutState['layout'])
-
+    newTable = Object.assign(newTable, this.relativeSizeAndPlacement(newTable, mouse, layoutState['layout']))
+    let table = this.tablesCalcRealSizeAndPlacement(newTable, layoutState['layout'])
     tables.push(table);
 
     return table;
-  }
-
-  relativeSizeAndPlacement(table: Table, mouse: Mouse, layout: HTMLElement) {
-    return {
-      x: Math.floor(mouse.x / layout.clientWidth * 100),
-      y: Math.floor(mouse.y / layout.clientHeight * 100),
-      width: Math.floor(50 / layout.clientWidth * 100),
-      height: Math.floor(50 / layout.clientHeight * 100)
-    }
   }
 
   editTablePlaceSize(event: Event, tables: Table[], layoutState: any, mouse: Mouse) {
@@ -223,10 +217,10 @@ export class CanvasService {
 
           const tableX = Math.floor(mouse.x / layoutState['layout'].clientWidth * 100);
           const tableY = Math.floor(mouse.y / layoutState['layout'].clientHeight * 100);
-          const tableWidth = Math.floor(table.width / layoutState['layout'].clientWidth * 100);
-          const tableHeight = Math.floor(table.height / layoutState['layout'].clientHeight * 100);
+          /*          const tableWidth = Math.floor(table.width / layoutState['layout'].clientWidth * 100);
+                    const tableHeight = Math.floor(table.height / layoutState['layout'].clientHeight * 100);*/
 
-          let cloneTable = {...table},
+          let cloneTable = table,
             yDiff,
             xDiff;
 
@@ -302,16 +296,43 @@ export class CanvasService {
 
           }
 
-          if (!this.detectOutOfBounds(cloneTable, layoutState['layout']) && !this.detectOverlap(cloneTable, tables)
-            && cloneTable.width >= 1 && cloneTable.height >= 1) {
+          if (this.detectOutOfBounds(cloneTable, layoutState['layout'])) {
+            return this.outOfBoundsRecursive(cloneTable, layoutState['layout'])
+          }
+
+          if (!this.detectOverlap(cloneTable, tables)) {
+            console.log('table changes made')
             layoutState.saveState = 'notSaved';
-            return this.tablesCalcRealSizeAndPlace({...table, ...cloneTable}, layoutState['layout'])
+            return this.tablesCalcRealSizeAndPlacement(Object.assign(table, cloneTable), layoutState['layout'])
           }
         }
         return table;
       })
     )
 
+  }
+
+  detectOutOfBounds(element: any, canvas: any) {
+    return (element.calcX < 5 || element.calcY < 5 || element.calcX + element.calcWidth > canvas.width - 1 || element.calcY + element.calcHeight > canvas.height - 1);
+  }
+
+  outOfBoundsRecursive(table: Table, layout: any): Table{
+    table = this.tablesCalcRealSizeAndPlacement(table,layout);
+    if (table.x < 1) {
+      table.x += .5;
+      return this.outOfBoundsRecursive(table, layout);
+    } else if (table.y < 1) {
+      table.y += .5;
+      return this.outOfBoundsRecursive(table, layout);
+    } else if (table.calcX + table.calcWidth > layout.width - 1) {
+      table.x -= .5;
+      return this.outOfBoundsRecursive(table, layout);
+    } else if (table.calcY + table.calcHeight > layout.height - 1) {
+      table.y -= .5;
+      return this.outOfBoundsRecursive(table, layout);
+    } else {
+      return this.tablesCalcRealSizeAndPlacement(table, layout)
+    }
   }
 
   mouseHoverDetection(tables: Table[], mouse: Mouse, layout: HTMLElement) {
@@ -431,28 +452,27 @@ export class CanvasService {
 
     //Calc real values of tables from canvas element
     const tables = this.tableSubject.getValue();
-    const newTables = tables.map(table => table = {
-      ...table, ...{
-        calcX: layoutState['layout'].clientWidth / 100 * table.x,
-        calcY: layoutState['layout'].clientHeight / 100 * table.y,
-        calcHeight: layoutState['layout'].clientHeight / 100 * table.height,
-        calcWidth: layoutState['layout'].clientWidth / 100 * table.width
-      }
-    });
+    const newTables = tables.map(table => this.tablesCalcRealSizeAndPlacement(table, layoutState['layout']));
     this.tableSubject.next(newTables);
 
   }
 
-  tablesCalcRealSizeAndPlace(table: Table, layout: HTMLElement) {
-    return {
-      ...table, ...{
-        calcX: layout.clientWidth / 100 * table.x,
-        calcY: layout.clientHeight / 100 * table.y,
-        calcHeight: layout.clientHeight / 100 * table.height,
-        calcWidth: layout.clientWidth / 100 * table.width
-      }
-    }
+  tablesCalcRealSizeAndPlacement(table: Table, layout: HTMLElement) {
+    return Object.assign(table, {
+      calcX: layout.clientWidth / 100 * table.x,
+      calcY: layout.clientHeight / 100 * table.y,
+      calcHeight: layout.clientHeight / 100 * table.height,
+      calcWidth: layout.clientWidth / 100 * table.width
+    })
+  }
 
+  relativeSizeAndPlacement(table: Table, mouse: Mouse, layout: HTMLElement) {
+    return {
+      x: Math.floor(mouse.x / layout.clientWidth * 100),
+      y: Math.floor(mouse.y / layout.clientHeight * 100),
+      /*      width: Math.min(5,Math.floor(table.width / layout.clientWidth * 100)),
+            height: Math.min(5,Math.floor(table.height / layout.clientHeight * 100)),*/
+    }
   }
 
 }
