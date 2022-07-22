@@ -9,7 +9,7 @@ import {CanvasService} from "../../core/services/canvas.service";
   selector: 'app-controls',
   templateUrl: './layout-controls.component.html',
   animations: [popInAnimation],
-  styleUrls:['controls.component.scss']
+  styleUrls:['layout-controls.component.scss']
 })
 export class LayoutControlsComponent {
 
