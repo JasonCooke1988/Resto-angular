@@ -7,11 +7,11 @@ import {CanvasService} from "../../core/services/canvas.service";
 
 @Component({
   selector: 'app-controls',
-  templateUrl: './controls.component.html',
+  templateUrl: './layout-controls.component.html',
   animations: [popInAnimation],
   styleUrls:['controls.component.scss']
 })
-export class ControlsComponent {
+export class LayoutControlsComponent {
 
   @Output() newTableEvent = new EventEmitter<Table>();
   @Output() deleteTableEvent = new EventEmitter<Table>();
