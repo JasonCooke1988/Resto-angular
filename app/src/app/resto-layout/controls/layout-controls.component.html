@@ -1,22 +1,24 @@
-<div class="mt-4 flex justify-end items-center">
-  <p class="save-state-msg">État de la sauvegarde : </p>
-  <i class="ml-2" [ngClass]="{'icon-checkmark': layoutState.saveState === 'saved',
+<div class="flex justify-between mt-4">
+
+  <div class="flex">
+    <app-button (click)="addNewTable()" [icon]="'plus'" class="mr-4"></app-button>
+
+    <app-button [buttonDisabled]="selectedTable === null" [@popInAnimation] class="mx-4" [icon]="'copy'"
+                (click)="copyTable()"></app-button>
+
+    <app-button [buttonDisabled]="selectedTable === null" [@popInAnimation] class="mx-4" [icon]="'bin'"
+                (click)="deleteTable()" buttonState="alert"></app-button>
+
+    <app-button [buttonDisabled]="layoutState.saveState === 'saved'" class="mx-4" [icon]="'floppy-disk'"
+                (click)="saveLayout()"></app-button>
+  </div>
+
+  <div class="mt-4 flex justify-end items-center">
+    <p class="save-state-msg">État de la sauvegarde : </p>
+    <i class="ml-2" [ngClass]="{'icon-checkmark': layoutState.saveState === 'saved',
                  'icon-cross': layoutState.saveState === 'notSaved',
                  'icon-spinner': layoutState.saveState === 'saving'}"></i>
-</div>
-
-<div class="mt-4 flex">
-
-  <app-button class="mr-4" (click)="addNewTable()" buttonText="+ table"></app-button>
-
-  <app-button *ngIf="selectedTable != null" [@popInAnimation] class="mx-4"
-              (click)="copyTable()" buttonText="Dupliquer table"></app-button>
-
-  <app-button *ngIf="selectedTable != null" [@popInAnimation] class="mx-4"
-              (click)="deleteTable()" buttonState="alert" buttonText="- table"></app-button>
-
-  <app-button *ngIf="layoutState.saveState === 'notSaved'" class="mx-4"
-              (click)="saveLayout()" buttonText="Enregistrer plan de salle"></app-button>
+  </div>
 
 </div>
 

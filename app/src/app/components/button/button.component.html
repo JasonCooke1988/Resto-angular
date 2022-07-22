@@ -1,0 +1,12 @@
+<button
+  [disabled]="buttonDisabled"
+  (click)="toggleMouseDown()"
+  [ngClass]="[buttonState === 'validate' ? 'bg-denim hover:bg-denim/80' : '', buttonState === 'alert' ? 'bg-red-700 hover:bg-red-700/80' : '']"
+  class="font-small uppercase text-white py-2 px-4 rounded transition ease duration-500 cursor:pointer disabled:opacity-75">
+
+  <i *ngIf="icon != ''" [ngClass]="[icon !='' ? 'icon-'+icon : '']"></i>
+
+  {{ buttonText }}
+
+
+</button>
