@@ -33,8 +33,8 @@ export class ControlsComponent {
 
   copyTable() {
 
-    const table = Object.assign(new Table(this.canvasService.calcLastTableId()),{width:this.selectedTable!.width, height: this.selectedTable!.height})
-    table.recalculatePlaceAndSize();
+    let table = Object.assign(new Table(this.canvasService.calcLastTableId()),{width:this.selectedTable!.width, height: this.selectedTable!.height})
+    table = this.canvasService.tablesCalcRelativeValues(table, this.layoutState['layout']);
     this.newTableEvent.emit(table)
 
   }

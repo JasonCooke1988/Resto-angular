@@ -168,25 +168,6 @@ export class CanvasService {
     });
   }
 
-  detectOverlap(table: Table, tables: Table[]) {
-
-    let count = 0;
-
-    tables.forEach(compare => {
-      if (table.tableId != compare.tableId) {
-        if ((!(table.calcX < compare.calcX + compare.calcWidth &&
-          table.calcX + table.calcWidth > compare.calcX &&
-          table.calcY < compare.calcY + compare.calcHeight &&
-          table.calcHeight + table.calcY > compare.calcY) && table.calcHeight >= 1 && table.calcWidth >= 1)) {
-          count++;
-        }
-      } else {
-        count++;
-      }
-    })
-
-    return count != tables.length;
-  }
 
   updateMousePos(args: any) {
 
@@ -203,7 +184,7 @@ export class CanvasService {
   placeNewTable(event: Event, tables: Table[], layoutState: LayoutState, mouse: Mouse, newTable: Table) {
 
     newTable = Object.assign(newTable, this.relativeSizeAndPlacement(newTable, mouse, layoutState['layout']))
-    let table = this.tablesCalcRealSizeAndPlacement(newTable, layoutState['layout'])
+    let table = this.tablesCalcRelativeValues(newTable, layoutState['layout'])
     tables.push(table);
 
     return table;
@@ -220,16 +201,18 @@ export class CanvasService {
           /*          const tableWidth = Math.floor(table.width / layoutState['layout'].clientWidth * 100);
                     const tableHeight = Math.floor(table.height / layoutState['layout'].clientHeight * 100);*/
 
-          let cloneTable = table,
+          let cloneTable = {...table},
             yDiff,
             xDiff;
 
           switch (mouse.state) {
             case 'move':
-              cloneTable = Object.assign(cloneTable, {
-                x: tableX - table.width / 2,
-                y: tableY - table.height / 2
-              });
+              cloneTable = {
+                ...cloneTable, ...{
+                  x: tableX - table.width / 2,
+                  y: tableY - table.height / 2
+                }
+              };
               break;
             case 'ne-resize':
               yDiff = cloneTable.y - tableY;
@@ -296,15 +279,13 @@ export class CanvasService {
 
           }
 
-          if (this.detectOutOfBounds(cloneTable, layoutState['layout'])) {
-            return this.outOfBoundsRecursive(cloneTable, layoutState['layout'])
+          if (this.detectOutOfBounds(cloneTable, layoutState['layout']) || this.detectOverlap(cloneTable, tables)) {
+            return this.tablesCalcRelativeValues(table, layoutState['layout']);
           }
 
-          if (!this.detectOverlap(cloneTable, tables)) {
-            console.log('table changes made')
-            layoutState.saveState = 'notSaved';
-            return this.tablesCalcRealSizeAndPlacement(Object.assign(table, cloneTable), layoutState['layout'])
-          }
+          layoutState.saveState = 'notSaved';
+          return this.tablesCalcRelativeValues({...table, ...cloneTable}, layoutState['layout'])
+
         }
         return table;
       })
@@ -312,27 +293,29 @@ export class CanvasService {
 
   }
 
-  detectOutOfBounds(element: any, canvas: any) {
-    return (element.calcX < 5 || element.calcY < 5 || element.calcX + element.calcWidth > canvas.width - 1 || element.calcY + element.calcHeight > canvas.height - 1);
+  detectOverlap(table: Table, tables: Table[]) {
+
+    let count = 0;
+
+    tables.forEach(compare => {
+      if (table.tableId != compare.tableId) {
+        if ((!(table.x < compare.x + compare.width &&
+          table.x + table.width > compare.x &&
+          table.y < compare.y + compare.height &&
+          table.height + table.y > compare.y) && table.height >= 1 && table.width >= 1)) {
+          count++;
+        }
+      } else {
+        count++;
+      }
+    })
+
+    return count != tables.length;
   }
 
-  outOfBoundsRecursive(table: Table, layout: any): Table{
-    table = this.tablesCalcRealSizeAndPlacement(table,layout);
-    if (table.x < 1) {
-      table.x += .5;
-      return this.outOfBoundsRecursive(table, layout);
-    } else if (table.y < 1) {
-      table.y += .5;
-      return this.outOfBoundsRecursive(table, layout);
-    } else if (table.calcX + table.calcWidth > layout.width - 1) {
-      table.x -= .5;
-      return this.outOfBoundsRecursive(table, layout);
-    } else if (table.calcY + table.calcHeight > layout.height - 1) {
-      table.y -= .5;
-      return this.outOfBoundsRecursive(table, layout);
-    } else {
-      return this.tablesCalcRealSizeAndPlacement(table, layout)
-    }
+  detectOutOfBounds(element: any, canvas: any) {
+    this.tablesCalcRelativeValues(element, canvas);
+    return (element.x < 1 || element.y < 1 || element.calcX + element.calcWidth > canvas.width - 1 || element.calcY + element.calcHeight > canvas.height - 1);
   }
 
   mouseHoverDetection(tables: Table[], mouse: Mouse, layout: HTMLElement) {
@@ -452,12 +435,12 @@ export class CanvasService {
 
     //Calc real values of tables from canvas element
     const tables = this.tableSubject.getValue();
-    const newTables = tables.map(table => this.tablesCalcRealSizeAndPlacement(table, layoutState['layout']));
+    const newTables = tables.map(table => this.tablesCalcRelativeValues(table, layoutState['layout']));
     this.tableSubject.next(newTables);
 
   }
 
-  tablesCalcRealSizeAndPlacement(table: Table, layout: HTMLElement) {
+  tablesCalcRelativeValues(table: Table, layout: HTMLElement) {
     return Object.assign(table, {
       calcX: layout.clientWidth / 100 * table.x,
       calcY: layout.clientHeight / 100 * table.y,

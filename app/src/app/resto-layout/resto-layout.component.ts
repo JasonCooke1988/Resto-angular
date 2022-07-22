@@ -227,9 +227,6 @@ export class RestoLayoutComponent implements OnInit {
 
   addTable(newTable: Table) {
 
-    console.log('add table method in resto layout')
-    console.log(newTable.height)
-
     this.selectedTable$ = null;
 
     this.canvasService.clearSelected()
@@ -246,18 +243,12 @@ export class RestoLayoutComponent implements OnInit {
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
 
-          console.log('inside addTableStart observable')
-          console.log(newTable.height)
-
-          let cloneTable = this.canvasService.tablesCalcRealSizeAndPlacement(
+          let cloneTable = this.canvasService.tablesCalcRelativeValues(
             Object.assign(newTable, {
                 x: mouse.x,
                 y: mouse.y
               }
             ), layoutState['layout']);
-
-          console.log('table resized')
-          console.log(cloneTable.height)
 
           if (!this.canvasService.detectOverlap(cloneTable, tables)) {
 
