@@ -19,16 +19,5 @@ export class Table {
   constructor(tableId: number) {
     this._id = new mongoose.Types.ObjectId();
     this.tableId = tableId;
-    // this.recalculatePlaceAndSize();
   }
-
-  // public recalculatePlaceAndSize() {
-  //
-  //   const layout = document.getElementById('canvas')!;
-  //   this.calcX = layout.clientWidth / 100 * this.x;
-  //   this.calcY = layout.clientHeight / 100 * this.y;
-  //   this.calcHeight = layout.clientHeight / 100 * this.height;
-  //   this.calcWidth = layout.clientWidth / 100 * this.width;
-  //
-  // }
 }
