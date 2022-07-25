@@ -10,9 +10,15 @@ export class ButtonComponent {
   @Input() buttonState: string = 'validate';
   @Input() buttonDisabled: boolean = false;
   @Input() icon: string = '';
+  @Input() tooltip: any = {message: '', state: '', disabledMessage: ''};
   mouseDown: string = 'false';
 
   constructor() {
+    this.tooltip.state = this.buttonDisabled ? 'warning' : '';
+  }
+
+  ngOnChanges(){
+    this.tooltip.state = this.buttonDisabled ? 'warning' : '';
   }
 
   toggleMouseDown() {

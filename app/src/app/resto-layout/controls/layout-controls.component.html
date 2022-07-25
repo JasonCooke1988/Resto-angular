@@ -1,15 +1,19 @@
 <div class="flex justify-between mt-4">
 
   <div class="flex">
-    <app-button (click)="addNewTable()" [icon]="'plus'" class="mr-4"></app-button>
+    <app-button (click)="addNewTable()" [icon]="'plus'" class="mr-4"
+                [tooltip]="{message: 'Ajouter une table'}"></app-button>
 
-    <app-button [buttonDisabled]="selectedTable === null" [@popInAnimation] class="mx-4" [icon]="'copy'"
+    <app-button [buttonDisabled]="selectedTable === null" class="mx-4" [icon]="'copy'"
+                [tooltip]="{message: 'Copier une table', disabledMessage: 'Veuillez sélectionner une table'}"
                 (click)="copyTable()"></app-button>
 
-    <app-button [buttonDisabled]="selectedTable === null" [@popInAnimation] class="mx-4" [icon]="'bin'"
+    <app-button [buttonDisabled]="selectedTable === null"  class="mx-4" [icon]="'bin'"
+                [tooltip]="{message: 'Supprimer la table', disabledMessage: 'Veuillez sélectionner une table'}"
                 (click)="deleteTable()" buttonState="alert"></app-button>
 
     <app-button [buttonDisabled]="layoutState.saveState === 'saved'" class="mx-4" [icon]="'floppy-disk'"
+                [tooltip]="{message: 'Enregistrer', disabledMessage: 'Aucune modification à enregistrer'}"
                 (click)="saveLayout()"></app-button>
   </div>
 
