@@ -377,10 +377,12 @@ export class CanvasService {
 
   }
 
-  toggleIsSaved() {
+  toggleIsSaved(override: string = '') {
 
     const layoutState = this.layoutSubject.getValue();
-    let newState = layoutState.saveState === 'saved' ? 'notSaved' : 'saved';
+
+    let newState = override != '' ? override : layoutState.saveState === 'saved' ? 'notSaved' : 'saved';
+
     this.layoutSubject.next({...layoutState, saveState: newState})
 
   }

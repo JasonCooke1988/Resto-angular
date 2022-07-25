@@ -271,8 +271,15 @@ export class RestoLayoutComponent implements OnInit {
 
   saveLayout() {
     this.canvasService.saveLayout().pipe().subscribe(
-      (e) => {
-        this.canvasService.toggleIsSaved();
+      (res) => {
+        if (!res.success) {
+          if (res.errorCode === 11000) {
+            this.alert = "Ce numéro de table est déjà associé à une table."
+            this.canvasService.toggleIsSaved('notSaved');
+          }
+        } else {
+          this.canvasService.toggleIsSaved();
+        }
       }
     );
   }
