@@ -181,9 +181,9 @@ export class CanvasService {
 
   }
 
-  placeNewTable(event: Event, tables: Table[], layoutState: LayoutState, mouse: Mouse, newTable: Table) {
+  placeNewTable(tables: Table[], layoutState: LayoutState, newTable: Table, mouse: Mouse) {
 
-    newTable = Object.assign(newTable, this.relativeSizeAndPlacement(newTable, mouse, layoutState['layout']))
+    newTable = Object.assign(newTable, this.tableCalcRealPlacement(newTable, layoutState['layout'],mouse))
     let table = this.tablesCalcRelativeValues(newTable, layoutState['layout'])
     tables.push(table);
 
@@ -449,10 +449,10 @@ export class CanvasService {
     })
   }
 
-  relativeSizeAndPlacement(table: Table, mouse: Mouse, layout: HTMLElement) {
-    return {
+  tableCalcRealPlacement(table: Table, layout: HTMLElement, mouse: Mouse) {
+    return {...table,...{
       x: Math.floor(mouse.x / layout.clientWidth * 100),
-      y: Math.floor(mouse.y / layout.clientHeight * 100),
+      y: Math.floor(mouse.y / layout.clientHeight * 100),}
       /*      width: Math.min(5,Math.floor(table.width / layout.clientWidth * 100)),
             height: Math.min(5,Math.floor(table.height / layout.clientHeight * 100)),*/
     }

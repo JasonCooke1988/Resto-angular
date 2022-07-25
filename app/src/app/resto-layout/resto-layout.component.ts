@@ -32,7 +32,6 @@ export class RestoLayoutComponent implements OnInit {
   layoutState$!: Observable<LayoutState>;
   private canvas!: HTMLElement;
 
-
   mouse$!: Observable<Mouse>;
   mouseState: String = 'default';
   private mouseDown$!: Observable<Event>;
@@ -228,32 +227,31 @@ export class RestoLayoutComponent implements OnInit {
   addTable(newTable: Table) {
 
     this.selectedTable$ = null;
-
     this.canvasService.clearSelected()
-
     this.alert = "Cliquez sur un emplacement libre pour placer la nouvelle table.";
-
     this.canvasService.togglePlacingNewTable();
 
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
       withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
-      take(1),
+      // take(1),
       takeWhile(([event, tables, layoutState, mouse]) => layoutState.placingNewTable),
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
 
-          let cloneTable = this.canvasService.tablesCalcRelativeValues(
-            Object.assign(newTable, {
-                x: mouse.x,
-                y: mouse.y
-              }
-            ), layoutState['layout']);
+        console.log('coucou')
 
-          if (!this.canvasService.detectOverlap(cloneTable, tables)) {
+          let cloneTable = this.canvasService.tableCalcRealPlacement(newTable, layoutState['layout'], mouse);
+
+        console.log(cloneTable)
+
+        console.log(this.canvasService.detectOutOfBounds(cloneTable, layoutState['layout']))
+        console.log(cloneTable, layoutState['layout'])
+
+          if (!this.canvasService.detectOverlap(cloneTable, tables) && !this.canvasService.detectOutOfBounds(cloneTable, layoutState['layout'])) {
 
             this.selectedTable$ = of(cloneTable);
-            cloneTable = this.canvasService.placeNewTable(event, tables, layoutState, mouse, cloneTable)
+            cloneTable = this.canvasService.placeNewTable(tables, layoutState, cloneTable, mouse)
             this.canvasService.addTableRemote(cloneTable)
             this.alert = "";
             this.canvasService.togglePlacingNewTable();
