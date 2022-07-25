@@ -44,33 +44,6 @@ export class CanvasService {
 
   }
 
-  addTableRemote(table: Table) {
-    fetch(`/api/add_table`, {
-      method: 'POST',
-      body: JSON.stringify(table),
-      headers: {
-        'content-type': 'application/json'
-      }
-    }).then(r => console.log('new table saved'))
-  }
-
-  modifyTable(selectedTable: Table) {
-    fetch('/api/save_table', {
-      method: 'PUT',
-      body: JSON.stringify(selectedTable),
-      headers: {
-        'content-type': 'application/json'
-      }
-    }).then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        console.error('Request failed with status code: ' + response.status)
-        return {error: 'Request failed with status code: ' + response.status}
-      }
-    }).catch(e => console.error(e))
-  }
-
   clearSelected() {
 
     const tables = this.tableSubject.getValue().map(table => Object.assign(table, {selected: false}));
@@ -110,7 +83,7 @@ export class CanvasService {
 
     this.layoutSaving();
 
-    return from(fetch('/api/save_all_tables', {
+    return from(fetch('/api/save_tables', {
       method: 'PUT',
       body: JSON.stringify(tables),
       headers: {

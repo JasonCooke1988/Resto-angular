@@ -239,20 +239,13 @@ export class RestoLayoutComponent implements OnInit {
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
 
-        console.log('coucou')
-
           let cloneTable = this.canvasService.tableCalcRealPlacement(newTable, layoutState['layout'], mouse);
-
-        console.log(cloneTable)
-
-        console.log(this.canvasService.detectOutOfBounds(cloneTable, layoutState['layout']))
-        console.log(cloneTable, layoutState['layout'])
 
           if (!this.canvasService.detectOverlap(cloneTable, tables) && !this.canvasService.detectOutOfBounds(cloneTable, layoutState['layout'])) {
 
             this.selectedTable$ = of(cloneTable);
             cloneTable = this.canvasService.placeNewTable(tables, layoutState, cloneTable, mouse)
-            this.canvasService.addTableRemote(cloneTable)
+            this.canvasService.toggleIsSaved();
             this.alert = "";
             this.canvasService.togglePlacingNewTable();
 
