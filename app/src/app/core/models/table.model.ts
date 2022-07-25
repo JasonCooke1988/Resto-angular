@@ -3,8 +3,8 @@ import * as mongoose from "mongoose";
 export class Table {
   _id: mongoose.Types.ObjectId;
   tableId: number;
-  width: number = 1;
-  height: number = 1;
+  width: number = 5;
+  height: number = 10;
   x: number = 0;
   y: number = 0;
   calcX: number = 0;
