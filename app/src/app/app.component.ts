@@ -1,8 +1,6 @@
 import {Component} from '@angular/core';
 import {ChildrenOutletContexts} from "@angular/router";
 import {slideInAnimation} from "./animation";
-import {CanvasService} from "./core/services/canvas.service";
-
 
 @Component({
   selector: 'app-root',
@@ -15,9 +13,8 @@ import {CanvasService} from "./core/services/canvas.service";
 export class AppComponent {
   title = 'Resto : Application de reservation';
 
-  constructor(private contexts: ChildrenOutletContexts, private canvasService: CanvasService) {
+  constructor(private contexts: ChildrenOutletContexts) {
   }
-
 
   getRouteAnimationData() {
     return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];

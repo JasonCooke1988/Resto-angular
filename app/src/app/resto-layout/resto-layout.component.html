@@ -3,7 +3,8 @@
 
     <canvas [@mouseState]="mouseState" id="canvas" class="bg-white/60"></canvas>
 
-    <app-controls (newTableEvent)="addTable($event)"
+    <app-controls *ngIf="layoutAdminRights"
+                  (newTableEvent)="addTable($event)"
                   (deleteTableEvent)="deleteTable($event)"
                   (saveLayoutEvent)="saveLayout()"
                   [selectedTable]="selectedTable$ | async"
@@ -13,7 +14,7 @@
   </div>
   <div class="px-5 col-span-1">
     <h2 class="font-montserrat justify-center flex uppercase text-denim font-bold mb-4 text-xl">Table sélectionné :</h2>
-    <app-table-controls *ngIf="selectedTable$"
+    <app-table-controls *ngIf="selectedTable$ && layoutAdminRights"
                         (modifyTableEvent)="modifyTable()"
                         [selectedTable]="selectedTable$ | async"></app-table-controls>
     <!--    TODO: Calendar + time component for reservation-->

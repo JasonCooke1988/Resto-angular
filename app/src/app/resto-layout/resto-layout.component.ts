@@ -1,4 +1,4 @@
-import {Component, NgModule, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Table} from "../core/models/table.model";
 import {mouseState, slideInAnimation} from "../animation";
 import {
@@ -15,6 +15,9 @@ import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
 import {CanvasService} from "../core/services/canvas.service";
 import {LayoutState} from "../core/models/layoutState.model";
+import {ActivatedRoute, ChildrenOutletContexts} from "@angular/router";
+import {placeholdersToParams} from "@angular/compiler/src/render3/view/i18n/util";
+
 
 @Component({
   selector: 'app-resto-layout',
@@ -27,6 +30,7 @@ export class RestoLayoutComponent implements OnInit {
   selectedTable$: Observable<Table> | null = null;
   alert: String = '';
 
+  layoutAdminRights!:  boolean;
   private ngUnsubscribe = new Subject<void>();
   private frames$!: Observable<number>;
   layoutState$!: Observable<LayoutState>;
@@ -37,10 +41,11 @@ export class RestoLayoutComponent implements OnInit {
   private mouseDown$!: Observable<Event>;
   private mouseMove$!: Observable<Event>;
 
-  constructor(private canvasService: CanvasService) {
+  constructor(private canvasService: CanvasService, private route: ActivatedRoute) {
 
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
+    this.layoutAdminRights = this.route.snapshot.data['layoutAdminRights']
 
   }
 
@@ -89,6 +94,7 @@ export class RestoLayoutComponent implements OnInit {
           tap(([event, layoutState, mouse, tables]) => {
             layoutState.isDragging = true;
           }),
+          takeWhile(() => this.layoutAdminRights),
           takeUntil(mouseUp$),
           takeUntil(this.ngUnsubscribe)
         )
