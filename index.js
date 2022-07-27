@@ -21,7 +21,7 @@ db.once("open", function () {
     console.log("Connected successfully");
 });
 
-
+db.collection('tables').createIndex({tableNumber:1}, {unique: true})
 
 const normalizePort = val => {
     const port = parseInt(val, 10);

@@ -31,8 +31,5 @@ const tableSchema = new mongoose.Schema({
     },
 });
 
-// const tablesSchema = new mongoose.Schema({
-//     tables: [tableSchema]
-// })
 
 module.exports =  tableSchema;

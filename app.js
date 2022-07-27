@@ -35,32 +35,7 @@ app.get('/api/tables', async (req, res, next) => {
     }
 });
 
-app.post("/api/add_table", async (req, res) => {
-
-
-    const table = new tableModel({...req.body});
-
-    try {
-        await table.save();
-        res.send(table);
-    } catch (error) {
-        res.status(500).send(error);
-    }
-});
-
-app.put('/api/save_table', async (req, res) => {
-
-    const table = new tableModel({...req.body});
-
-    try {
-        await table.updateOne(table);
-        res.send(table);
-    } catch (error) {
-        res.status(500).send(error);
-    }
-})
-
-app.put('/api/save_all_tables', async (req, res) => {
+app.put('/api/save_tables', async (req, res) => {
 
     const tables = tableModel.hydrate(req.body);
 
@@ -77,15 +52,12 @@ app.put('/api/save_all_tables', async (req, res) => {
         }
     })
 
-    try {
-        tableModel.bulkWrite(bulkOps).then((BulkWriteResult) => {
-            console.log("Tables updated", BulkWriteResult.modifiedCount)
-        });
-        res.send(tables);
-    } catch (error) {
-        console.log('error', error)
-        res.status(500).send(error);
-    }
+    return await tableModel.bulkWrite(bulkOps)
+        .then((BulkWriteResult) => {
+        console.log("Tables updated", BulkWriteResult.modifiedCount)
+        res.send({success: true});
+        })
+        .catch((error) => res.send({success: false, errorCode: error.code}));
 })
 
 app.delete('/api/delete_table', async (req, res) => {
