@@ -1,16 +1,27 @@
 <form [formGroup]="reservationForm" (ngSubmit)="submitReservation()">
 
-  <mat-form-field appearance="fill">
-    <mat-label>Choose a date</mat-label>
-    <input matInput type="datetime-local" [min]="startDate" [max]="null" [matDatepicker]="picker" formControlName="reservationDate">
-    <mat-hint>JJ/MM/AAAA</mat-hint>
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
+  <div class="flex justify-between items-center mx-4">
+    <mat-form-field appearance="fill" class="bg-white rounded py-2">
+      <mat-label>Choisir une date</mat-label>
+      <input matInput [min]="startDate" [max]="null" [matDatepicker]="picker" formControlName="reservationDate"
+             required>
+      <mat-hint>JJ/MM/AAAA</mat-hint>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
 
-  <button [disabled]="selectedTable === null" type="submit"
-          class="font-small uppercase text-white py-2 px-4 rounded transition ease duration-500 cursor:pointer disabled:opacity-75 bg-denim hover:bg-denim/80">
-    Réserver
-  </button>
+    <div class="flex flex-col">
+      <label for="time" class="text-denim font-montserrat font-bold">Choisir l'heure</label>
+      <input id="time" type="time" formControlName="reservationTime" class="h-8 rounded p-4" required>
+    </div>
+
+  </div>
+
+  <div class="flex justify-end">
+    <button [disabled]="selectedTable === null" type="submit"
+            class="ml-auto mt-4 mr-4 font-small uppercase text-white py-2 px-4 rounded transition ease duration-500 cursor:pointer disabled:opacity-75 bg-denim hover:bg-denim/80">
+      Réserver
+    </button>
+  </div>
 
 </form>

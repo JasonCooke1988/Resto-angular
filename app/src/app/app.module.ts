@@ -8,7 +8,9 @@ import {ComponentsModule} from "./components/components.module";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {HomeModule} from "./home/home.module";
 import {ReactiveFormsModule} from "@angular/forms";
-import {MAT_DATE_LOCALE, MatNativeDateModule} from "@angular/material/core";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule} from "@angular/material-moment-adapter";
 
 @NgModule({
   declarations: [
@@ -22,10 +24,12 @@ import {MAT_DATE_LOCALE, MatNativeDateModule} from "@angular/material/core";
     BrowserAnimationsModule,
     HomeModule,
     ReactiveFormsModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatDatepickerModule,
+    MatMomentDateModule
   ],
   providers: [
-    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+    {provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: {useUtc: true}}
   ],
   bootstrap: [AppComponent]
 })

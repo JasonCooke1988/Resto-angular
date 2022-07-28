@@ -29,8 +29,6 @@ import moment from "moment";
 export class RestoLayoutComponent implements OnInit {
   tables$!: Observable<Table[]>;
 
-  // selectedTable$: Observable<Table> | null = null;
-
   private selectedTableSubject = new BehaviorSubject(<Table | null>null)
   selectedTable$: Observable<Table | null> = this.selectedTableSubject.asObservable();
 
@@ -52,8 +50,6 @@ export class RestoLayoutComponent implements OnInit {
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
     this.layoutAdminRights = this.route.snapshot.data['layoutAdminRights']
-
-    console.log(this.selectedTable$)
 
   }
 

@@ -76,9 +76,12 @@ app.delete('/api/delete_table', async (req, res) => {
 app.post('/api/save_reservation', async (req, res) => {
 
     const reservation = {
-        date: new Date(req.body.date),
+        date: req.body.date,
         tableNumber: req.body.tableNumber
     }
+
+
+    console.log(req.body.date)
 
     return await reservationModel.create(reservation)
         .then(() => {
