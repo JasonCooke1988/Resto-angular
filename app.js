@@ -38,8 +38,6 @@ app.get('/api/tables', async (req, res, next) => {
 
 app.put('/api/save_tables', async (req, res) => {
 
-    const tables = tableModel.hydrate(req.body);
-
     const bulkOps = req.body.map(obj => {
 
         return {
@@ -79,9 +77,6 @@ app.post('/api/save_reservation', async (req, res) => {
         date: req.body.date,
         tableNumber: req.body.tableNumber
     }
-
-
-    console.log(req.body.date)
 
     return await reservationModel.create(reservation)
         .then(() => {

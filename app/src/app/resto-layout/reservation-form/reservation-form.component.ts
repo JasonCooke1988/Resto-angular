@@ -9,7 +9,7 @@ import moment from "moment";
   templateUrl: './reservation-form.component.html',
   styleUrls: ['./reservation-form.component.scss']
 })
-export class ReservationFormComponent implements OnInit {
+export class ReservationFormComponent {
 
   @Input() selectedTable?: Table | null = null;
 
@@ -22,41 +22,21 @@ export class ReservationFormComponent implements OnInit {
 
   constructor(private fb: FormBuilder) { }
 
-  ngOnInit(): void {
-  }
-
   submitReservation() {
 
     const moment = require('moment');
 
-    console.log(this.reservationForm.value.reservationDate)
-
     const time = this.reservationForm.value.reservationTime!.split(':');
-    let date = new Date(Date.parse(this.reservationForm.value.reservationDate!));
-
-    date.setHours(parseInt(time[0]) + 2,parseInt(time[1]),0);
-
-    // console.log(date.toUTCString())
-
-    console.log(date.toUTCString())
-
-    // const date = moment().utc(this.reservationForm.value.reservationDate).format();
-    // const time = this.reservationForm.value.reservationTime.split(':');
-    //
-    // date.set({
-    //   hour: time[0],
-    //   minute: time[1]
-    // })
-    // console.log(date)
-    //
+    let dateToParse = new Date(this.reservationForm.value.reservationDate!).setHours(parseInt(time[0]),parseInt(time[1]));
+    const date = moment(dateToParse).utcOffset(0,true).format();
 
     return from(fetch('/api/save_reservation', {
       method: 'POST',
-      body: JSON.stringify({tableNumber: this.selectedTable?.tableNumber, date: date.toUTCString()}),
+      body: JSON.stringify({tableNumber: this.selectedTable?.tableNumber, date: date}),
       headers: {
         'content-type': 'application/json'
       }
-    }).then(response => {
+    }).then(() => {
       console.log('reservation saved')
     }).catch(e => console.error(e)))
 
