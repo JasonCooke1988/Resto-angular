@@ -1,13 +1,14 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Table} from "../../core/models/table.model";
 import {FormBuilder, Validators} from "@angular/forms";
-import {from} from "rxjs";
-import moment from "moment";
+import {BehaviorSubject, from, Observable} from "rxjs";
+import {popInAnimation} from "../../animation";
 
 @Component({
   selector: 'app-reservation-form',
   templateUrl: './reservation-form.component.html',
-  styleUrls: ['./reservation-form.component.scss']
+  styleUrls: ['./reservation-form.component.scss'],
+  animations: [popInAnimation],
 })
 export class ReservationFormComponent {
 
@@ -19,6 +20,9 @@ export class ReservationFormComponent {
     reservationTime: ['', Validators.required]
   })
   startDate: Date = new Date();
+
+  private successSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+  public success$: Observable<string | null> = this.successSubject.asObservable();
 
   constructor(private fb: FormBuilder) { }
 
@@ -38,6 +42,8 @@ export class ReservationFormComponent {
       }
     }).then(() => {
       console.log('reservation saved')
+      this.successSubject.next('Votre réservation à été enregistrée.')
+      setTimeout(() => this.successSubject.next(null), 5000)
     }).catch(e => console.error(e)))
 
   }

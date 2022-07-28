@@ -81,8 +81,14 @@ app.post('/api/save_reservation', async (req, res) => {
     return await reservationModel.create(reservation)
         .then(() => {
             console.log('reservation created')
+            res.send({success: true})
         })
         .catch((error) => res.send({success: false, error: error}));
+})
+
+app.get('/api/delete_all_reservations', async (req, res) => {
+
+    return reservationModel.deleteMany({});
 })
 
 

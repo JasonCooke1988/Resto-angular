@@ -1,7 +1,6 @@
 import {Component, Output, EventEmitter, Input} from '@angular/core';
 import {Table} from "../../core/models/table.model";
 import {popInAnimation} from "../../animation";
-import * as mongoose from "mongoose";
 import {LayoutState} from "../../core/models/layoutState.model";
 import {CanvasService} from "../../core/services/canvas.service";
 
