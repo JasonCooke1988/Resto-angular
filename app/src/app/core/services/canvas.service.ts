@@ -428,8 +428,6 @@ export class CanvasService {
     return {...table,...{
       x: Math.floor(mouse.x / layout.clientWidth * 100),
       y: Math.floor(mouse.y / layout.clientHeight * 100),}
-      /*      width: Math.min(5,Math.floor(table.width / layout.clientWidth * 100)),
-            height: Math.min(5,Math.floor(table.height / layout.clientHeight * 100)),*/
     }
   }
 

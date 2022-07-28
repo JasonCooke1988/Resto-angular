@@ -6,18 +6,26 @@ import {ComponentsModule} from "../components/components.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { TableControlsComponent } from './controls/table-controls/table-controls.component';
 import {CanvasService} from "../core/services/canvas.service";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatInputModule} from "@angular/material/input";
+import { ReservationFormComponent } from './reservation-form/reservation-form.component';
 
 @NgModule({
   declarations: [
     RestoLayoutComponent,
     LayoutControlsComponent,
-    TableControlsComponent
+    TableControlsComponent,
+    ReservationFormComponent
   ],
   imports: [
     CommonModule,
     ComponentsModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatFormFieldModule,
+    MatDatepickerModule,
+    MatInputModule
   ],
   exports: [
     RestoLayoutComponent

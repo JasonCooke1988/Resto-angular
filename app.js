@@ -2,8 +2,9 @@ const express = require('express');
 const app = express(),
     bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const tableSchema = require("./models");
+const {tableSchema, reservationSchema} = require("./models");
 const tableModel = mongoose.model('table', tableSchema);
+const reservationModel = mongoose.model('reservation', reservationSchema);
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -71,5 +72,20 @@ app.delete('/api/delete_table', async (req, res) => {
         res.status(500).send(error);
     }
 })
+
+app.post('/api/save_reservation', async (req, res) => {
+
+    const reservation = {
+        date: new Date(req.body.date),
+        tableNumber: req.body.tableNumber
+    }
+
+    return await reservationModel.create(reservation)
+        .then(() => {
+            console.log('reservation created')
+        })
+        .catch((error) => res.send({success: false, error: error}));
+})
+
 
 module.exports = app;

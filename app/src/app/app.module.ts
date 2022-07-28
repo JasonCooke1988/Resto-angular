@@ -8,6 +8,7 @@ import {ComponentsModule} from "./components/components.module";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {HomeModule} from "./home/home.module";
 import {ReactiveFormsModule} from "@angular/forms";
+import {MAT_DATE_LOCALE, MatNativeDateModule} from "@angular/material/core";
 
 @NgModule({
   declarations: [
@@ -20,9 +21,12 @@ import {ReactiveFormsModule} from "@angular/forms";
     ComponentsModule,
     BrowserAnimationsModule,
     HomeModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatNativeDateModule
   ],
-  providers: [],
+  providers: [
+    {provide: MAT_DATE_LOCALE, useValue: 'fr-FR'},
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

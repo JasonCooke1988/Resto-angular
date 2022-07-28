@@ -17,7 +17,11 @@
     <app-table-controls *ngIf="selectedTable$ && layoutAdminRights"
                         (modifyTableEvent)="modifyTable()"
                         [selectedTable]="selectedTable$ | async"></app-table-controls>
-    <!--    TODO: Calendar + time component for reservation-->
+
+
+    <app-reservation-form *ngIf="!layoutAdminRights"
+                          [selectedTable]="selectedTable$ | async"></app-reservation-form>
+
   </div>
 </section>
 

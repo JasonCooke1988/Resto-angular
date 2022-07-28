@@ -31,5 +31,16 @@ const tableSchema = new mongoose.Schema({
     },
 });
 
+const reservationSchema = new mongoose.Schema({
+    date: {
+        type: Date,
+        required: true
+    },
+    tableNumber: {
+        type: Number,
+        required: true
+    }
+});
 
-module.exports =  tableSchema;
+
+module.exports = {tableSchema, reservationSchema};
