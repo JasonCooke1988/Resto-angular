@@ -1,9 +1,9 @@
-<form [formGroup]="reservationForm" (ngSubmit)="submitReservation()">
+<form [formGroup]="reservationForm" id="reservation-form">
 
   <div class="flex justify-between items-center mx-4">
     <mat-form-field appearance="fill" class="bg-white rounded py-2">
       <mat-label>Choisir une date</mat-label>
-      <input #reservationDateInput matInput [min]="startDate" [max]="null" [matDatepicker]="picker" formControlName="reservationDate"
+      <input matInput [min]="startDate" [max]="null" [matDatepicker]="picker" formControlName="reservationDate"
              required>
       <mat-hint>JJ/MM/AAAA</mat-hint>
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -11,7 +11,7 @@
     </mat-form-field>
 
     <div class="flex flex-col">
-      <label for="time" class="text-denim font-montserrat font-bold">Choisir l'heure</label>
+      <label for="time" class="text-white font-montserrat font-bold">Choisir l'heure</label>
       <input id="time" type="time" formControlName="reservationTime" class="h-8 rounded p-4" required>
     </div>
 

@@ -1,8 +1,9 @@
 import {Component, Input} from '@angular/core';
 import {Table} from "../../core/models/table.model";
 import {FormBuilder, Validators} from "@angular/forms";
-import {BehaviorSubject, from, Observable} from "rxjs";
+import {BehaviorSubject, debounceTime, distinctUntilChanged, from, fromEvent, Observable, tap} from "rxjs";
 import {popInAnimation} from "../../animation";
+import {exhaustMap} from "rxjs/operators"
 
 @Component({
   selector: 'app-reservation-form',
@@ -24,17 +25,30 @@ export class ReservationFormComponent {
   private successSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   public success$: Observable<string | null> = this.successSubject.asObservable();
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) {
+  }
+
+  ngOnInit() {
+    //Construct observable for submitting form
+    const form = document.getElementById('reservation-form')!;
+    const formSubmit$ = fromEvent<any>(form, 'submit').pipe(
+      debounceTime(1000)
+    );
+
+    formSubmit$.subscribe(() => {
+      this.submitReservation()
+    });
+  }
 
   submitReservation() {
 
     const moment = require('moment');
 
     const time = this.reservationForm.value.reservationTime!.split(':');
-    let dateToParse = new Date(this.reservationForm.value.reservationDate!).setHours(parseInt(time[0]),parseInt(time[1]));
-    const date = moment(dateToParse).utcOffset(0,true).format();
+    let dateToParse = new Date(this.reservationForm.value.reservationDate!).setHours(parseInt(time[0]), parseInt(time[1]));
+    const date = moment(dateToParse).utcOffset(0, true).format();
 
-    return from(fetch('/api/save_reservation', {
+    fetch('/api/save_reservation', {
       method: 'POST',
       body: JSON.stringify({tableNumber: this.selectedTable?.tableNumber, date: date}),
       headers: {
@@ -44,7 +58,7 @@ export class ReservationFormComponent {
       console.log('reservation saved')
       this.successSubject.next('Votre réservation à été enregistrée.')
       setTimeout(() => this.successSubject.next(null), 5000)
-    }).catch(e => console.error(e)))
+    }).catch(e => console.error(e))
 
   }
 
