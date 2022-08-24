@@ -252,10 +252,14 @@ export class CanvasService {
 
           }
 
+          // If moved table overlaps or is out of bounds of canvas return table data before movement was made
           if (this.detectOutOfBounds(cloneTable, layoutState['layout']) || this.detectOverlap(cloneTable, tables)) {
+            // console.error('out of bounds or overlap detected')
             return this.tablesCalcRelativeValues(table, layoutState['layout']);
           }
 
+          //Update table with new data and set the save state to not saved
+          // console.log('table successfully moved')
           layoutState.saveState = 'notSaved';
           return this.tablesCalcRelativeValues({...table, ...cloneTable}, layoutState['layout'])
 
@@ -266,24 +270,22 @@ export class CanvasService {
 
   }
 
+
+
   detectOverlap(table: Table, tables: Table[]) {
 
-    let count = 0;
-
-    tables.forEach(compare => {
-      if (table.tableId != compare.tableId) {
-        if ((!(table.x < compare.x + compare.width &&
-          table.x + table.width > compare.x &&
-          table.y < compare.y + compare.height &&
-          table.height + table.y > compare.y) && table.height >= 1 && table.width >= 1)) {
-          count++;
+    for (let i = 0; i < tables.length; i++) {
+      if (table.tableId != tables[i].tableId) {
+        if (((table.x < tables[i].x + tables[i].width &&
+          table.x + table.width > tables[i].x &&
+          table.y < tables[i].y + tables[i].height &&
+          table.height + table.y > tables[i].y) && table.height >= 1 && table.width >= 1)) {
+          return true
         }
-      } else {
-        count++;
       }
-    })
+    }
 
-    return count != tables.length;
+    return false
   }
 
   detectOutOfBounds(element: any, canvas: any) {
