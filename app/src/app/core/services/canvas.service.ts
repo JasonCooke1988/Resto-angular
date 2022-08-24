@@ -149,14 +149,14 @@ export class CanvasService {
 
     if (!args['layoutState']['isDragging'] && !args['layoutState']['addingTable']) {
       args['mouse'].state = 'default';
-      this.mouseHoverDetection(args['tables'], args['mouse'], args['layoutState']['layout']);
+      this.mouseHoverDetection(args['tables'], args['mouse']);
     }
 
   }
 
   placeNewTable(tables: Table[], layoutState: LayoutState, newTable: Table, mouse: Mouse) {
 
-    newTable = Object.assign(newTable, this.tableCalcRealPlacement(newTable, layoutState['layout'],mouse))
+    newTable = Object.assign(newTable, this.tableCalcRealPlacement(newTable, layoutState['layout'], mouse))
     let table = this.tablesCalcRelativeValues(newTable, layoutState['layout'])
     tables.push(table);
 
@@ -271,7 +271,6 @@ export class CanvasService {
   }
 
 
-
   detectOverlap(table: Table, tables: Table[]) {
 
     for (let i = 0; i < tables.length; i++) {
@@ -293,83 +292,83 @@ export class CanvasService {
     return (element.x < 1 || element.y < 1 || element.calcX + element.calcWidth > canvas.width - 1 || element.calcY + element.calcHeight > canvas.height - 1);
   }
 
-  mouseHoverDetection(tables: Table[], mouse: Mouse, layout: HTMLElement) {
+  mouseHoverDetection(tables: Table[], mouse: Mouse) {
+
+    const margin = 10;
 
     for (var i = 0; i < tables.length; i++) {
-      if (mouse.y > tables[i].calcY - 10 && mouse.y < tables[i].calcY + 10 &&
-        mouse.x > tables[i].calcX + tables[i].calcWidth - 10 && mouse.x < tables[i].calcX + tables[i].calcWidth + 10) {
+
+      const tableRight = tables[i].calcX + tables[i].calcWidth;
+      const tableBottom = tables[i].calcY + tables[i].calcHeight;
+
+      //If mouse is inside tables border + $margin
+      if (mouse.y > tables[i].calcY - margin && mouse.y < tableBottom + margin &&
+        mouse.x > tables[i].calcX - margin && mouse.x < tableRight + margin) {
 
         tables[i].hovering = true;
-        mouse.state = 'ne-resize'
-        break;
 
-      } else if (mouse.y > tables[i].calcY + tables[i].calcHeight - 10 && mouse.y < tables[i].calcY + tables[i].calcHeight + 10 &&
-        mouse.x > tables[i].calcX + tables[i].calcWidth - 10 && mouse.x < tables[i].calcX + tables[i].calcWidth + 10) {
+        //Is mouse no more than $margin away from table top border
+        //Start check all top resizes
+        if (mouse.y < tables[i].calcY + margin) {
 
-        tables[i].hovering = true;
-        mouse.state = 'se-resize'
-        break;
+          //top right resize
+          if (mouse.x > tableRight - margin && mouse.x < tableRight + margin) {
+            mouse.state = 'ne-resize'
+            break;
+          }
+          //top left resize
+          else if (mouse.x > tables[i].calcX - margin && mouse.x < tables[i].calcX + margin) {
+            mouse.state = 'nw-resize'
+            break;
+          }
+          //top resize
+          mouse.state = 'n-resize'
+          break;
+        }
+        //Is mouse on bottom table border
+        else if (mouse.y > tableBottom - margin) {
+          //Bottom left resize
+          if (mouse.x > tables[i].calcX - margin && mouse.x < tables[i].calcX + margin) {
+            mouse.state = 'sw-resize'
+            break;
+          }
+          //Bottom right resize
+          else if (mouse.x > tableRight - margin && mouse.x < tableRight + margin) {
+            mouse.state = 'se-resize'
+            break;
+          }
 
-      } else if (mouse.y > tables[i].calcY - 10 && mouse.y < tables[i].calcY + 10 &&
-        mouse.x > tables[i].calcX - 10 && mouse.x < tables[i].calcX + 10) {
+          //Bottom resize
+          mouse.state = 's-resize'
+          break;
 
-        tables[i].hovering = true;
-        mouse.state = 'nw-resize'
-        break;
+          //  Right resize
+        } else if (mouse.x > tables[i].calcX - 10 && mouse.x < tables[i].calcX + 10) {
 
-      } else if (mouse.y > tables[i].calcY + tables[i].calcHeight - 10 && mouse.y < tables[i].calcY + tables[i].calcHeight + 10 &&
-        mouse.x > tables[i].calcX - 10 && mouse.x < tables[i].calcX + 10) {
+          tables[i].hovering = true;
+          mouse.state = 'w-resize'
+          break;
 
-        tables[i].hovering = true;
-        mouse.state = 'sw-resize'
-        break;
+          //Left resize
+        } else if (mouse.x > tableRight - 10 && mouse.x < tableRight + 10) {
 
+          tables[i].hovering = true;
+          mouse.state = 'e-resize'
+          break;
 
-      } else if (mouse.y > tables[i].calcY - 10 && mouse.y < tables[i].calcY + 10 &&
-        mouse.x > tables[i].calcX && mouse.x < tables[i].calcX + tables[i].calcWidth) {
+          //Else cursor is not on borders so move is assigned
+        } else {
 
-        tables[i].hovering = true;
-        mouse.state = 'n-resize'
-        break;
+          mouse.state = 'move'
+          break;
 
-
-      } else if (mouse.x > tables[i].calcX && mouse.x < tables[i].calcX + tables[i].calcWidth
-        && mouse.y > tables[i].calcY + tables[i].calcHeight - 10 && mouse.y < tables[i].calcY + tables[i].calcHeight + 10) {
-
-        tables[i].hovering = true;
-        mouse.state = 's-resize'
-        break;
-
-
-      } else if (mouse.x > tables[i].calcX + tables[i].calcWidth - 10 && mouse.x < tables[i].calcX + tables[i].calcWidth + 10 &&
-        mouse.y > tables[i].calcY && mouse.y < tables[i].calcY + tables[i].calcHeight) {
-
-        tables[i].hovering = true;
-        mouse.state = 'e-resize'
-        break;
-
-
-      } else if (mouse.x > tables[i].calcX - 10 && mouse.x < tables[i].calcX + 10
-        && mouse.y > tables[i].calcY && mouse.y < tables[i].calcY + tables[i].calcHeight) {
-
-        tables[i].hovering = true;
-        mouse.state = 'w-resize'
-        break;
-
-
-      } else if ((mouse.x >= tables[i].calcX && mouse.x <= tables[i].calcX + tables[i].calcWidth) &&
-        (mouse.y >= tables[i].calcY && mouse.y <= tables[i].calcY + tables[i].calcHeight)) {
-
-        tables[i].hovering = true;
-        mouse.state = 'move'
-        break;
+        }
 
       }
 
       tables[i].hovering = false;
-    }
 
-    console.log(i)
+    }
 
   }
 
@@ -418,7 +417,12 @@ export class CanvasService {
 
   }
 
-  tablesCalcRelativeValues(table: Table, layout: HTMLElement) {
+  tablesCalcRelativeValues(table
+                             :
+                             Table, layout
+                             :
+                             HTMLElement
+  ) {
     return Object.assign(table, {
       calcX: layout.clientWidth / 100 * table.x,
       calcY: layout.clientHeight / 100 * table.y,
@@ -427,10 +431,19 @@ export class CanvasService {
     })
   }
 
-  tableCalcRealPlacement(table: Table, layout: HTMLElement, mouse: Mouse) {
-    return {...table,...{
-      x: Math.floor(mouse.x / layout.clientWidth * 100),
-      y: Math.floor(mouse.y / layout.clientHeight * 100),}
+  tableCalcRealPlacement(table
+                           :
+                           Table, layout
+                           :
+                           HTMLElement, mouse
+                           :
+                           Mouse
+  ) {
+    return {
+      ...table, ...{
+        x: Math.floor(mouse.x / layout.clientWidth * 100),
+        y: Math.floor(mouse.y / layout.clientHeight * 100),
+      }
     }
   }
 
