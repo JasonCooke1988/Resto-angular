@@ -295,80 +295,81 @@ export class CanvasService {
 
   mouseHoverDetection(tables: Table[], mouse: Mouse, layout: HTMLElement) {
 
-    tables.forEach(table => {
+    for (var i = 0; i < tables.length; i++) {
+      if (mouse.y > tables[i].calcY - 10 && mouse.y < tables[i].calcY + 10 &&
+        mouse.x > tables[i].calcX + tables[i].calcWidth - 10 && mouse.x < tables[i].calcX + tables[i].calcWidth + 10) {
 
-      if (mouse.y > table.calcY - 10 && mouse.y < table.calcY + 10 &&
-        mouse.x > table.calcX + table.calcWidth - 10 && mouse.x < table.calcX + table.calcWidth + 10) {
-
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'ne-resize'
-        return;
+        break;
 
-      } else if (mouse.y > table.calcY + table.calcHeight - 10 && mouse.y < table.calcY + table.calcHeight + 10 &&
-        mouse.x > table.calcX + table.calcWidth - 10 && mouse.x < table.calcX + table.calcWidth + 10) {
+      } else if (mouse.y > tables[i].calcY + tables[i].calcHeight - 10 && mouse.y < tables[i].calcY + tables[i].calcHeight + 10 &&
+        mouse.x > tables[i].calcX + tables[i].calcWidth - 10 && mouse.x < tables[i].calcX + tables[i].calcWidth + 10) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'se-resize'
-        return;
+        break;
 
-      } else if (mouse.y > table.calcY - 10 && mouse.y < table.calcY + 10 &&
-        mouse.x > table.calcX - 10 && mouse.x < table.calcX + 10) {
+      } else if (mouse.y > tables[i].calcY - 10 && mouse.y < tables[i].calcY + 10 &&
+        mouse.x > tables[i].calcX - 10 && mouse.x < tables[i].calcX + 10) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'nw-resize'
-        return;
+        break;
 
-      } else if (mouse.y > table.calcY + table.calcHeight - 10 && mouse.y < table.calcY + table.calcHeight + 10 &&
-        mouse.x > table.calcX - 10 && mouse.x < table.calcX + 10) {
+      } else if (mouse.y > tables[i].calcY + tables[i].calcHeight - 10 && mouse.y < tables[i].calcY + tables[i].calcHeight + 10 &&
+        mouse.x > tables[i].calcX - 10 && mouse.x < tables[i].calcX + 10) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'sw-resize'
-        return;
+        break;
 
 
-      } else if (mouse.y > table.calcY - 10 && mouse.y < table.calcY + 10 &&
-        mouse.x > table.calcX && mouse.x < table.calcX + table.calcWidth) {
+      } else if (mouse.y > tables[i].calcY - 10 && mouse.y < tables[i].calcY + 10 &&
+        mouse.x > tables[i].calcX && mouse.x < tables[i].calcX + tables[i].calcWidth) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'n-resize'
-        return;
+        break;
 
 
-      } else if (mouse.x > table.calcX && mouse.x < table.calcX + table.calcWidth
-        && mouse.y > table.calcY + table.calcHeight - 10 && mouse.y < table.calcY + table.calcHeight + 10) {
+      } else if (mouse.x > tables[i].calcX && mouse.x < tables[i].calcX + tables[i].calcWidth
+        && mouse.y > tables[i].calcY + tables[i].calcHeight - 10 && mouse.y < tables[i].calcY + tables[i].calcHeight + 10) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 's-resize'
-        return;
+        break;
 
 
-      } else if (mouse.x > table.calcX + table.calcWidth - 10 && mouse.x < table.calcX + table.calcWidth + 10 &&
-        mouse.y > table.calcY && mouse.y < table.calcY + table.calcHeight) {
+      } else if (mouse.x > tables[i].calcX + tables[i].calcWidth - 10 && mouse.x < tables[i].calcX + tables[i].calcWidth + 10 &&
+        mouse.y > tables[i].calcY && mouse.y < tables[i].calcY + tables[i].calcHeight) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'e-resize'
-        return;
+        break;
 
 
-      } else if (mouse.x > table.calcX - 10 && mouse.x < table.calcX + 10
-        && mouse.y > table.calcY && mouse.y < table.calcY + table.calcHeight) {
+      } else if (mouse.x > tables[i].calcX - 10 && mouse.x < tables[i].calcX + 10
+        && mouse.y > tables[i].calcY && mouse.y < tables[i].calcY + tables[i].calcHeight) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'w-resize'
-        return;
+        break;
 
 
-      } else if ((mouse.x >= table.calcX && mouse.x <= table.calcX + table.calcWidth) &&
-        (mouse.y >= table.calcY && mouse.y <= table.calcY + table.calcHeight)) {
+      } else if ((mouse.x >= tables[i].calcX && mouse.x <= tables[i].calcX + tables[i].calcWidth) &&
+        (mouse.y >= tables[i].calcY && mouse.y <= tables[i].calcY + tables[i].calcHeight)) {
 
-        table.hovering = true;
+        tables[i].hovering = true;
         mouse.state = 'move'
-        return;
+        break;
 
       }
 
-      table.hovering = false;
-    })
+      tables[i].hovering = false;
+    }
+
+    console.log(i)
 
   }
 
