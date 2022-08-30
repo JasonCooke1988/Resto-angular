@@ -54,10 +54,27 @@ export class ReservationFormComponent {
       headers: {
         'content-type': 'application/json'
       }
-    }).then(() => {
-      console.log('reservation saved')
-      this.successSubject.next('Votre réservation à été enregistrée.')
-      setTimeout(() => this.successSubject.next(null), 5000)
+    }).then((res) => {
+      // let test = res.json();
+      // console.log('reservation saved')
+      // console.log(test.success)
+      // this.successSubject.next('Votre réservation à été enregistrée.')
+      // setTimeout(() => this.successSubject.next(null), 5000)
+      if (res.ok) {
+        let test = res.json();
+        test.then((r) => {
+          if (r.success) {
+            this.successSubject.next('Votre réservation à été enregistrée.')
+            setTimeout(() => this.successSubject.next(null), 5000)
+          } else {
+            this.successSubject.next('La table sélectionnée n\'est pas disponible. ' +
+              'Veuillez réessayer avec une autre table ou une autre plage horaire.')
+            setTimeout(() => this.successSubject.next(null), 5000)
+          }
+        })
+      } else {
+        console.error('Erreur de reservation')
+      }
     }).catch(e => console.error(e))
 
   }

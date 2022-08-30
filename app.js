@@ -53,8 +53,8 @@ app.put('/api/save_tables', async (req, res) => {
 
     return await tableModel.bulkWrite(bulkOps)
         .then((BulkWriteResult) => {
-        console.log("Tables updated", BulkWriteResult.modifiedCount)
-        res.send({success: true});
+            console.log("Tables updated", BulkWriteResult.modifiedCount)
+            res.send({success: true});
         })
         .catch((error) => res.send({success: false, errorCode: error.code}));
 })
@@ -76,6 +76,23 @@ app.post('/api/save_reservation', async (req, res) => {
     const reservation = {
         date: req.body.date,
         tableNumber: req.body.tableNumber
+    }
+
+    let permissionToCreate;
+
+    await reservationModel.findOne({
+        date: reservation.date,
+        tableNumber: reservation.tableNumber
+    }).then((res) => {
+        console.log('Reservation duplicate check :', res)
+        permissionToCreate = !(res instanceof reservationModel);
+        console.log('permissionToCreate :', permissionToCreate)
+    }).catch((err) => {
+        console.error(err)
+    });
+
+    if (!permissionToCreate) {
+        return res.send({success: false, error: 'Reservation existe déjà'});
     }
 
     return await reservationModel.create(reservation)
