@@ -81,21 +81,15 @@ app.post('/api/save_reservation', async (req, res) => {
 
     let permissionToCreate = true;
 
-    // const date = new Date(reservation.date);
-    // const parsedDate = `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(-2)}-${("0" + date.getDate()).slice(-2)}`
-
     const day = moment(newReservation.date).format('YYYY-MM-DD');
     const newReservationMoment = moment(newReservation.date);
 
-    console.log('parsed date:', day)
 
     //Tries to find all reservations for that table happening on the same day
     await reservationModel.find({
-        // date: reservation.date,
         date: {$gte: day},
         tableNumber: newReservation.tableNumber
     }).then((res) => {
-        console.log('Reservation duplicate check :', res)
 
         //Check if result is null if not check each reservation to see if new reservation conflicts with existing ones
         if (res != null) {
@@ -110,11 +104,9 @@ app.post('/api/save_reservation', async (req, res) => {
             })
 
         } else {
-            console.log('response from db is null')
             permissionToCreate = false;
         }
 
-        console.log('permissionToCreate :', permissionToCreate)
     }).catch((err) => {
         console.error(err)
     });
@@ -123,12 +115,12 @@ app.post('/api/save_reservation', async (req, res) => {
         return res.send({success: false, error: 'Reservation existe déjà'});
     }
 
-    // return await reservationModel.create(newReservation)
-    //     .then(() => {
-    //         console.log('reservation created')
-    //         res.send({success: true})
-    //     })
-    //     .catch((error) => res.send({success: false, error: error}));
+    return await reservationModel.create(newReservation)
+        .then(() => {
+            console.log('reservation created')
+            res.send({success: true})
+        })
+        .catch((error) => res.send({success: false, error: error}));
 })
 
 app.get('/api/delete_all_reservations', async (req, res) => {
