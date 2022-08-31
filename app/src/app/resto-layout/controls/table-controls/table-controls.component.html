@@ -1,3 +1,7 @@
+<h2 class="font-montserrat justify-center flex uppercase text-white font-bold mb-4 text-xl">
+  {{selectedTable != null ? 'Table sélectionné :' : 'Aucune table sélectionné'}}
+</h2>
+
 <form *ngIf="selectedTable" [formGroup]="selectedTableForm">
 
   <div class="my-4 w-1/2 justify-between align-middle flex">

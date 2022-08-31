@@ -9,15 +9,13 @@ import {
   of,
   tap,
   withLatestFrom,
-  fromEvent, switchMap, takeUntil, Subject, takeWhile, BehaviorSubject, from,
+  fromEvent, switchMap, takeUntil, Subject, takeWhile, BehaviorSubject,
 } from "rxjs";
 import {IFrameData} from "./canvas/frame.interface";
 import {Mouse} from "../core/models/mouse.model";
 import {CanvasService} from "../core/services/canvas.service";
 import {LayoutState} from "../core/models/layoutState.model";
 import {ActivatedRoute} from "@angular/router";
-import {FormControl, FormGroup} from "@angular/forms";
-import moment from "moment";
 
 
 @Component({
@@ -27,6 +25,7 @@ import moment from "moment";
   animations: [slideInAnimation, mouseState]
 })
 export class RestoLayoutComponent implements OnInit {
+
   tables$!: Observable<Table[]>;
 
   private selectedTableSubject = new BehaviorSubject(<Table | null>null)
@@ -46,11 +45,9 @@ export class RestoLayoutComponent implements OnInit {
   private mouseMove$!: Observable<Event>;
 
   constructor(private canvasService: CanvasService, private route: ActivatedRoute) {
-
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
     this.layoutAdminRights = this.route.snapshot.data['layoutAdminRights']
-
   }
 
   ngOnInit(): void {
@@ -148,6 +145,7 @@ export class RestoLayoutComponent implements OnInit {
           )
 
           if (!isSelected) {
+            console.log('clear selected table')
             this.selectedTableSubject.next(null);
           }
 
