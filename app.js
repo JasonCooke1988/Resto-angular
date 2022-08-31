@@ -84,7 +84,6 @@ app.post('/api/save_reservation', async (req, res) => {
     const day = moment(newReservation.date).format('YYYY-MM-DD');
     const newReservationMoment = moment(newReservation.date);
 
-
     //Tries to find all reservations for that table happening on the same day
     await reservationModel.find({
         date: {$gte: day},
@@ -93,7 +92,6 @@ app.post('/api/save_reservation', async (req, res) => {
 
         //Check if result is null if not check each reservation to see if new reservation conflicts with existing ones
         if (res != null) {
-            console.log('checking reservations from db :')
             res.forEach(reservation => {
                 let before = moment(reservation.date).subtract(2, 'hours')
                 let after = moment(reservation.date).add(2, 'hours')

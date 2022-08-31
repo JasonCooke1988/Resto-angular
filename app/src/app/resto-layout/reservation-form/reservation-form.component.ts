@@ -22,8 +22,8 @@ export class ReservationFormComponent {
   })
   startDate: Date = new Date();
 
-  private successSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
-  public success$: Observable<string | null> = this.successSubject.asObservable();
+  private alertSubject: BehaviorSubject<any | null> = new BehaviorSubject<any | null>(null);
+  public alert$: Observable<any | null> = this.alertSubject.asObservable();
 
   constructor(private fb: FormBuilder) {
   }
@@ -55,21 +55,16 @@ export class ReservationFormComponent {
         'content-type': 'application/json'
       }
     }).then((res) => {
-      // let test = res.json();
-      // console.log('reservation saved')
-      // console.log(test.success)
-      // this.successSubject.next('Votre réservation à été enregistrée.')
-      // setTimeout(() => this.successSubject.next(null), 5000)
       if (res.ok) {
         let test = res.json();
         test.then((r) => {
           if (r.success) {
-            this.successSubject.next('Votre réservation à été enregistrée.')
-            setTimeout(() => this.successSubject.next(null), 5000)
+            this.alertSubject.next({message: 'Votre réservation à été enregistrée.', type: 'success'})
+            setTimeout(() => this.alertSubject.next(null), 5000)
           } else {
-            this.successSubject.next('La table sélectionnée n\'est pas disponible. ' +
-              'Veuillez réessayer avec une autre table ou une autre plage horaire.')
-            setTimeout(() => this.successSubject.next(null), 5000)
+            this.alertSubject.next({message: 'La table sélectionnée n\'est pas disponible. ' +
+                'Veuillez réessayer avec une autre table ou une autre plage horaire.', type: 'error'})
+            // setTimeout(() => this.alertSubject.next(null), 5000)
           }
         })
       } else {
