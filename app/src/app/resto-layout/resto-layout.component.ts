@@ -138,7 +138,7 @@ export class RestoLayoutComponent implements OnInit {
 
               if (table.selected) {
                 isSelected = true;
-                this.selectedTable$ = of(table);
+                this.selectedTableSubject.next(table);
               }
               return table;
             }

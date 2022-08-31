@@ -63,7 +63,7 @@ export class ReservationFormComponent {
           } else {
             this.alertSubject.next({message: 'La table sélectionnée n\'est pas disponible. ' +
                 'Veuillez réessayer avec une autre table ou une autre plage horaire.', type: 'error'})
-            // setTimeout(() => this.alertSubject.next(null), 5000)
+            setTimeout(() => this.alertSubject.next(null), 5000)
           }
         })
       } else {
