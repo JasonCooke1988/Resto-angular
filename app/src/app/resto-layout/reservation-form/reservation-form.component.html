@@ -1,4 +1,9 @@
+<h2 class="font-montserrat justify-center flex uppercase text-white font-bold mb-4 text-xl">
+  {{selectedTable != null ? 'Table sélectionné :' : 'Veuillez choisir une table'}}
+</h2>
+
 <div [class.hidden]="selectedTable === null">
+
   <div *ngIf="selectedTable != null" class="font-montserrat text-white flex justify-between items-center mx-4 mb-4">
     <p>{{selectedTable!.seats}} couverts</p>
     <p>Table n° {{selectedTable!.tableNumber}}</p>

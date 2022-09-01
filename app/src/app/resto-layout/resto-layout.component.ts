@@ -145,7 +145,6 @@ export class RestoLayoutComponent implements OnInit {
           )
 
           if (!isSelected) {
-            console.log('clear selected table')
             this.selectedTableSubject.next(null);
           }
 
