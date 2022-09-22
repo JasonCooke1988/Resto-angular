@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Table} from "../core/models/table.model";
 import {mouseState, slideInAnimation} from "../animation";
 import {
@@ -46,13 +46,15 @@ export class RestoLayoutComponent implements AfterViewInit{
   private mouseDown$!: Observable<Event>;
   private mouseMove$!: Observable<Event>;
 
-  constructor(private canvasService: CanvasService, public route: ActivatedRoute) {
+  constructor(private canvasService: CanvasService, public route: ActivatedRoute, private cd: ChangeDetectorRef) {
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
     this.layoutAdminRights = this.route.snapshot.data['layoutAdminRights']
   }
 
   ngAfterViewInit(): void {
+
+    console.log('init')
 
     //Set up layout config
     this.canvasService.init(this.canvasElement.nativeElement);
@@ -169,6 +171,10 @@ export class RestoLayoutComponent implements AfterViewInit{
 
       this.canvasService.tablesCalcRelativeValues()
     }, 300)
+
+
+    this.cd.detectChanges();
+
   }
 
   ngOnDestroy() {
