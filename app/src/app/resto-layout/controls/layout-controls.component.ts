@@ -8,7 +8,7 @@ import {CanvasService} from "../../core/services/canvas.service";
   selector: 'app-controls',
   templateUrl: './layout-controls.component.html',
   animations: [popInAnimation],
-  styleUrls:['layout-controls.component.scss']
+  styleUrls: ['layout-controls.component.scss']
 })
 export class LayoutControlsComponent {
 
@@ -32,8 +32,15 @@ export class LayoutControlsComponent {
 
   copyTable() {
 
-    let table = Object.assign(new Table(this.canvasService.calcLastTableId()),{width:this.selectedTable!.width, height: this.selectedTable!.height})
-    table = this.canvasService.tablesCalcRelativeValues(table, this.layoutState['layout']);
+    // let table = Object.assign(new Table(this.canvasService.calcLastTableId()),{width:this.selectedTable!.width, height: this.selectedTable!.height})
+    let newId = this.canvasService.calcLastTableId();
+    let table = {
+      ...new Table(newId), ...{
+        width: this.selectedTable!.width,
+        height: this.selectedTable!.height
+      }
+    }
+    table = this.canvasService.tableCalcRelativeValues(table);
     this.newTableEvent.emit(table)
 
   }

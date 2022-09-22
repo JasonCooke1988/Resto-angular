@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Table} from "../core/models/table.model";
 import {mouseState, slideInAnimation} from "../animation";
 import {
@@ -24,7 +24,7 @@ import {ActivatedRoute} from "@angular/router";
   styleUrls: ['./resto-layout.component.scss'],
   animations: [slideInAnimation, mouseState]
 })
-export class RestoLayoutComponent implements OnInit {
+export class RestoLayoutComponent implements AfterViewInit{
 
   tables$!: Observable<Table[]>;
 
@@ -37,28 +37,27 @@ export class RestoLayoutComponent implements OnInit {
   private ngUnsubscribe = new Subject<void>();
   private frames$!: Observable<number>;
   layoutState$!: Observable<LayoutState>;
-  private canvas!: HTMLElement;
+
+  // public canvas!: HTMLElement;
+  @ViewChild('canvasElement') canvasElement!: ElementRef;
 
   mouse$!: Observable<Mouse>;
   mouseState: String = 'default';
   private mouseDown$!: Observable<Event>;
   private mouseMove$!: Observable<Event>;
 
-  constructor(private canvasService: CanvasService, private route: ActivatedRoute) {
+  constructor(private canvasService: CanvasService, public route: ActivatedRoute) {
     this.mouse$ = of({x: 0, y: 0, state: 'default'})
     this.mouse$.subscribe(mouse => mouse)
     this.layoutAdminRights = this.route.snapshot.data['layoutAdminRights']
   }
 
-  ngOnInit(): void {
-
-    this.canvasService.init();
-
-    this.tables$ = this.canvasService.tables$;
+  ngAfterViewInit(): void {
 
     //Set up layout config
+    this.canvasService.init(this.canvasElement.nativeElement);
     this.layoutState$ = this.canvasService.layoutState$;
-    this.canvas = document.getElementById('canvas')!;
+    this.tables$ = this.canvasService.tables$;
 
     // This is our core stream of frames. We use expand to recursively call the
     //  `calculateStep` function above that will give us each new Frame based on the
@@ -83,9 +82,9 @@ export class RestoLayoutComponent implements OnInit {
       });
 
     //Mouse interactions observables
-    this.mouseDown$ = fromEvent(this.canvas, 'mousedown');
-    this.mouseMove$ = fromEvent(this.canvas, 'mousemove');
-    const mouseUp$ = fromEvent(this.canvas, 'mouseup');
+    this.mouseDown$ = fromEvent(this.canvasElement.nativeElement, 'mousedown');
+    this.mouseMove$ = fromEvent(this.canvasElement.nativeElement, 'mousemove');
+    const mouseUp$ = fromEvent(this.canvasElement.nativeElement, 'mouseup');
 
     const dragStart$ = this.mouseDown$;
     const dragMove$ = dragStart$.pipe(
@@ -167,6 +166,8 @@ export class RestoLayoutComponent implements OnInit {
     }, 100)
     setTimeout(() => {
       this.canvasService.refresh();
+
+      this.canvasService.tablesCalcRelativeValues()
     }, 300)
   }
 
@@ -175,10 +176,9 @@ export class RestoLayoutComponent implements OnInit {
     this.ngUnsubscribe.complete();
   }
 
-  update(state: any) {
-    //TODO: Do some updates
-    return state;
-  }
+  // update(state: any) {
+  //   return state;
+  // }
 
   /**
    * This is our rendering function. We take the given game state and render the items

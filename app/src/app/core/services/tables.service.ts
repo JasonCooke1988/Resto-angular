@@ -37,7 +37,7 @@ export class TablesService {
   deleteTable(selectedTable: Table) {
 
     const tables = this.subject.getValue();
-    const newTables = tables.filter(table => table.id != selectedTable.id);
+    const newTables = tables.filter(table => table.tableId != selectedTable.tableId);
     this.subject.next(newTables);
 
   }

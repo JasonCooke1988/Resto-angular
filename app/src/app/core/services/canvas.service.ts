@@ -13,15 +13,15 @@ export class CanvasService {
   tables$: Observable<Table[]> = this.tableSubject.asObservable();
 
 
-  init() {
+  init(canvas: HTMLElement) {
 
-    const tables$ = createHttpObservable('/tables');
+    let tables$ = createHttpObservable('/tables');
     tables$.subscribe(tables => this.tableSubject.next(tables))
 
-    const ctx = (<HTMLCanvasElement>document.getElementById('canvas')).getContext('2d')!;
-    const layout = document.getElementById('canvas')!;
+    let ctx = (<HTMLCanvasElement>canvas).getContext('2d')!;
+    let layout = canvas!;
 
-    const layoutState$ = of(new LayoutState(layout, ctx))
+    let layoutState$ = of(new LayoutState(layout, ctx))
     layoutState$.subscribe(state => this.layoutSubject.next(state))
 
   }
@@ -157,7 +157,7 @@ export class CanvasService {
   placeNewTable(tables: Table[], layoutState: LayoutState, newTable: Table, mouse: Mouse) {
 
     newTable = Object.assign(newTable, this.tableCalcRealPlacement(newTable, layoutState['layout'], mouse))
-    let table = this.tablesCalcRelativeValues(newTable, layoutState['layout'])
+    let table = this.tableCalcRelativeValues(newTable)
     tables.push(table);
 
     return table;
@@ -255,13 +255,13 @@ export class CanvasService {
           // If moved table overlaps or is out of bounds of canvas return table data before movement was made
           if (this.detectOutOfBounds(cloneTable, layoutState['layout']) || this.detectOverlap(cloneTable, tables)) {
             // console.error('out of bounds or overlap detected')
-            return this.tablesCalcRelativeValues(table, layoutState['layout']);
+            return this.tableCalcRelativeValues(table);
           }
 
           //Update table with new data and set the save state to not saved
           // console.log('table successfully moved')
           layoutState.saveState = 'notSaved';
-          return this.tablesCalcRelativeValues({...table, ...cloneTable}, layoutState['layout'])
+          return this.tableCalcRelativeValues({...table, ...cloneTable})
 
         }
         return table;
@@ -288,7 +288,7 @@ export class CanvasService {
   }
 
   detectOutOfBounds(element: any, canvas: any) {
-    this.tablesCalcRelativeValues(element, canvas);
+    element = this.tableCalcRelativeValues(element);
     return (element.x < 1 || element.y < 1 || element.calcX + element.calcWidth > canvas.width - 1 || element.calcY + element.calcHeight > canvas.height - 1);
   }
 
@@ -407,22 +407,12 @@ export class CanvasService {
     const layoutState = this.layoutSubject.getValue();
     layoutState.ctx.canvas.width = canvasWrapWidth;
     layoutState.ctx.canvas.height = canvasWrapHeight;
-
-    this.layoutSubject.next(layoutState)
-
-    //Calc real values of tables from canvas element
-    const tables = this.tableSubject.getValue();
-    const newTables = tables.map(table => this.tablesCalcRelativeValues(table, layoutState['layout']));
-    this.tableSubject.next(newTables);
-
   }
 
-  tablesCalcRelativeValues(table
-                             :
-                             Table, layout
-                             :
-                             HTMLElement
-  ) {
+  tableCalcRelativeValues(table: Table) {
+    //Calc real values of tables from canvas element
+    const layout = this.layoutSubject.getValue().layout;
+
     return Object.assign(table, {
       calcX: layout.clientWidth / 100 * table.x,
       calcY: layout.clientHeight / 100 * table.y,
@@ -431,14 +421,17 @@ export class CanvasService {
     })
   }
 
-  tableCalcRealPlacement(table
-                           :
-                           Table, layout
-                           :
-                           HTMLElement, mouse
-                           :
-                           Mouse
-  ) {
+  tablesCalcRelativeValues() {
+    let tables = this.tableSubject.getValue();
+
+    //Calc real values of tables from canvas element
+    tables.forEach(table => {
+      this.tableCalcRelativeValues(table);
+    })
+
+  }
+
+  tableCalcRealPlacement(table: Table, layout: HTMLElement, mouse: Mouse) {
     return {
       ...table, ...{
         x: Math.floor(mouse.x / layout.clientWidth * 100),

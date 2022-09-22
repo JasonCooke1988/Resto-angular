@@ -1,7 +1,8 @@
 <section class="bg-lavendar/75 grid grid-cols-3 pt-40 px-20 h-screen">
   <div class="col-span-2" id="canvas-wrap">
 
-    <canvas [@mouseState]="mouseState" id="canvas" class="bg-white/60"></canvas>
+    <canvas #canvasElement
+      [@mouseState]="mouseState" id="canvas" class="bg-white/60"></canvas>
 
     <app-controls *ngIf="layoutAdminRights"
                   (newTableEvent)="addTable($event)"

@@ -17,4 +17,5 @@ src: url('/assets/fonts/montserrat/Montserrat-Medium.ttf')  format('truetype')
 body {
   margin: 0;
   font-family: RobotoMono, sans-serif;
+  overflow-x: hidden;
 }
