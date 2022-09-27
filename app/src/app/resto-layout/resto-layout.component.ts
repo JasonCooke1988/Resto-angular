@@ -37,8 +37,8 @@ export class RestoLayoutComponent implements AfterViewInit{
   private ngUnsubscribe = new Subject<void>();
   private frames$!: Observable<number>;
   layoutState$!: Observable<LayoutState>;
+  loading: boolean = true;
 
-  // public canvas!: HTMLElement;
   @ViewChild('canvasElement') canvasElement!: ElementRef;
 
   mouse$!: Observable<Mouse>;
@@ -54,12 +54,25 @@ export class RestoLayoutComponent implements AfterViewInit{
 
   ngAfterViewInit(): void {
 
-    console.log('init')
+    this.initObservables();
 
+    //Manually detect changes in view lifecycle to be able to use canvas element
+    this.cd.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this.canvasService.loading();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  initObservables() {
     //Set up layout config
     this.canvasService.init(this.canvasElement.nativeElement);
     this.layoutState$ = this.canvasService.layoutState$;
     this.tables$ = this.canvasService.tables$;
+
+    this.layoutState$.subscribe((layoutState) => this.loading = layoutState.loading);
 
     // This is our core stream of frames. We use expand to recursively call the
     //  `calculateStep` function above that will give us each new Frame based on the
@@ -111,10 +124,9 @@ export class RestoLayoutComponent implements AfterViewInit{
 
     //Update mouse position
     this.mouseMove$.pipe(
-      withLatestFrom(this.layoutState$, this.mouse$, this.tables$),
-      tap(([evt, layoutState, mouse, tables]) => this.canvasService.updateMousePos({
+      withLatestFrom(this.layoutState$, this.mouse$),
+      tap(([evt, layoutState, mouse]) => this.canvasService.updateMousePos({
         evt,
-        tables,
         layoutState,
         mouse
       })),
@@ -161,25 +173,6 @@ export class RestoLayoutComponent implements AfterViewInit{
     ).subscribe(([event, layoutState]) => {
       layoutState.isDragging = false
     })
-
-    //Refresh canvas size upon re entry into page
-    setTimeout(() => {
-      this.canvasService.refresh();
-    }, 100)
-    setTimeout(() => {
-      this.canvasService.refresh();
-
-      this.canvasService.tablesCalcRelativeValues()
-    }, 300)
-
-
-    this.cd.detectChanges();
-
-  }
-
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
   }
 
   // update(state: any) {
@@ -247,7 +240,6 @@ export class RestoLayoutComponent implements AfterViewInit{
     const addTableStart$ = this.mouseDown$;
     addTableStart$.pipe(
       withLatestFrom(this.tables$, this.layoutState$, this.mouse$),
-      // take(1),
       takeWhile(([event, tables, layoutState, mouse]) => layoutState.placingNewTable),
       takeUntil(this.ngUnsubscribe),
       tap(([event, tables, layoutState, mouse]) => {
@@ -257,7 +249,7 @@ export class RestoLayoutComponent implements AfterViewInit{
           if (!this.canvasService.detectOverlap(cloneTable, tables) && !this.canvasService.detectOutOfBounds(cloneTable, layoutState['layout'])) {
 
             this.selectedTable$ = of(cloneTable);
-            cloneTable = this.canvasService.placeNewTable(tables, layoutState, cloneTable, mouse)
+            this.canvasService.placeNewTable(tables, layoutState, cloneTable, mouse)
             this.canvasService.toggleIsSaved();
             this.alert = "";
             this.canvasService.togglePlacingNewTable();

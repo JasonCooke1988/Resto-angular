@@ -4,6 +4,7 @@ export class LayoutState {
   isDragging: boolean;
   placingNewTable: boolean;
   saveState: string;
+  loading: boolean;
 
   constructor(layout: HTMLElement, ctx: CanvasRenderingContext2D) {
     this.layout = layout;
@@ -11,5 +12,6 @@ export class LayoutState {
     this.isDragging = false;
     this.placingNewTable = false;
     this.saveState = 'saved';
+    this.loading = true;
   }
 }

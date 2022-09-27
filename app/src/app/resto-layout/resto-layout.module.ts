@@ -10,6 +10,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatInputModule} from "@angular/material/input";
 import { ReservationFormComponent } from './reservation-form/reservation-form.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -18,15 +19,16 @@ import { ReservationFormComponent } from './reservation-form/reservation-form.co
     TableControlsComponent,
     ReservationFormComponent
   ],
-  imports: [
-    CommonModule,
-    ComponentsModule,
-    ReactiveFormsModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatDatepickerModule,
-    MatInputModule
-  ],
+    imports: [
+        CommonModule,
+        ComponentsModule,
+        ReactiveFormsModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatDatepickerModule,
+        MatInputModule,
+        MatProgressSpinnerModule
+    ],
   exports: [
     RestoLayoutComponent
   ],

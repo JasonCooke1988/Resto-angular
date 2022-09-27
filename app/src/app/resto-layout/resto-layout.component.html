@@ -1,5 +1,11 @@
-<section class="bg-lavendar/75 grid grid-cols-3 pt-40 px-20 h-screen">
-  <div class="col-span-2" id="canvas-wrap">
+<section class="bg-lavendar/75 grid grid-cols-3 pt-40 px-20 h-screen relative">
+
+  <div id="spinner-wrap" class="col-span-3 flex justify-center items-center" [ngClass]="{'invisible': !loading, 'hidden': !loading}">
+    <mat-spinner></mat-spinner>
+  </div>
+
+
+  <div class="col-span-2" id="canvas-wrap" [ngClass]="{'invisible':loading}">
 
     <canvas #canvasElement
       [@mouseState]="mouseState" id="canvas" class="bg-white/60"></canvas>
@@ -13,7 +19,8 @@
                   [tables]="(tables$ | async) ?? []" [alert]="alert"></app-controls>
 
   </div>
-  <div class="px-5 col-span-1">
+
+  <div class="px-5 col-span-1" [ngClass]="{'invisible':loading}">
 
     <app-table-controls *ngIf="selectedTable$ && layoutAdminRights"
                         (modifyTableEvent)="modifyTable()"

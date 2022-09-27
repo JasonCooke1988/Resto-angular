@@ -15,15 +15,24 @@ export class CanvasService {
 
   init(canvas: HTMLElement) {
 
-    let tables$ = createHttpObservable('/tables');
-    tables$.subscribe(tables => this.tableSubject.next(tables))
-
     let ctx = (<HTMLCanvasElement>canvas).getContext('2d')!;
     let layout = canvas!;
 
     let layoutState$ = of(new LayoutState(layout, ctx))
     layoutState$.subscribe(state => this.layoutSubject.next(state))
 
+    let tables$ = createHttpObservable('/tables');
+    tables$.subscribe(tables => {
+      this.refresh();
+      this.tableSubject.next(this.tablesCalcRelativeValues(tables))
+      this.loading(false)
+    })
+
+  }
+
+  loading(bool: boolean = true) {
+    const layoutState = this.layoutSubject.getValue();
+    this.layoutSubject.next({...layoutState, loading: bool})
   }
 
   saveTablesLocally(tables: Table[]) {
@@ -149,14 +158,14 @@ export class CanvasService {
 
     if (!args['layoutState']['isDragging'] && !args['layoutState']['addingTable']) {
       args['mouse'].state = 'default';
-      this.mouseHoverDetection(args['tables'], args['mouse']);
+      this.mouseHoverDetection(args['mouse']);
     }
 
   }
 
   placeNewTable(tables: Table[], layoutState: LayoutState, newTable: Table, mouse: Mouse) {
 
-    newTable = Object.assign(newTable, this.tableCalcRealPlacement(newTable, layoutState['layout'], mouse))
+    newTable = {...newTable, ...this.tableCalcRealPlacement(newTable, layoutState['layout'], mouse)}
     let table = this.tableCalcRelativeValues(newTable)
     tables.push(table);
 
@@ -259,7 +268,6 @@ export class CanvasService {
           }
 
           //Update table with new data and set the save state to not saved
-          // console.log('table successfully moved')
           layoutState.saveState = 'notSaved';
           return this.tableCalcRelativeValues({...table, ...cloneTable})
 
@@ -285,18 +293,22 @@ export class CanvasService {
     }
 
     return false
+
   }
 
   detectOutOfBounds(element: any, canvas: any) {
-    element = this.tableCalcRelativeValues(element);
+
     return (element.x < 1 || element.y < 1 || element.calcX + element.calcWidth > canvas.width - 1 || element.calcY + element.calcHeight > canvas.height - 1);
+
   }
 
-  mouseHoverDetection(tables: Table[], mouse: Mouse) {
+  mouseHoverDetection(mouse: Mouse) {
+
+    let tables = this.tableSubject.getValue();
 
     const margin = 10;
 
-    for (var i = 0; i < tables.length; i++) {
+    for (let i = 0; i < tables.length; i++) {
 
       const tableRight = tables[i].calcX + tables[i].calcWidth;
       const tableBottom = tables[i].calcY + tables[i].calcHeight;
@@ -382,9 +394,7 @@ export class CanvasService {
   toggleIsSaved(override: string = '') {
 
     const layoutState = this.layoutSubject.getValue();
-
     let newState = override != '' ? override : layoutState.saveState === 'saved' ? 'notSaved' : 'saved';
-
     this.layoutSubject.next({...layoutState, saveState: newState})
 
   }
@@ -413,22 +423,22 @@ export class CanvasService {
     //Calc real values of tables from canvas element
     const layout = this.layoutSubject.getValue().layout;
 
-    return Object.assign(table, {
+    return {...table, ...{
       calcX: layout.clientWidth / 100 * table.x,
       calcY: layout.clientHeight / 100 * table.y,
       calcHeight: layout.clientHeight / 100 * table.height,
       calcWidth: layout.clientWidth / 100 * table.width
-    })
+    }}
   }
 
-  tablesCalcRelativeValues() {
-    let tables = this.tableSubject.getValue();
+  tablesCalcRelativeValues(tables: Table[]) {
 
     //Calc real values of tables from canvas element
-    tables.forEach(table => {
-      this.tableCalcRelativeValues(table);
-    })
+    for (let i = 0; i < tables.length; i++) {
+      tables[i] = this.tableCalcRelativeValues(tables[i])
+    }
 
+    return tables;
   }
 
   tableCalcRealPlacement(table: Table, layout: HTMLElement, mouse: Mouse) {
