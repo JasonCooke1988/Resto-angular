@@ -10,7 +10,10 @@ module.exports = {
     },
     extend: {
       colors: {
-        'denim': '#1E40AF',
+        'denim': {
+          DEFAULT: '#1E40AF',
+          'light': '#3453B7',
+        },
         'lavendar': '#857885',
         'gold': '#bfae48',
         'green': '#04724d'

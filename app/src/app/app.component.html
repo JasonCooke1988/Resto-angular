@@ -5,11 +5,21 @@
 </head>
 <body>
 
-<header class="px-10 py-4 bg-denim sticky top-0 z-50">
-  <div id="header-title-wrap">
-    <p id="header-title" class="text-center"><a routerLink="">RESTO</a></p>
-  </div>
-  <app-menu id="header-menu" class="flex items-center justify-end"></app-menu>
+<header class="sticky top-0 z-50 bg-denim-light">
+  <nav class="flex items-center justify-between flex-wrap p-6">
+
+    <div id="header-title-wrap">
+      <p id="header-title" class="text-center"><a routerLink="">RESTO</a></p>
+    </div>
+
+    <div id="header-menu" class="flex justify-between lg:flex-grow">
+      <a routerLink="">Accueil</a>
+      <a routerLink="resto-admin">Admin</a>
+      <a routerLink="client">Client</a>
+    </div>
+
+  </nav>
+
 </header>
 
 <main [@routeAnimations]="getRouteAnimationData()">
