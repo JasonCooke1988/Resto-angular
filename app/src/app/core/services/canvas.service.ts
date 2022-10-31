@@ -18,7 +18,9 @@ export class CanvasService {
     let ctx = (<HTMLCanvasElement>canvas).getContext('2d')!;
     let layout = canvas!;
 
-    let layoutState$ = of(new LayoutState(layout, ctx))
+    let headerHeight = document.querySelector('nav')!.clientHeight;
+
+    let layoutState$ = of(new LayoutState(layout, ctx, headerHeight))
     layoutState$.subscribe(state => this.layoutSubject.next(state))
 
     let tables$ = createHttpObservable('/tables');
@@ -154,7 +156,7 @@ export class CanvasService {
   updateMousePos(args: any) {
 
     args['mouse'].x = args['evt'].clientX - args['layoutState']['layout'].offsetLeft;
-    args['mouse'].y = args['evt'].clientY - args['layoutState']['layout'].offsetTop;
+    args['mouse'].y = args['evt'].clientY - args['layoutState']['layout'].offsetTop - args['layoutState'].headerHeight;
 
     if (!args['layoutState']['isDragging'] && !args['layoutState']['addingTable']) {
       args['mouse'].state = 'default';

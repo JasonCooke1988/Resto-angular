@@ -23,7 +23,9 @@ export class TablesService {
   }
 
   saveTablesLocally(tables: Table[]) {
+
     this.subject.next(tables);
+
   }
 
   clearSelected() {
